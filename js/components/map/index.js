@@ -367,43 +367,144 @@ dist() {
 
 
   renderButtons() {
-    if (this.props.vehicle === "scooter") {
-      return (
-        <View style = {styles.iconss}>
+    if (!this.props.route_set) {
 
-            <TouchableOpacity
-              onPress={()=>this.choose('scooter', this.props.emergency)}
-              >
-              <Image style = {{marginRight: 7}} source = {require("../../../img/scooter_active.png")}/>
-            </TouchableOpacity>
+      if (this.props.vehicle === "scooter") {
+        return (
+          <View style = {styles.iconssRoute}>
+              
+              <TouchableOpacity
+                style = {{
+                  borderWidth:1,
+                  borderColor:'rgba(0,0,0,0.2)',
+                  alignItems:'center',
+                  justifyContent:'center',
+                  width:80,
+                  height:80,
+                  backgroundColor:'#fff',
+                  borderRadius:80,
+                  shadowColor: '#888',
+                  borderColor:  '#CCC',
+                  borderBottomWidth: 3,
+                  shadowOffset:{ width: 7, height: 2},
+                  shadowOpacity:0.7,
+                }}
+                onPress={()=>this.choose('scooter', this.props.emergency)}
+                
+                >
+                <Image style = {{marginRight: 7}} source = {require("../../../img/scooter_active.png")}/>
+              </TouchableOpacity>
+               
+              <TouchableOpacity
+              style = {{
+                borderWidth:1,
+                borderColor:'rgba(0,0,0,0.2)',
+                alignItems:'center',
+                justifyContent:'center',
+                width:80,
+                height:80,
+                backgroundColor:'#fff',
+                borderRadius:80,
+                shadowColor: '#888',
+                  borderColor:  '#CCC',
+                  borderBottomWidth: 3,
+                  shadowOffset:{ width: 7, height: 2},
+                  shadowOpacity:0.7,
+                }}
+                onPress = {()=>this.choose('truck', this.props.emergency)}
+                >
+                <Image style = {{marginRight: 7}} source = {require("../../../img/truck.png")}/>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress = {()=>this.choose('truck', this.props.emergency)}
-              >
-              <Image style = {{marginRight: 7}} source = {require("../../../img/truck.png")}/>
-            </TouchableOpacity>
-
-        </View>
-      );
-    } else {
-      return (
-        <View style = {styles.iconss}>
-            <TouchableOpacity
-              onPress={()=>this.choose('scooter')}
-              //onPress = {() => this.toggleScooter()}
-              >
-              <Image style = {{marginRight: 7}} source = {require("../../../img/scooter.png")}/>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress = {()=>this.choose('truck')}
-              >
-              <Image style = {{marginRight: 7, }} source = {require("../../../img/truck_active.png")}/>
-            </TouchableOpacity>
           </View>
-      );
-    }
+        );
+      } else {
+        return (
+          <View style = {styles.iconssRoute}>
+              <TouchableOpacity
+              style = {{
+                borderWidth:1,
+                borderColor:'rgba(0,0,0,0.2)',
+                alignItems:'center',
+                justifyContent:'center',
+                width:80,
+                height:80,
+                backgroundColor:'#fff',
+                borderRadius:80,
+                shadowColor: '#888',
+                  borderColor:  '#CCC',
+                  borderBottomWidth: 3,
+                  shadowOffset:{ width: 7, height: 2},
+                  shadowOpacity:0.7,
+                }}
+                onPress={()=>this.choose('scooter')}
+                //onPress = {() => this.toggleScooter()}
+                >
+                <Image style = {{marginRight: 7}} source = {require("../../../img/scooter.png")}/>
+              </TouchableOpacity>
 
+              <TouchableOpacity
+              style = {{
+                borderWidth:1,
+                borderColor:'rgba(0,0,0,0.2)',
+                alignItems:'center',
+                justifyContent:'center',
+                width:80,
+                height:80,
+                backgroundColor:'#fff',
+                borderRadius:80,
+                shadowColor: '#888',
+                  borderColor:  '#CCC',
+                  borderBottomWidth: 3,
+                  shadowOffset:{ width: 7, height: 2},
+                  shadowOpacity:0.7,
+                }}
+                onPress = {()=>this.choose('truck')}
+                >
+                <Image style = {{marginRight: 7, }} source = {require("../../../img/truck_active.png")}/>
+              </TouchableOpacity>
+            </View>
+        );
+      }
+    } else {
+
+      if (this.props.vehicle === "scooter") {
+        return (
+          <View style = {styles.iconss}>
+
+              <TouchableOpacity
+                onPress={()=>this.choose('scooter', this.props.emergency)}
+                >
+                <Image style = {{marginRight: 7}} source = {require("../../../img/scooter_active.png")}/>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress = {()=>this.choose('truck', this.props.emergency)}
+                >
+                <Image style = {{marginRight: 7}} source = {require("../../../img/truck.png")}/>
+              </TouchableOpacity>
+
+          </View>
+        );
+      } else {
+        return (
+          <View style = {styles.iconss}>
+              <TouchableOpacity
+                onPress={()=>this.choose('scooter')}
+                //onPress = {() => this.toggleScooter()}
+                >
+                <Image style = {{marginRight: 7}} source = {require("../../../img/scooter.png")}/>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress = {()=>this.choose('truck')}
+                >
+                <Image style = {{marginRight: 7, }} source = {require("../../../img/truck_active.png")}/>
+              </TouchableOpacity>
+            </View>
+        );
+      }
+    }
   }
 
 
@@ -447,9 +548,9 @@ dist() {
 
 
 
-      {!this.props.route_set && 
+      {!this.props.route_set && !this.props.hoveron  &&
         <View style = {styles.okayokay}>
-
+        {this.renderButtons()}
           </View>
       }
 

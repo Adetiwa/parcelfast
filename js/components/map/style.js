@@ -44,7 +44,8 @@ export default {
     zIndex: 100,
     left: 0,
     right: 0,
-    alignItems: 'center',
+    //alignItems: 'center',
+    justifyContent: 'space-between',
 
   }, 
   iconss: {
@@ -52,6 +53,13 @@ export default {
     padding: 20,
     flexDirection: "row",
     justifyContent: "center",
+    alignContent: 'center',
+  },
+  iconssRoute: {
+    margin: 30,
+    padding: 40,
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignContent: 'center',
   },
   buttonContainer: {
