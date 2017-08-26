@@ -48,8 +48,8 @@ export default {
     alignSelf: "center"
   },
   text: {
-    fontWeight: Platform.OS === "ios" ? "500" : "400",
-    fontSize: 16,
+    fontWeight: Platform.OS === "ios" ? "400" : "300",
+    fontSize: 14,
     marginLeft: 20
   },
   badgeText: {

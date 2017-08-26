@@ -47,6 +47,7 @@ import {
   FETCH_HISTORY_GOOD,
   FETCH_HISTORY_EMPTY,
   FETCH_HISTORY_BAD,
+  SCREEN_SHOT,
 } from '../../actions/types';
 
 import { Dimensions } from "react-native";
@@ -114,6 +115,7 @@ const INITIAL_STATE =
     fetching: false,
     history_empty: false,
     history_error: false,
+    screenshot: null,
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -333,6 +335,8 @@ export default (state = INITIAL_STATE, action) => {
         error_submitting_order: false,
         done: true,
       };
+    case SCREEN_SHOT: 
+      return {...state, screenshot: action.payload };
     case FETCHING_HISTORY:
       return { ...state, fetching: true };
     case FETCH_HISTORY_GOOD:

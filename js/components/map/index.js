@@ -13,6 +13,7 @@ import {  destinationChanged,
           StorePrice,
           StoreKm,
           StoreHr,
+          saveScreenShot,
         } from '../../actions/Map';
 import Pulse from 'react-native-pulse';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -81,6 +82,7 @@ class Map extends Component {
     bounceValue: new Animated.Value(100),
     buttonText: "GET ESTIMATE",
     isDateTimePickerVisible: false,
+    mapSnapshot: null,
   }
   }
 
@@ -123,6 +125,19 @@ class Map extends Component {
 
 
 
+  takeSnapshot() {
+    this.map.takeSnapshot(300, 300, {
+      latitude: this.props.latitude,
+      longitude: this.props.longitude,
+      latitudeDelta: this.props.latitudeDelta * 10,
+      longitudeDelta: this.props.longitudeDelta  * 10,
+    }, (err, data) => {
+      if (err) console.log(err);
+      this.setState({ mapSnapshot: data });
+      console.log("cur state "+this.state);
+    });
+  }
+
   componentWillMount() {
     //this.props.getCurrentLocation();
   }
@@ -131,12 +146,13 @@ class Map extends Component {
   componentDidMount() {
     //this.animateMap();
     //this.refs._map.fitToElements(true);
+    //this.takeSnapshot();
     this.props.fetchPrice(this.props.vehicle, this.props.emergency);
-    if(this.props.route_set === false) {
+    if(!this.props.route_set) {
       this.props.getCurrentLocation();
-    }
-    if (this.props.route_set) {
+    } else {
       this.calculatePriceThe(this.props.distanceInKM, this.props.distanceInHR, this.props.prices.per_km, this.props.prices.per_hr, this.props.prices.emergency, this.props.prices.base_price);
+     
     }
 
   }
@@ -207,8 +223,8 @@ dist() {
       return (
       <View style={styles.map}>
         <MapView.Animated
-
-        ref={component => this._map = component}
+        ref={ref => { this.map = ref; }}
+        //ref={component => this._map = component}
         customMapStyle={mapStyle}
         style={{ flex: 1,
                   zIndex: -1,
@@ -243,7 +259,7 @@ dist() {
         fillColor="rgba(255,0,0,0.5)"
       />
 
-
+            
              <MapView.Marker
                coordinate={{
                  latitude: this.props.latitude,
@@ -251,6 +267,7 @@ dist() {
                }}
                title="Pick-up"
                            />
+            {this.props.dropoff_coords.lat &&
              <MapView.Marker
                 coordinate={{
                  latitude: this.props.dropoff_coords.lat,
@@ -258,16 +275,17 @@ dist() {
                  }}
                title="Drop-off"
              />
+            }
       </MapView.Animated>
       </View>
-
       )
     } else {
       return (
         <View style={styles.map}>
 
         <MapView.Animated
-        ref={component => this._map = component}
+        ref={ref => { this.map = ref; }}
+        //ref={component => this._map = component}
         customMapStyle={mapStyle}
         style={{ flex: 1,
                   zIndex: -1,
@@ -383,9 +401,10 @@ dist() {
                   height:80,
                   backgroundColor:'#fff',
                   borderRadius:80,
-                  shadowColor: '#888',
-                  borderColor:  '#CCC',
-                  borderBottomWidth: 3,
+                  shadowColor: '#AAA',
+                  elevation: 2,
+                  borderColor:  '#DDD',
+                  borderBottomWidth: 1,
                   shadowOffset:{ width: 7, height: 2},
                   shadowOpacity:0.7,
                 }}
@@ -405,11 +424,12 @@ dist() {
                 height:80,
                 backgroundColor:'#fff',
                 borderRadius:80,
-                shadowColor: '#888',
-                  borderColor:  '#CCC',
-                  borderBottomWidth: 3,
-                  shadowOffset:{ width: 7, height: 2},
-                  shadowOpacity:0.7,
+                shadowColor: '#AAA',
+                elevation: 2,
+                borderColor:  '#DDD',
+                borderBottomWidth: 1,
+                shadowOffset:{ width: 7, height: 2},
+                shadowOpacity:0.7,
                 }}
                 onPress = {()=>this.choose('truck', this.props.emergency)}
                 >
@@ -431,11 +451,12 @@ dist() {
                 height:80,
                 backgroundColor:'#fff',
                 borderRadius:80,
-                shadowColor: '#888',
-                  borderColor:  '#CCC',
-                  borderBottomWidth: 3,
-                  shadowOffset:{ width: 7, height: 2},
-                  shadowOpacity:0.7,
+                shadowColor: '#AAA',
+                elevation: 2,
+                borderColor:  '#DDD',
+                borderBottomWidth: 1,
+                shadowOffset:{ width: 7, height: 2},
+                shadowOpacity:0.7,
                 }}
                 onPress={()=>this.choose('scooter')}
                 //onPress = {() => this.toggleScooter()}
@@ -453,11 +474,12 @@ dist() {
                 height:80,
                 backgroundColor:'#fff',
                 borderRadius:80,
-                shadowColor: '#888',
-                  borderColor:  '#CCC',
-                  borderBottomWidth: 3,
-                  shadowOffset:{ width: 7, height: 2},
-                  shadowOpacity:0.7,
+                shadowColor: '#AAA',
+                elevation: 2,
+                borderColor:  '#DDD',
+                borderBottomWidth: 1,
+                shadowOffset:{ width: 7, height: 2},
+                shadowOpacity:0.7,
                 }}
                 onPress = {()=>this.choose('truck')}
                 >
@@ -813,6 +835,7 @@ export default connect(mapStateToProps, {
   calculatePrice,
   StorePrice,
   StoreKm,
+  saveScreenShot,
   StoreHr,
 
 })(Map);

@@ -61,6 +61,7 @@ import {
    FETCH_HISTORY_GOOD,
    FETCH_HISTORY_EMPTY,
    FETCH_HISTORY_BAD,
+   SCREEN_SHOT,
   } from '../types';
 
 
@@ -98,6 +99,12 @@ export const select_vehicle = (type) => {
     type: SELECT_VEHICLE,
     payload: type
   };
+}
+export const saveScreenShot = (uri) => {
+  return {
+    type: SCREEN_SHOT,
+    payload: uri,
+  }
 }
 
 export const hoverondesc = () => {
@@ -389,20 +396,14 @@ export const getHistory = (userid) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
-            let status = responseJson.status;
-            if (status === 'success') {
-              dispatch({ type: FETCH_HISTORY_GOOD, payload: responseJson });
-              //this.props.navigation.navigate('Profile', {name: 'Lucy'})
-              //dispatch(NavigationActions.navigate({ routeName: 'Map' }));
-            } else if (status === 'no order') {
+            if (responseJson.length === 0) {
               dispatch({ type: FETCH_HISTORY_EMPTY, payload: responseJson });
             } else {
-              dispatch({ type: FETCH_HISTORY_BAD, payload: responseJson })
+              dispatch({ type: FETCH_HISTORY_GOOD, payload: responseJson });
             }
-
           })
           .catch((error) => {
-            console.log(error);
+            console.log("Error is "+error);
             dispatch({ type: FETCH_HISTORY_BAD, payload: responseJson })
           })
       }
