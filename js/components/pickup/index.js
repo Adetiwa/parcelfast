@@ -7,6 +7,7 @@ import {  destinationChanged,
           get_name_of_loc,
           update_region,
           fetchPrice,
+          getStaticImage,
           getDistance,
           calculatePrice,
           StorePrice,
@@ -61,8 +62,9 @@ class Pickup extends Component {
 }
 
   componentDidMount() {
-    if (this.props.pickup !== '' && this.props.destination !== '') {
+    if (this.props.pickup !== '' && this.props.destination !== '' && this.props.route_set) {
       this.props.getDistance(this.props.pickup, this.props.destination);
+      this.props.getStaticImage(this.props.raw);
     }
 
 
@@ -253,6 +255,8 @@ const mapStateToProps = ({ map }) => {
     longitudeDelta,
     prices,
     error, region, user,
+    route_set,
+    raw,
     distance_info,
     proceed,
     edit_error, loading,emergency, status } = map;
@@ -273,6 +277,8 @@ const mapStateToProps = ({ map }) => {
     emergency,
     prices,
     edit_error,
+    route_set,
+    raw,
     proceed,
   };
 };
@@ -286,6 +292,7 @@ export default connect(mapStateToProps, {
   update_region,
   fetchPrice,
   getDistance,
+  getStaticImage,
   calculatePrice,
   StorePrice,
   StoreKm,

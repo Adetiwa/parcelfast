@@ -43,6 +43,7 @@ export const STORE_KM = "store_km";
 export const STORE_HR = "store_hr";
 
 export const DRAW_ROUTE = "draw_route";
+export const DRAW_ROUTE_RAW = "draw_route_raw";
 export const DRAWING_ROUTE = "drawing_route";
 export const DRAWING_ROUTE_ERROR = "drawing_route_error";
 export const PICKUP_LONG_LAT_RESET = "pickup_long_lat_reset";
@@ -59,3 +60,6 @@ export const FETCH_HISTORY_GOOD = "fetch_history_good";
 export const FETCH_HISTORY_EMPTY = "fetch_history_empty";
 export const FETCH_HISTORY_BAD = "fetch_history_bad";
 export const SCREEN_SHOT = "screenshot";
+export const STATIC_IMAGE = "static_image";
+export const STATIC_IMAGE_SUCCESS = "static_image_success";
+export const STATIC_IMAGE_ERROR = "static_image_error";

@@ -62,6 +62,10 @@ import {
    FETCH_HISTORY_EMPTY,
    FETCH_HISTORY_BAD,
    SCREEN_SHOT,
+   DRAW_ROUTE_RAW,
+   STATIC_IMAGE,
+   STATIC_IMAGE_SUCCESS,
+   STATIC_IMAGE_ERROR,
   } from '../types';
 
 
@@ -411,6 +415,7 @@ export const getHistory = (userid) => {
 
 
 
+
 export const fetchPrice = (vehicle, emergency) => {
   if (vehicle === '' || emergency === '') {
       //return (dispatch) => {
@@ -549,6 +554,37 @@ export const getDistance = (pickup, destination) => {
 };
 
 
+export const getStaticImage = (route) => {
+  
+      return (dispatch) => {
+          //login user
+          dispatch({ type: STATIC_IMAGE });
+          var api_keey = "AIzaSyDz8hAJiNiqCVaoNaNcJC8GyxgU_2u6tXA";
+  
+          fetch('https://maps.googleapis.com/maps/api/staticmap?size=600x400&path=enc%3A'+route+'&key=YOUR_API_KEY='+api_keey, {
+            method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+  
+            })
+            .then((response) => response.blob())
+            .then((responseJson) => {
+                outputImg = 'data:image/png;base64,'+responseJson.data;
+                dispatch({ type: STATIC_IMAGE_SUCCESS, payload: outputImg });
+                
+  
+            })
+            .catch((error) => {
+              console.log(error);
+              dispatch({ type: STATIC_IMAGE_ERROR, payload: responseJson })
+            })
+  
+       }
+  };
+
+
 export const calculatePrice = (km, hr, price_per_km, price_per_hr, emergency) => {
   return (dispatch) => {
 
@@ -620,6 +656,7 @@ export const getRoute = (pickup, destination) => {
       .then(response => response.json())
       .then(responseJson => {
           if (responseJson.routes.length) {
+              dispatch({type: DRAW_ROUTE_RAW, payload: responseJson.routes[0].overview_polyline.points });
               dispatch({ type: DRAW_ROUTE, payload: decode(responseJson.routes[0].overview_polyline.points) }); // definition below
 
           }

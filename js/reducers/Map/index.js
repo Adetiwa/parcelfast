@@ -48,6 +48,10 @@ import {
   FETCH_HISTORY_EMPTY,
   FETCH_HISTORY_BAD,
   SCREEN_SHOT,
+  DRAW_ROUTE_RAW,
+  STATIC_IMAGE,
+  STATIC_IMAGE_SUCCESS,
+  STATIC_IMAGE_ERROR,
 } from '../../actions/types';
 
 import { Dimensions } from "react-native";
@@ -116,6 +120,7 @@ const INITIAL_STATE =
     history_empty: false,
     history_error: false,
     screenshot: null,
+    raw: null,
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -337,6 +342,13 @@ export default (state = INITIAL_STATE, action) => {
       };
     case SCREEN_SHOT: 
       return {...state, screenshot: action.payload };
+     
+    case DRAW_ROUTE_RAW: 
+      return { ...state, raw: action.payload };
+    case STATIC_IMAGE_SUCCESS:
+      return { ...state, screenshot: action.payload };
+    case STATIC_IMAGE_ERROR:  
+      return { ...state, screenshot: action.payload };
     case FETCHING_HISTORY:
       return { ...state, fetching: true };
     case FETCH_HISTORY_GOOD:

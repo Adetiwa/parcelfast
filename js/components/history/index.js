@@ -36,7 +36,8 @@ import {
   Header,
   Title,
   Content,
-
+  List,
+  ListItem,
   Item,
   Label,
   Input,
@@ -59,13 +60,36 @@ const pickup = require("../../../img/pickup.png");
 const deviceHeight = Dimensions.get("window").height;
 
 
-
+const datas = [];
 class History extends Component {
 
 componentWillMount(){
   this.props.getHistory(this.props.user.userid);
+  
 }
 
+componentDidMount() {
+  this.haha();
+}
+
+objectifythys() {
+  return JSON.stringify(this.props.history);
+}
+
+haha() {
+  
+        datas = [];
+        for (var key in this.props.history) {
+          if (this.props.history.hasOwnProperty(key)) {
+            //console.log("Thisss!!! "+JSON.stringify(this.props.predictions[key]));
+            datas.push(this.props.history[key]);
+          }
+  
+        }
+        //console.log(this.props.predictions);
+  
+      }
+  
   render () {
     return (
       <Container style={styles.container}>
@@ -87,6 +111,31 @@ componentWillMount(){
           <Right />
         </Header>
       <ScrollView>
+      <List
+     
+
+                    						dataArray={datas}
+                    						renderRow={data =>
+                    							<Card>
+
+                                <Card.Body>
+                                    <Text>Pick-up: {data.user_from}</Text>
+                                    <Text>Drop-off: {data.user_to}</Text>
+                                </Card.Body>
+
+                                <Card.Actions>
+                                    <Card.Actions position="left">
+                                      <Text style = {{fontSize: 10,}}>20/21/2017</Text>
+                                    </Card.Actions>
+                                  <Card.Actions position="right">
+                                  <Button value="VIEW" />
+                                </Card.Actions>
+                                </Card.Actions>
+                            </Card>
+                                  
+                                  }
+                    					/>
+
       </ScrollView>
 
     </Container>

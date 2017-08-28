@@ -91,6 +91,7 @@ import History from "./components/history";
 import Payment from "./components/payment";
 import SplashPage from "./components/splashscreen";
 import ErrorPage from "./components/error";
+import Test from "./components/test"
 
 const AppNavigator = StackNavigator(
 	{
@@ -175,6 +176,7 @@ const AppNavigator = StackNavigator(
 		History: {screen: History},
 		SplashPage: {screen: SplashPage},
 		ErrorPage: {screen: ErrorPage},
+		Test: {screen: Test},
 
 	},
 	{

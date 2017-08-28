@@ -14,6 +14,7 @@ import {  destinationChanged,
           StoreKm,
           StoreHr,
           saveScreenShot,
+          getStaticImage,
         } from '../../actions/Map';
 import Pulse from 'react-native-pulse';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -43,6 +44,7 @@ import {
   FooterTab,
   Text
 } from "native-base";
+import { ViewShot } from "react-native-view-shot";
 import isEqual from 'lodash/isEqual';
 /*
 
@@ -124,36 +126,20 @@ class Map extends Component {
   }
 
 
-
-  takeSnapshot() {
-    this.map.takeSnapshot(300, 300, {
-      latitude: this.props.latitude,
-      longitude: this.props.longitude,
-      latitudeDelta: this.props.latitudeDelta * 10,
-      longitudeDelta: this.props.longitudeDelta  * 10,
-    }, (err, data) => {
-      if (err) console.log(err);
-      this.setState({ mapSnapshot: data });
-      console.log("cur state "+this.state);
-    });
-  }
-
   componentWillMount() {
-    //this.props.getCurrentLocation();
+    this.props.fetchPrice(this.props.vehicle, this.props.emergency);
+    this.props.getCurrentLocation();
   }
 
 
   componentDidMount() {
-    //this.animateMap();
-    //this.refs._map.fitToElements(true);
-    //this.takeSnapshot();
-    this.props.fetchPrice(this.props.vehicle, this.props.emergency);
     if(!this.props.route_set) {
       this.props.getCurrentLocation();
-    } else {
-      this.calculatePriceThe(this.props.distanceInKM, this.props.distanceInHR, this.props.prices.per_km, this.props.prices.per_hr, this.props.prices.emergency, this.props.prices.base_price);
      
-    }
+    } else {
+      
+      this.calculatePriceThe(this.props.distanceInKM, this.props.distanceInHR, this.props.prices.per_km, this.props.prices.per_hr, this.props.prices.emergency, this.props.prices.base_price);
+     }
 
   }
 
@@ -163,6 +149,7 @@ class Map extends Component {
   componentWillUnmount() {
     //navigator.geolocation.clearWatch(this.watchID);
     this.props.fetchPrice(this.props.vehicle, this.props.emergency);
+    
   }
 
 
@@ -223,6 +210,7 @@ dist() {
       return (
       <View style={styles.map}>
         <MapView.Animated
+        //provider={this.props.provider}
         ref={ref => { this.map = ref; }}
         //ref={component => this._map = component}
         customMapStyle={mapStyle}
@@ -265,8 +253,36 @@ dist() {
                  latitude: this.props.latitude,
                  longitude: this.props.longitude,
                }}
-               title="Pick-up"
-                           />
+              >
+              <View
+                style = {{
+                  backgroundColor: '#FFF',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                }}
+                >
+                <View style = {{
+                  backgroundColor: '#000',
+                }}>
+                <Text
+                style = {{
+                  fontSize: 12,
+                  color: '#FFF',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                }}
+                >{this.props.distanceInHR} MINS</Text>
+                </View>
+                <Text
+                style = {{
+                  fontSize: 12,
+                }}
+                >Pickup Location ></Text>
+                </View>
+                </MapView.Marker>
+
             {this.props.dropoff_coords.lat &&
              <MapView.Marker
                 coordinate={{
@@ -319,8 +335,15 @@ dist() {
         latitude: this.props.latitude,
         longitude: this.props.longitude,
         }}
-        title="Pick-up"
-        />
+        //onSelect={(e) => log('onSelect', e)}
+           // onDrag={(e) => log('onDrag', e)}
+          //  onDragStart={(e) => log('onDragStart', e)}
+         //   onDragEnd={this.onRegionChange.bind(this)}
+        //onPress={(e) => log('onPress', e)}
+        draggable
+        >
+
+        </MapView.Marker>
 
     </MapView.Animated>
     </View>
@@ -536,6 +559,9 @@ dist() {
 
       <Container style={styles.container}>
         <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
+        
+      
+      
         {!this.props.hoveron ?
 
 
@@ -620,6 +646,12 @@ dist() {
     );
   }
 }
+
+Map.propTypes = {
+  provider: MapView.ProviderPropType,
+};
+
+
 const trame = require("../../../img/TRAME.png");
 
 const menu = require("../../../img/MENU.png");
@@ -797,7 +829,7 @@ const mapStateToProps = ({ map }) => {
     error, region,prices,
     distanceInKM,
     distanceInHR,
-    user, dropoff_coords,loading,emergency,route_set, status } = map;
+    user, dropoff_coords,loading,emergency,route_set, raw, status } = map;
   return {
     destination,
     pickup,
@@ -819,6 +851,7 @@ const mapStateToProps = ({ map }) => {
     distanceInKM,
     distanceInHR,
     prices,
+    raw,
   };
 };
 
@@ -837,5 +870,6 @@ export default connect(mapStateToProps, {
   StoreKm,
   saveScreenShot,
   StoreHr,
+  getStaticImage,
 
 })(Map);
