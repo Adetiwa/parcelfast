@@ -75,7 +75,8 @@ class Summary extends Component {
       this.props.scheduled,
       this.props.estimated_price,
       this.props.distanceInKM,
-      this.props.distanceInHR
+      this.props.distanceInHR,
+      this.props.screenshot
     );
   }
 
@@ -203,6 +204,7 @@ const mapStateToProps = ({ map }) => {
     dropoff_coords,
     type,
     edit_progress,
+    screenshot,
     scheduled,
     order_success,
     error_submitting_order,
@@ -235,6 +237,7 @@ const mapStateToProps = ({ map }) => {
     order_success,
     error_submitting_order,
     edit_progress,
+    screenshot,
   };
 };
 

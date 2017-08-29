@@ -25,6 +25,7 @@ export default {
   container: {
     backgroundColor: '#FFF',
     flex: 1,
+    padding: 0,
   },
   mainContainer: {
     backgroundColor: '#FFF',

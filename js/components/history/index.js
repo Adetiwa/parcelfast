@@ -9,7 +9,7 @@ import {
   Dimensions,
   StyleSheet,
   Image,
-  Text,
+  
   ScrollView,
   StatusBar,
 
@@ -31,25 +31,24 @@ import {  destinationChanged,
           getHistory,
 
         } from '../../actions/Map';
-import {
-  Container,
-  Header,
-  Title,
-  Content,
-  List,
-  ListItem,
-  Item,
-  Label,
-  Input,
-  Body,
-  Left,
-  Right,
-  Icon,
-  Form
-} from "native-base";
-
+        import {
+          Container,
+          Header,
+          Title,
+          Content,
+          Button,
+          Icon,
+          Card,
+          CardItem,
+          Text,
+          Thumbnail,
+          Left,
+          Body,
+          Right,
+          IconNB
+        } from "native-base";
 import AndroidBackButton from "react-native-android-back-button";
-import { Card, Button } from 'react-native-material-design';
+//import { Card, Button } from 'react-native-material-design';
 
 
 
@@ -61,6 +60,9 @@ const deviceHeight = Dimensions.get("window").height;
 
 
 const datas = [];
+const logo = require("../../../img/logo.png");
+const cardImage = require("../../../img/drawer-cover.png");
+
 class History extends Component {
 
 componentWillMount(){
@@ -92,53 +94,57 @@ haha() {
   
   render () {
     return (
-      <Container style={styles.container}>
-        <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
+        
+        
+        <Container style={styles.container}>
+          <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
         <AndroidBackButton
           onPress={() => this.props.navigation.navigate('Map')}
          />
         <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#FFF"}}>
-          <Left>
-            <TouchableOpacity
-                transparent onPress={() => this.props.navigation.navigate("DrawerOpen")}
-              >
-                <Image source = {menu}/>
-              </TouchableOpacity>
-          </Left>
+        <Left>
+          <TouchableOpacity
+              transparent onPress={() => this.props.navigation.navigate("DrawerOpen")}
+            >
+              <Image source = {menu}/>
+            </TouchableOpacity>
+        </Left>
+        <Body>
+          <Title style = {{color: '#888'}}>History</Title>
+        </Body>
+        <Right />
+      </Header>
+      <Content padder>
+      <Card style={styles.mb}>
+       
+
+        <CardItem cardBody>
+          <Image
+            style={{
+              resizeMode: "cover",
+              width: null,
+              height: 200,
+              flex: 1
+            }}
+            source={{uri: "https://maps.googleapis.com/maps/api/staticmap?size=960x400&path=enc:gxkf@ez%7CSdBsGJ%5BkD%7D@%7BCw@gQqE_Ba@%5DEU?WDi@P_@VMROb@%7DErRw@dDaDhMaC~J%5DrBMfAQnDBvCFlAH~@NnA%5ClBp@tCl@%60CfB~EjBdExCxFlAnBlJbPlEpHZjA%5C%60BHxAAtBCrCGzAMhAOt@c@dBE%60@_@jAWlAQtAQfDSjHMjCQhBYjB%5D%60BYjAc@tAUp@e@n@%5Db@g@d@g@%5CeAf@wCbAyAj@aBt@yAt@mCdBeAx@aA~@gB%7CB%7B@nA_AfBi@xAe@zA_@pBYtBWbE?vBJfCRzCVvBb@rBAP@%5CXtAh@nBFh@@f@C%5EGb@O%5EUXk@%60@%5DNSPAHyGrC_JrD_@VSPWj@Gf@Dr@nAlDNf@Lj@JrAAn@IjAq@fFU%60Ae@rAm@vAG%60@CLo@Iu@%5DuCeAo@Ee@Fk@Le@%5CQTSd@En@CbACRMX%5B%5Ec@TeA%5CYTqBh@qDxAmAl@%7BA~@iBlAoAnA%7B@bAuAhBoJvMeJvMiB~BY%5Cc@VaDbDURsCxBmDxB_EtBGHwEdBsBf@i@NiFtAmHhBkKhCs@RQA%5DDaKhCwAV%7BARgBJwBDmBE_BIiDc@YEU%60B%5DnDe@nC?Nq@~C%7D@vDu@xCWfAKLIHo@zC%5BhAyCnMUbAa@rAi@lAWZ%7DA%60D%5Dt@OPUJMDIJEJ?NBLHJLFN?LCJG@ArFpAdAPzDRhAHz@L%60B%5EZHu@fCGVEh@Ax@l@tAZv@Pj@Lt@Bj@rA%5Dz@WBtD?%7CBrC@Ar@@JDJJFvABA%7CIG%7C@u@tDWxBIfA@zL?vDCfBCpAIr@Kd@Yl@O%60@El@IjCM~BYdEAhG?xAIzB@hB?fCCdAMx@QViAj@i@Z&key=AIzaSyDz8hAJiNiqCVaoNaNcJC8GyxgU_2u6tXA"}}
+          />
+        </CardItem>
+
+        <CardItem style={{ paddingVertical: 0 }}>
+          
           <Body>
-            <Title style = {{color: '#888'}}>History</Title>
+            <Button iconLeft transparent>
+              <Text>89 Comments</Text>
+            </Button>
           </Body>
-          <Right />
-        </Header>
-      <ScrollView>
-      <List
-     
+          <Right>
+            <Text>11h ago</Text>
+          </Right>
+        </CardItem>
+      </Card>
+    </Content>
 
-                    						dataArray={datas}
-                    						renderRow={data =>
-                    							<Card>
-
-                                <Card.Body>
-                                    <Text>Pick-up: {data.user_from}</Text>
-                                    <Text>Drop-off: {data.user_to}</Text>
-                                </Card.Body>
-
-                                <Card.Actions>
-                                    <Card.Actions position="left">
-                                      <Text style = {{fontSize: 10,}}>20/21/2017</Text>
-                                    </Card.Actions>
-                                  <Card.Actions position="right">
-                                  <Button value="VIEW" />
-                                </Card.Actions>
-                                </Card.Actions>
-                            </Card>
-                                  
-                                  }
-                    					/>
-
-      </ScrollView>
-
-    </Container>
+</Container>
     );
   }
 }
