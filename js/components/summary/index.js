@@ -76,7 +76,11 @@ class Summary extends Component {
       this.props.estimated_price,
       this.props.distanceInKM,
       this.props.distanceInHR,
-      this.props.screenshot
+      this.props.screenshot,
+      this.props.prices.base_price,
+      this.props.prices.tollgate,
+      this.props.prices.emergency,
+      this.props.vehicle
     );
   }
 

@@ -69,6 +69,8 @@ const LONGITUDE = 3.4246;
 
 const LATITUDE_DELTA = 0.01;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+const USER_TOKEN = "user_token";
+
 
 class Map extends Component {
   constructor(props) {
@@ -126,9 +128,22 @@ class Map extends Component {
   }
 
 
-  componentWillMount() {
+ 
+  async componentWillMount() {
     this.props.fetchPrice(this.props.vehicle, this.props.emergency);
     this.props.getCurrentLocation();
+    const user = await AsyncStorage.getItem(USER_TOKEN);
+    if (user !== null) {
+      // We have data!!
+      console.log(JSON.parse(user));
+    } else {
+      try {
+          await AsyncStorage.setItem(USER_TOKEN, JSON.stringify(this.props.user));
+      } catch (error) {
+          // Error saving data
+      }
+    }
+    
   }
 
 

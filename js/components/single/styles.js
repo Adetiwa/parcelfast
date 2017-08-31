@@ -10,6 +10,9 @@ export default {
     width: null,
     height: null
   },
+  smalls: {
+    fontsize: 10,
+  },
   logoContainer: {
     flex: 1,
     marginTop: deviceHeight / 8,
@@ -25,6 +28,7 @@ export default {
   container: {
     backgroundColor: '#FFF',
     flex: 1,
+    padding: 0,
   },
   mainContainer: {
     backgroundColor: '#FFF',

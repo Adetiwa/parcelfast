@@ -59,7 +59,16 @@ export const FETCHING_HISTORY = "fetching_history";
 export const FETCH_HISTORY_GOOD = "fetch_history_good";
 export const FETCH_HISTORY_EMPTY = "fetch_history_empty";
 export const FETCH_HISTORY_BAD = "fetch_history_bad";
+
+export const FETCHING_HISTORY_SINGLE = "fetching_history_single";
+export const FETCH_HISTORY_GOOD_SINGLE = "fetch_history_good_single";
+export const FETCH_HISTORY_EMPTY_SINGLE = "fetch_history_empty_single";
+export const FETCH_HISTORY_BAD_SINGLE = "fetch_history_bad_single";
+
 export const SCREEN_SHOT = "screenshot";
 export const STATIC_IMAGE = "static_image";
 export const STATIC_IMAGE_SUCCESS = "static_image_success";
 export const STATIC_IMAGE_ERROR = "static_image_error";
+
+export const SELECT_HISTORY = "select_history";
+export const LOGOUT = "logout";

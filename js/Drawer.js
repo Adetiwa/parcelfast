@@ -44,7 +44,9 @@ import Confirm from "./components/confirm";
 import CardView from "./components/cardinput";
 import Profile from "./components/profile";
 import History from "./components/history";
+import Orders from "./components/orders";
 import Payment from "./components/payment";
+import Single from "./components/single";
 
 const DrawerExample = DrawerNavigator(
   {
@@ -89,6 +91,8 @@ const DrawerExample = DrawerNavigator(
     Profile: {screen: Profile},
     History: {screen: History},
     Payment: {screen: Payment},
+    Orders: { screen: Orders },
+    Single: { screen: Single},
 
   },
   {

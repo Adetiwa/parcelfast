@@ -47,11 +47,17 @@ import {
   FETCH_HISTORY_GOOD,
   FETCH_HISTORY_EMPTY,
   FETCH_HISTORY_BAD,
+  FETCHING_HISTORY_SINGLE,
+  FETCH_HISTORY_GOOD_SINGLE,
+  FETCH_HISTORY_EMPTY_SINGLE,
+  FETCH_HISTORY_BAD_SINGLE,
   SCREEN_SHOT,
   DRAW_ROUTE_RAW,
   STATIC_IMAGE,
   STATIC_IMAGE_SUCCESS,
   STATIC_IMAGE_ERROR,
+  SELECT_HISTORY,
+  LOGOUT,
 } from '../../actions/types';
 
 import { Dimensions } from "react-native";
@@ -116,11 +122,15 @@ const INITIAL_STATE =
     scheduled: null,
     done: false,
     history: {},
+    //history_single,
     fetching: false,
     history_empty: false,
     history_error: false,
     screenshot: null,
     raw: null,
+    selected: null,
+    history_single: null,
+    history_empty_single: null,
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -336,6 +346,7 @@ export default (state = INITIAL_STATE, action) => {
         base_price: '',
         per_hr: 0,
         route: {},
+        done: false,
         estimated_price: null,
         pickup_coords: {},
         dropoff_coords: {},
@@ -343,6 +354,12 @@ export default (state = INITIAL_STATE, action) => {
         order_success: false,
         error_submitting_order: false,
         done: true,
+        proceed: false,
+        screenshot: null,
+        order_success: false,
+        raw: null,
+        selected: null,
+        
       };
     case SCREEN_SHOT: 
       return {...state, screenshot: action.payload };
@@ -361,6 +378,18 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, history_empty: true };
     case FETCH_HISTORY_BAD:
       return { ...state, history_error: true };
+    case FETCHING_HISTORY_SINGLE:
+      return { ...state, fetching: true };
+    case FETCH_HISTORY_GOOD_SINGLE:
+      return { ...state, history_single: action.payload };
+    case FETCH_HISTORY_EMPTY_SINGLE:
+      return { ...state, history_empty_single: true };
+    case FETCH_HISTORY_BAD_SINGLE:
+      return { ...state, history_error: true };
+    case SELECT_HISTORY:
+      return { ...state, selected: action.payload };
+    case LOGOUT:
+      return { ...state, ...INITIAL_STATE };
     default:
           return state;
     }

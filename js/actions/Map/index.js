@@ -31,6 +31,10 @@ import {
    FETCHING_PRICES,
    FETCH_PRICE_GOOD,
    FETCH_PRICE_BAD,
+   FETCHING_HISTORY_SINGLE,
+   FETCH_HISTORY_GOOD_SINGLE,
+   FETCH_HISTORY_EMPTY_SINGLE,
+   FETCH_HISTORY_BAD_SINGLE,
    EDIT_NO_INPUT,
    EDITTING_USER,
    EDIT_USER_SUCCESS,
@@ -66,6 +70,8 @@ import {
    STATIC_IMAGE,
    STATIC_IMAGE_SUCCESS,
    STATIC_IMAGE_ERROR,
+   SELECT_HISTORY,
+   LOGOUT,
   } from '../types';
 
 
@@ -89,6 +95,13 @@ export const save_summary_state = (data) => {
         }
     }
 }
+
+export const clearEverything = () => {
+  return {
+    type: LOGOUT,
+    payload: true
+  };
+};
 
 export const pickupChanged = (text) => {
   return {
@@ -115,6 +128,14 @@ export const hoverondesc = () => {
   return {
     type: HOVER_ON_DESTINATION,
     payload: true,
+  };
+}
+
+
+export const selectHistory = (history_id) => {
+  return {
+    type: SELECT_HISTORY,
+    payload: history_id,
   };
 }
 
@@ -415,6 +436,40 @@ export const getHistory = (userid) => {
 
 
 
+  export const getThisHistory = (id) => {
+    return (dispatch) => {
+        //login user
+        dispatch({ type: FETCHING_HISTORY_SINGLE });
+        fetch('https://project.stackonly.com/app/api/singlehistory', {
+
+          method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: id,
+            })
+          })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            if (responseJson.length === 0) {
+              dispatch({ type: FETCH_HISTORY_EMPTY_SINGLE, payload: responseJson });
+            } else {
+              dispatch({ type: FETCH_HISTORY_GOOD_SINGLE, payload: responseJson });
+              //console.log(JSON.stringify(responseJson));
+            }
+          })
+          .catch((error) => {
+            console.log("Error is "+error);
+            dispatch({ type: FETCH_HISTORY_BAD_SINGLE, payload: responseJson })
+          })
+      }
+  };
+
+
+
+
 
 export const fetchPrice = (vehicle, emergency) => {
   if (vehicle === '' || emergency === '') {
@@ -563,45 +618,17 @@ export const getStaticImage = (route) => {
           var api_key = "AIzaSyDz8hAJiNiqCVaoNaNcJC8GyxgU_2u6tXA";
           
           fetch('https://maps.googleapis.com/maps/api/staticmap?size=960x400&path=enc:'+route+'&key='+api_key, {
-          //RNFetchBlob.fetch('GET', 'https://maps.googleapis.com/maps/api/staticmap?size=600x400&path=enc%3A'+route+'&key=YOUR_API_KEY='+api_keey, { 
-             //method: 'POST',
               headers: {
-            //    Authorization : 'Bearer access-token...',
-                //'Content-Type': 'application/json',
               },
-  
-            })
-            //.then((res) => {
-              // the conversion is done in native code
-              //let base64Str = res.base64()
-              // the following conversions are done in js, it's SYNC
-              //let text = res.text()
-              //let json = res.json()
-              
-          
-            //})
+           })
             .then((response) => {
-              //console.log('Response is '+ JSON.stringify(response));
               if (response.status === 200) {
                   var url = response.url;
-               // fetch(response.url)
-                //.then(res => res.blob())
-                //.then((blob) => {
                   dispatch({ type: STATIC_IMAGE_SUCCESS, payload: url });
-                //}
-                //console.log(blob))
-                //response.blob()
-               // )
               } else {
                 dispatch({ type: STATIC_IMAGE_ERROR, payload: "Google didn't return a good image Fam" })
               }
               
-            //.then((responseJson) => {
-              //  outputImg = 'data:image/png;base64,'+responseJson;
-                //console.log("Blob file is "+JSON.stringify(responseJson));
-                
-                
-  
             })
             .catch((error) => {
               console.log(error);
@@ -699,7 +726,7 @@ export const getRoute = (pickup, destination) => {
 
 
 
-export const submitOrder = (user, pickup, destination, emergency, order_info, pickup_coords, dropoff_coords, type, scheduled, amount, km, min, screenshot) => {
+export const submitOrder = (user, pickup, destination, emergency, order_info, pickup_coords, dropoff_coords, type, scheduled, amount, km, min, screenshot, base, toll, emergency_cost, vehicle) => {
   if ((pickup === '') || (destination === '') || (pickup_coords === '') || (dropoff_coords === '') || (amount === 0) || (order_info === '')) {
       return (dispatch) => {
         dispatch({ type: ERROR_OVERALL, payload: null });
@@ -736,6 +763,10 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
               km: km,
               min: min,
               screenshot: screenshot,
+              base: base,
+              toll: toll,
+              emergency_cost: emergency_cost,
+              vehicle:vehicle,
 
             })
           })

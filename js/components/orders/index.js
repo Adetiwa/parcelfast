@@ -70,7 +70,7 @@ const deviceHeight = Dimensions.get("window").height;
 
 const datas = [];
 const maxlimit = 20;
-class History extends Component {
+class Orders extends Component {
 
 componentWillMount(){
   this.props.getHistory(this.props.user.userid);
@@ -115,7 +115,7 @@ haha() {
             </TouchableOpacity>
         </Left>
         <Body>
-          <Title style = {{color: '#888'}}>History</Title>
+          <Title style = {{color: '#888'}}>Historyy</Title>
         </Body>
         <Right />
       </Header>
@@ -250,7 +250,7 @@ export default connect(mapStateToProps, {
   StorePrice,
   getHistory,
   selectHistory,
-})(History);
+})(Orders);
 
 const styles = StyleSheet.create({
   container: {

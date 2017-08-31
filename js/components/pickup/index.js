@@ -54,9 +54,9 @@ class Pickup extends Component {
   this.state = {
     pick_up_name: this.props.user.fullname,
     pick_up_tel: this.props.user.tel,
-    drop_off_name: '',
-    drop_off_tel: '',
-    extra: '',
+    drop_off_name: this.props.order_info.drop_off_name,
+    drop_off_tel: this.props.order_info.drop_off_tel,
+    extra: this.props.order_info.extra,
   }
 
 }
@@ -111,12 +111,11 @@ handleFormChange(formData){
 }
 
 sendData() {
-  if (this.props.proceed) {
-    this.props.navigation.navigate('Summary');
-  }
   this.props.save_summary_state(this.state);
-
+  this.props.navigation.navigate('Summary');
 }
+
+
 
 
 
@@ -210,7 +209,7 @@ sendData() {
              returnKeyType = "next"
              onChangeText = {(input)=>this.setState({extra: input})}
              placeholderTextColor="#CCC"
-             value={this.state.tel}
+             value={this.state.extra}
              style={styles.names}
              //ref= {(input) => this.lastname = input}
              ref='extra_shit'
@@ -259,6 +258,7 @@ const mapStateToProps = ({ map }) => {
     raw,
     distance_info,
     proceed,
+    order_info,
     edit_error, loading,emergency, status } = map;
   return {
     destination, pickup,
@@ -275,6 +275,7 @@ const mapStateToProps = ({ map }) => {
     latitudeDelta,
     longitudeDelta,
     emergency,
+    order_info,
     prices,
     edit_error,
     route_set,
