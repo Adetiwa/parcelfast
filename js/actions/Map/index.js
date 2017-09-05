@@ -72,6 +72,10 @@ import {
    STATIC_IMAGE_ERROR,
    SELECT_HISTORY,
    LOGOUT,
+   MATCH_ALERT_ERROR,
+   MATCH_ALERT,
+   NO_NEW_MATCH,
+   SCHEDULE,
   } from '../types';
 
 
@@ -87,6 +91,7 @@ export const save_summary_state = (data) => {
     if ((data.pick_up_name === '') || (data.pick_up_tel === '') || (data.drop_off_name === '') || (data.drop_off_tel === '') || (data.extra === '')) {
         return (dispatch) => {
         dispatch({ type: EDIT_NO_INPUT, payload: null });
+        
         }
     } else {
         return (dispatch) => {
@@ -149,6 +154,13 @@ export const setUser = (user) => {
   };
 }
 
+export const setDate = (date) => {
+  return {
+    type: SCHEDULE,
+    payload: date,
+  };
+}
+
 export const input_everything = () => {
   return {
     type: INPUT_DONE,
@@ -187,12 +199,18 @@ export const getCurrentLocation = () => {
   return(dispatch) => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-          //console.log("Current pos is "+position);
+          console.log("Current pos is "+position);
           dispatch({
             type: GET_USER_LOCATION,
             payload: position
           })
-      },
+          /*dispatch({
+            type: UPDATE_REGION,
+            payload: position
+          })
+          dispatch({type: GET_NAME_OF_LOCATION, payload: address })
+          */
+        },
       (error) => console.log(error.message),
       {enableHighAccuracy: false,
          timeout: 20000,
@@ -227,13 +245,13 @@ export const get_name_of_loc = (lat, long) => {
           //this.props.navigation.navigate('Profile', {name: 'Lucy'})
           //dispatch(NavigationActions.navigate({ routeName: 'Map' }));
         } else {
-          dispatch({ type: GET_NAME_OF_LOCATION_ERROR, payload: "Error" });
+          dispatch({ type: GET_NAME_OF_LOCATION_ERROR, payload: "" });
         }
 
       })
       .catch((error) => {
         console.log(error);
-        dispatch({ type: GET_NAME_OF_LOCATION, payload: "Error" })
+        dispatch({ type: GET_NAME_OF_LOCATION, payload: "" })
       })
   }
 }
@@ -639,6 +657,9 @@ export const getStaticImage = (route) => {
   };
 
 
+  
+
+
 export const calculatePrice = (km, hr, price_per_km, price_per_hr, emergency) => {
   return (dispatch) => {
 
@@ -791,4 +812,38 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
 
   }
 
+};
+
+
+export const getNewMatch = (id) => {
+  return (dispatch) => {
+      //login user
+      //dispatch({ type: FETCHING_HISTORY_SINGLE });
+      fetch('https://project.stackonly.com/app/api/new-order', {
+
+        method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: id,
+          })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson.status === 'null') {
+            dispatch({ type: NO_NEW_MATCH, payload: true });
+            console.log(JSON.stringify(responseJson));
+          } else {
+            dispatch({ type: MATCH_ALERT, payload: responseJson });
+            dispatch({ type: NO_NEW_MATCH, payload: false });
+            console.log(JSON.stringify(responseJson));
+          }
+        })
+        .catch((error) => {
+          console.log("Error is "+error);
+          dispatch({ type: MATCH_ALERT_ERROR, payload: "An error occured while getting match background" })
+        })
+    }
 };

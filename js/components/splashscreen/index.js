@@ -11,6 +11,7 @@ import {  destinationChanged,
           setUser,
 
         } from '../../actions/Map';
+import PubNub from 'pubnub';
 const {width, height} = Dimensions.get("window");
 const SCREEN_WIDTH = width;
 const SCREEN_HEIGHT = height;
@@ -30,6 +31,20 @@ class SplashPage extends Component {
     }
   
      async componentDidMount() {
+      pubnub = new PubNub({
+        publishKey : "pub-c-ec13d9d1-3969-4fed-9783-4364b338f1db",
+        subscribeKey : "sub-c-c9d8331c-9175-11e7-8fea-b28b0a09174f"
+      }); 
+     
+      var publishConfig = { 
+        channel : "pubnub_onboarding_channel", 
+        message : "Hellloo From JavaScript SDK"
+      } 
+     
+      pubnub.publish(publishConfig, function(status, response) { 
+        console.log(status, response); 
+      });
+      
         var navigator = this.props.navigator;
         setTimeout (() => {
           const user = AsyncStorage.getItem(USER_TOKEN)

@@ -58,6 +58,10 @@ import {
   STATIC_IMAGE_ERROR,
   SELECT_HISTORY,
   LOGOUT,
+  MATCH_ALERT_ERROR,
+  MATCH_ALERT,
+  NO_NEW_MATCH,
+  SCHEDULE,
 } from '../../actions/types';
 
 import { Dimensions } from "react-native";
@@ -110,12 +114,16 @@ const INITIAL_STATE =
     estimated_price: null,
     distanceInKM: 0,
     distanceInHR: 0,
-    route: {},
+    //route: [],
     route_set: false,
     pickup_coords: {},
     dropoff_coords: {},
     type: 'normal',
-    order_info: {},
+    order_info: {
+      drop_off_name: '',
+      drop_off_tel: '',
+      extra: '',
+    },
     proceed: false,
     order_success: false,
     error_submitting_order: false,
@@ -131,16 +139,26 @@ const INITIAL_STATE =
     selected: null,
     history_single: null,
     history_empty_single: null,
+    match_alert: null,
+    no_new_match: true,
+    match_error: '',
 }
 
 export default (state = INITIAL_STATE, action) => {
   console.log(action);
-
   switch(action.type) {
+    case MATCH_ALERT:
+      return { ...state, match_alert: action.payload };
+    case MATCH_ALERT_ERROR:
+      return { ...state, match_error: action.payload };
+    case NO_NEW_MATCH:
+      return { ...state, no_new_match: action.payload };
     case DESTINATION_INPUT:
       return { ...state,
         current_hover: 'destination',
         destination: action.payload };
+    case SCHEDULE:    
+        return { ...state, scheduled: action.payload, type: 'scheduled'  };
     case SELECT_VEHICLE:
       return { ...state, vehicle: action.payload };
     case HOVER_ON_DESTINATION:

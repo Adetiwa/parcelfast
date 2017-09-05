@@ -13,6 +13,7 @@ import {  destinationChanged,
           StorePrice,
           clearSomethings,
 } from '../../actions/Map';
+import * as Animatable from 'react-native-animatable';
 
 import AndroidBackButton from "react-native-android-back-button";
 
@@ -51,7 +52,7 @@ class Confirm extends Component {
   }
   render() {
     return (
-      <View style={{
+      <Animatable.View animation='bounceIn' style={{
         flex: 1,
         backgroundColor: '#009AD5',
       }}>
@@ -95,7 +96,7 @@ class Confirm extends Component {
               </View>
             </TouchableOpacity>
         </View>
-      </View>
+      </Animatable.View>
     );
   }
 }

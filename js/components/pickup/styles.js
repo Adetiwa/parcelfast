@@ -15,6 +15,11 @@ export default {
     marginTop: deviceHeight / 8,
     marginBottom: 30
   },
+  text: {
+    fontSize: 15,
+    fontWeight: 0,
+    color: '#888',
+  },
   logo: {
     position: "absolute",
     left: Platform.OS === "android" ? 40 : 50,
@@ -66,7 +71,7 @@ export default {
     padding: 10,
   },
   continue: {
-    marginTop: 5,
+    marginTop: 30,
     width: "100%",
 
   },

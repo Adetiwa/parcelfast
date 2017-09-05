@@ -35,6 +35,7 @@ import {
 
   Form
 } from "native-base";
+import * as Animatable from 'react-native-animatable';
 
 import styles from "./styles";
 
@@ -119,7 +120,7 @@ class Summary extends Component {
         </Header>
 
 
-        <View style ={styles.mainContainer}>
+        <Animatable.View animation='bounceIn' style ={styles.mainContainer}>
               {this.props.edit_progress &&
                 <ActivityIndicator style = {{
                 justifyContent: 'center',
@@ -175,7 +176,7 @@ class Summary extends Component {
 
 
 
-        </View>
+        </Animatable.View>
 
       </Container>
     );

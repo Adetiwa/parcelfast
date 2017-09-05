@@ -29,7 +29,8 @@ import { View, Image, Dimensions,ScrollView, Animated, PermissionsAndroid,
   	Left,
   	Right,
   	Badge,
-  	Button,
+    Button,
+    
 
   	StyleProvider,
   	getTheme,
@@ -121,12 +122,13 @@ class Location extends Component {
     return (
 
 
-                    <ScrollView style = {{
+                    <Animatable.View animation='bounceIn' style = {{
                       flex: 1,
                       backgroundColor: '#FFF',
-                      marginTop: 110,
+                      marginTop: 150,
 
                     }}>
+                    <ScrollView>
                     <AndroidBackButton
                         onPress={() => this.props.input_everything()}
                        />
@@ -134,9 +136,10 @@ class Location extends Component {
 
                     						dataArray={datas}
                     						renderRow={data =>
-                    							<ListItem button noBorder onPress={() => this.select_suggest(data.description)}>
-                    									<Text>
-                    										{data.description}
+                    							<ListItem button  onPress={() => this.select_suggest(data.description)}>
+                    									<Text style = {{fontSize: 13, flex: 10, flexDirection: 'row'}}>
+                                      
+                                      <Icon style = {{color: '#888', marginRight: 15, flex: 2, fontSize: 17}} name="pin" /> {data.description}
                     									</Text>
 
                     							</ListItem>}
@@ -144,6 +147,7 @@ class Location extends Component {
 
 
                     </ScrollView>
+                    </Animatable.View>
 
 
 

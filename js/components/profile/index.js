@@ -9,6 +9,7 @@ import {  destinationChanged,
           getCurrentLocation,
           get_name_of_loc,
           update_region,
+          getNewMatch,
           editUser,
 
         } from '../../actions/Map';
@@ -53,7 +54,9 @@ class Profile extends Component {
 
 }
 
-
+componentDidMount() {
+ 
+}
 
   editProfile() {
     this.props.editUser(this.state.fullname, this.state.email, this.state.tel, this.state.password, this.props.user.token, this.props.user.userid);
@@ -107,6 +110,11 @@ class Profile extends Component {
                 <Input
                   ref = "fullname"
                   type="text"
+                  style = {{
+                    fontSize: 15,
+                    //fontWeight: 0,
+                    borderBottomColor: '#CCC',
+                  }}
                   onChangeText = {(input)=>this.setState({fullname: input})}
                   value = {this.state.fullname} />
               </Item>
@@ -117,6 +125,11 @@ class Profile extends Component {
               <Input
                 ref = "email"
                 type="email"
+                style = {{
+                    fontSize: 15,
+                    //fontWeight: 0,
+                    borderBottomColor: '#CCC',
+                  }}
                 onChangeText = {(input)=>this.setState({email: input})}
                 value = {this.state.email}/>
             </Item>
@@ -125,6 +138,11 @@ class Profile extends Component {
               <Input
                 ref = "tel"
                 type="tel"
+                style = {{
+                    fontSize: 15,
+                    //fontWeight: 0,
+                    borderBottomColor: '#CCC',
+                  }}
                 onChangeText = {(input)=>this.setState({tel: input})}
                 value = {this.state.tel}/>
             </Item>
@@ -134,6 +152,11 @@ class Profile extends Component {
               <Input
                 onChangeText = {(input)=>this.setState({password: input})}
                 ref = "password"
+                style = {{
+                    fontSize: 15,
+                    //fontWeight: 0,
+                    borderBottomColor: '#CCC',
+                  }}
                 secureTextEntry={true}
                  />
             </Item>
@@ -210,5 +233,6 @@ export default connect(mapStateToProps, {
   get_name_of_loc,
   update_region,
   editUser,
+  getNewMatch,
 
 })(Profile);

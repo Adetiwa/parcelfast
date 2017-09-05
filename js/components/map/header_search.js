@@ -114,6 +114,11 @@ class Header_Search extends Component {
       }
     }
   }
+  backJob() {
+    this.props.goBacktoMap();
+  }
+
+
 
   getAnimatableStyles = () => {
     const {width: windowWidth} = Dimensions.get('window')
@@ -123,41 +128,48 @@ class Header_Search extends Component {
     return {
       names: {
         //14px 28px
-        marginTop: this.props.hoveron ? 20 : 0,
+        //padding: 20,
+        marginTop: this.props.hoveron ? 50 : 0,
         height: 40,
-        zIndex: 6,
+        right: this.props.hoveron ? 15 : 25,
+        left: this.props.hoveron ? 15 : -15,
+        zIndex: 6000,
         backgroundColor: '#FFF',
-        width: this.props.hoveron ? 0.8 * width : 0.8 * width,
+        width: this.props.hoveron ? 0.95 * width : 0.95 * width,
         borderColor: this.props.hoveron ? '#CCC' : '#fff',
-        shadowColor: '#888',
+        shadowColor: this.props.hoveron ? '#FFF' : '#888',
         shadowOffset: this.props.hoveron ? { width: 0, height: 0} : { width: 5, height: 5},
         shadowOpacity: this.props.hoveron ? 0 : 0.7,
-        elevation: 10,
+        elevation: this.props.hoveron ? 0: 10,
         color: '#111',
-        fontSize: 15,
-        marginBottom: this.props.hoveron ? 0 : 10,
-        borderWidth: 1,
+        fontSize: 12,
+        //fontWeight: 0,
+        marginBottom: this.props.hoveron ? 0 : 5,
+        borderWidth: this.props.hoveron ? 1 : 2,
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
         alignSelf: this.props.hoveron ? "center" : "auto",
-
       },
       names1: {
         //14px 28px
         height: 40,
-        zIndex: 6,
+        right: this.props.hoveron ? 15 : 25,
+        left: this.props.hoveron ? 15 : -15,
+        zIndex: 6000,
         backgroundColor: '#FFF',
-        width: this.props.hoveron ? 0.8 * width : 0.8 * width,
+        width: this.props.hoveron ? 0.95 * width : 0.95 * width,
         borderColor: this.props.hoveron ? '#CCC' : '#fff',
-        shadowColor: '#888',
+        shadowColor: this.props.hoveron ? '#FFF' : '#888',
         shadowOffset: this.props.hoveron ? { width: 0, height: 0} : { width: 5, height: 5},
         shadowOpacity: this.props.hoveron ? 0 : 0.7,
-        elevation: 10,
+        elevation: this.props.hoveron ? 0: 10,
         color: '#111',
-        fontSize: 15,
-        marginBottom: 10,
-        borderWidth: 1,
+        fontSize: 12,
+        //fontWeight: 0,
+        marginBottom: this.props.hoveron ? 10 : 0,
+        marginTop: this.props.hoveron ? 5 : 0,
+        borderWidth: this.props.hoveron ? 1 : 2,
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
@@ -180,16 +192,16 @@ class Header_Search extends Component {
       },
       destinationBox: {
         position: "absolute",
+        elevation: this.props.hoveron ? 2: 0,
+        backgroundColor: this.props.hoveron ? '#FFF': 'transparent',
         top: this.props.hoveron ? 0 : 60,
         left: this.props.hoveron ? 0 : 50,
         justifyContent: "center",
-        borderWidth: this.props.hoveron ? 0 : 1,
+        borderWidth: this.props.hoveron ? 2 : 0,
         width: this.props.hoveron ? windowWidth : width,
         borderBottomColor:  this.props.hoveron ? '#CCC' : 'transparent',
-        backgroundColor: this.props.hoveron ? '#FFF' : 'transparent',
-        //shadowRadius: this.props.hoveron ? 10 / 2 : 60 / 2,
         borderColor: this.props.hoveron ? '#CCC' : 'transparent',
-        shadowColor: '#888',
+        shadowColor: '#CCC',
         shadowOffset: this.props.hoveron ? { width: 5, height: 5} : { width: 0, height: 0},
         shadowOpacity: this.props.hoveron ? 0.7 : 0,
 
@@ -198,7 +210,7 @@ class Header_Search extends Component {
       destinationText: {
         left: this.props.hoveron ? 65 : 75,
         top: this.props.hoveron ? 103 : 112,
-        fontSize: this.props.hoveron ? 15 : 20,
+        fontSize: this.props.hoveron ? 10 : 15,
         color: this.props.hoveron ? '#A4A4AC' : '#525760',
         opacity: (this.props.hoveron && this.props.destination.length !== 0) ? 0 : 1,
       },
@@ -220,65 +232,125 @@ class Header_Search extends Component {
         opacity: this.props.hoveron ? 1 : 0,
       },
       dot: {
-        top: this.props.hoveron ? 69 : 69 + 22 - 5,
-        left: this.props.hoveron ? 29.5 : 29.5 + 22 - 5,
-        opacity: this.props.hoveron ? 1 : 0,
+        //top: this.props.hoveron ? 69 : 69 + 22 - 5,
+        //left: this.props.hoveron ? 29.5 : 29.5 + 22 - 5,
+       // opacity: this.props.hoveron ? 1 : 1,
+        //padding: 0,
+        zIndex: 10000,
+        position : 'absolute',
+        top: this.props.hoveron ? 62 : 15,
+        left: this.props.hoveron ? 22 : 12,
+        width: 10,
+        height: 10,
+        borderRadius: this.props.hoveron ? 0 : 10,
+        backgroundColor: '#009AD5',
+        marginRight: 10,
       },
+      searchSection: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+       
+     },
+     line: {
+        position: 'absolute',
+        //color: 'red',
+        flexDirection: 'row',
+        width: 1,
+        height: 40,
+        flexDirection: 'row',
+        zIndex: 10,
+        backgroundColor: '#888',
+        marginRight: 10,
+        top: this.props.hoveron ? 72 : 0,
+        left: this.props.hoveron ? 27 : 0,
+        opacity: this.props.hoveron ? 1 : 0,
+     },
+     dot2: {
+      //top: this.props.hoveron ? 69 : 69 + 22 - 5,
+      //left: this.props.hoveron ? 29.5 : 29.5 + 22 - 5,
+     // opacity: this.props.hoveron ? 1 : 1,
+      //padding: 0,
+      zIndex: 10000,
+      position : 'absolute',
+      top: this.props.hoveron ? 15 : 15,
+      left: this.props.hoveron ? 22 : 12,
+      width: 10,
+      height: 10,
+      opacity: (this.props.hoveron || this.props.destination !== '') ? 1 : 0,
+      borderRadius: this.props.hoveron ? 0 : 10,
+      backgroundColor: 'black',
+      marginRight: 10,
+    },
+    searchSection2: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+     
+   },
+    backButton: {
+      
+    },
     }
   }
 
   render() {
-    /*
-    {
-      position: "absolute",
-      top: 60,
-      left: 30,
-      justifyContent: "center",
-
-    }
-    */
-    //const {expanded, sourceText, destination} = this.props
     const animatableStyles = this.getAnimatableStyles()
 
-    const homePlace = {description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }};
-    const workPlace = {description: 'Work', geometry: { location: { lat: 48.8496818, lng: 2.2940881 } }};
-
-
-
+    
     return (
 
 
 
-                    <Animated.View style = {animatableStyles.destinationBox}>
+                    <Animated.View animation='flipInY'  style = {animatableStyles.destinationBox}>
                       <AndroidBackButton
                           onPress={() => this.props.input_everything()}
                          />
-                         <TextInput
-                          placeholder="Pick up Address"
-                          value = {this.props.pickup}
-                          ref='pickupInput'
-                          underlineColorAndroid= 'transparent'
-                          placeholderTextColor="#CCC"
-                          returnKeyType = "go"
-                          onFocus = {this.onDestHover.bind(this)}
-                          onChangeText = {this.onPickupChange.bind(this)}
-                          onSubmitEditing= {() => this.inputter()}
-                          style={animatableStyles.names}
-                        />
-
-                        <TextInput
-                          placeholder="Drop off Address"
-                          ref='destInput'
-                          value = {this.props.destination}
-                          underlineColorAndroid= 'transparent'
-                          placeholderTextColor="#CCC"
-                          returnKeyType = "go"
-                          onFocus = {this.onDestHover.bind(this)}
-                          onChangeText = {this.onDestChange.bind(this)}
-                          //onChangeText ={(val) => this.setState({firstname: val})}
-                          onSubmitEditing= {() => this.inputter()}
-                          style={animatableStyles.names1}
-                        />
+                         <Button 
+                         style = {{position: 'absolute',
+                          left: -5,
+                          top: 10,
+                          //marginTop: -10,
+                          opacity: this.props.hoveron ? 1 : 1,
+                          }}
+                        transparent
+                        onPress={() => this.props.input_everything()}>
+                          <Icon style = {{color: '#888'}} name="arrow-back" />
+                        </Button>
+                         <View style={animatableStyles.searchSection}>
+                          <View style={animatableStyles.dot}/>
+                          <View style={animatableStyles.line}/>
+                          <TextInput
+                            placeholder="Pick up Address"
+                            value = {this.props.pickup}
+                            ref='pickupInput'
+                            underlineColorAndroid= 'transparent'
+                            placeholderTextColor="#CCC"
+                            returnKeyType = "go"
+                            onFocus = {this.onDestHover.bind(this)}
+                            onChangeText = {this.onPickupChange.bind(this)}
+                            onSubmitEditing= {() => this.inputter()}
+                            style={animatableStyles.names}
+                          ></TextInput>
+                        </View>
+                        <View style={animatableStyles.searchSection2}>
+                            <View style={animatableStyles.dot2}/>
+                            <TextInput
+                            placeholder="Drop off Address"
+                            ref='destInput'
+                            value = {this.props.destination}
+                            underlineColorAndroid= 'transparent'
+                            placeholderTextColor="#CCC"
+                            returnKeyType = "go"
+                            onFocus = {this.onDestHover.bind(this)}
+                            onChangeText = {this.onDestChange.bind(this)}
+                            //onChangeText ={(val) => this.setState({firstname: val})}
+                            onSubmitEditing= {() => this.inputter()}
+                            style={animatableStyles.names1}
+                          />
+                        </View>
 
                   </Animated.View>
 

@@ -20,7 +20,7 @@ import {  destinationChanged,
 import { View, Image, TextInput, KeyboardAvoidingView,  Dimensions, Platform , StatusBar , TouchableOpacity} from "react-native";
 import AndroidBackButton from "react-native-android-back-button";
 import { KeyboardAwareScrollView, Form } from 'react-native-form-generator'
-
+import { Switch } from 'react-native-switch';
 import {
   Container,
   Header,
@@ -35,9 +35,12 @@ import {
   IconNB,
   Item,
   Input,
+  Label,
+
 
 
 } from "native-base";
+import * as Animatable from 'react-native-animatable'
 
 import styles from "./styles";
 
@@ -57,6 +60,8 @@ class Pickup extends Component {
     drop_off_name: this.props.order_info.drop_off_name,
     drop_off_tel: this.props.order_info.drop_off_tel,
     extra: this.props.order_info.extra,
+    emergency: false,
+    error: '',
   }
 
 }
@@ -111,8 +116,13 @@ handleFormChange(formData){
 }
 
 sendData() {
-  this.props.save_summary_state(this.state);
-  this.props.navigation.navigate('Summary');
+  if ((this.state.pick_up_name === '') || (this.state.pick_up_tel === '') || (this.state.drop_off_name === '') || (this.state.drop_off_tel === '') || (this.state.extra === '')) {
+    this.setState({error: "All inputs are required"});
+  } else {
+    this.props.save_summary_state(this.state);
+    this.props.navigation.navigate('Summary');
+  }
+  //console.log(JSON.stringify(this.state));
 }
 
 
@@ -131,90 +141,135 @@ sendData() {
          />
         <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#FFF"}}>
           <Left>
-            <Button transparent onPress={() => this.props.navigation.navigate('Map')}>
+            <Button
+             transparent onPress={() => this.props.navigation.navigate('Map')}>
               <Icon style = {{color: '#888'}} name="arrow-back" />
             </Button>
           </Left>
           <Body>
-            <Title style = {{color: '#888'}}> Pickup <Image source = {pickup}/></Title>
+            <Title style = {{fontSize: 15, color: '#888'}}> <Image source = {pickup}/> Pickup Info </Title>
           </Body>
           <Right />
         </Header>
 
 
-        <KeyboardAvoidingView  style ={styles.mainContainer}>
-          <View style ={styles.firstText}>
-            <Text style = {{color: "#CCC"}}>
-                ENTER THE PICK-UP ADDRESS
-            </Text>
-          </View>
+        <Animatable.View animation='pulse'  style ={styles.mainContainer}>
+          
           <Form
             style = {styles.forms}
             label="Personal Information">
 
-          <TextInput
-             placeholder="Name of Pickup collector"
-             underlineColorAndroid= 'transparent'
-             value={this.state.pick_up_name}
-             onSubmitEditing= {() => this.tel.focus()}
-             returnKeyType = "next"
-             onChangeText = {(input)=>this.setState({pick_up_name: input})}
-             placeholderTextColor="#CCC"
-             style={styles.names}
-             ref='pickup_collector'
-             //ref= {(input) => this.lastname = input}
-           />
-          <TextInput
-           placeholder="Telephone"
-           value={this.state.pick_up_tel}
-           onChangeText = {(input)=>this.setState({pick_up_tel: input})}
-           underlineColorAndroid= 'transparent'
-           placeholderTextColor="#CCC"
-           onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
-           returnKeyType = "next"
-           style={styles.names}
-           ref='pickup_collector_tel'
+            <Item floatingLabel>
+              <Input
+              placeholder="Name of Pickup collector"
+              underlineColorAndroid= 'transparent'
+              value={this.state.pick_up_name}
+              style = {{
+              fontSize: 15,
+              //fontWeight: 0,
+              borderBottomColor: '#CCC',
+              }}
+              //onSubmitEditing= {() => this.tel.focus()}
+              returnKeyType = "next"
+              onChangeText = {(input)=>this.setState({pick_up_name: input})}
+              placeholderTextColor="#CCC"
+              ref='pickup_collector'
+              />
+            </Item>
+          
 
-        />
-          <TextInput
-             placeholder="Name of Drop-off collector"
-             underlineColorAndroid= 'transparent'
-             onSubmitEditing= {() => this.refs.dropoff_collector_tel.focus()}
-             returnKeyType = "next"
-             value={this.state.drop_off_name}
-             onChangeText = {(input)=>this.setState({drop_off_name: input})}
-             placeholderTextColor="#CCC"
-             style={styles.names}
-             ref='dropoff_collector'
+            <Item floatingLabel>
+              <Input
+              placeholder="Telephone"
+              underlineColorAndroid= 'transparent'
+              onSubmitEditing= {() => this.tel.focus()}
+              returnKeyType = "next"
+              style = {{
+              fontSize: 15,
+              //fontWeight: 0,
+              borderBottomColor: '#CCC',
+              }}
+              value={this.state.pick_up_tel}
+              onChangeText = {(input)=>this.setState({pick_up_tel: input})}
+              placeholderTextColor="#CCC"
+              ref='pickup_collector_tel'
+              //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
+           
+              />
+            </Item>
 
-          />
+            <Item floatingLabel>
+              <Input
+              placeholder="Name of Drop-off collector"
+              underlineColorAndroid= 'transparent'
+              //onSubmitEditing= {() => this.tel.focus()}
+              returnKeyType = "next"
+              style = {{
+              fontSize: 15,
+              //fontWeight: 0,
+              borderBottomColor: '#CCC',
+              }}
+              value={this.state.drop_off_name}
+              onChangeText = {(input)=>this.setState({drop_off_name: input})}
+              placeholderTextColor="#CCC"
+              ref='dropoff_collector'
+              
+              />
+            </Item>
 
-          <TextInput
-             placeholder="Drop-off Collector Number"
-             underlineColorAndroid= 'transparent'
-             onSubmitEditing= {() => this.refs.tel.extra_shit()}
-             returnKeyType = "next"
-             value={this.state.drop_off_tel}
-             onChangeText = {(input)=>this.setState({drop_off_tel: input})}
-             placeholderTextColor="#CCC"
-             style={styles.names}
-             //ref= {(input) => this.lastname = input}
-             ref='dropoff_collector_tel'
+            <Item floatingLabel>
+              <Input
+              placeholder="Drop-off Collector Number"
+              underlineColorAndroid= 'transparent'
+              //onSubmitEditing= {() => this.tel.focus()}
+              returnKeyType = "next"
+              style = {{
+              fontSize: 15,
+              //fontWeight: 0,
+              borderBottomColor: '#CCC',
+              }}
+              value={this.state.drop_off_tel}
+              onChangeText = {(input)=>this.setState({drop_off_tel: input})}
+              placeholderTextColor="#CCC"
+              ref='dropoff_collector_tel'
+              //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
+           
+              />
+            </Item>
 
-          />
-          <TextInput
-             placeholder="Extra comments"
-             underlineColorAndroid= 'transparent'
-             onSubmitEditing= {() => this.tel.focus()}
-             returnKeyType = "next"
-             onChangeText = {(input)=>this.setState({extra: input})}
-             placeholderTextColor="#CCC"
-             value={this.state.extra}
-             style={styles.names}
-             //ref= {(input) => this.lastname = input}
-             ref='extra_shit'
-
-          />
+            <Item floatingLabel>
+              <Input
+              placeholder="Extra comments"
+              underlineColorAndroid= 'transparent'
+              //onSubmitEditing= {() => this.tel.focus()}
+              returnKeyType = "next"
+              style = {{
+              fontSize: 15,
+              //fontWeight: 0,
+              borderBottomColor: '#CCC',
+              }}
+              onChangeText = {(input)=>this.setState({extra: input})}
+              placeholderTextColor="#CCC"
+              value={this.state.extra}
+              ref='extra_shit'
+              //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
+           
+              />
+            </Item>
+            
+            <Switch
+              value={true}
+              onValueChange={(val) => this.setState({emergency: val})}
+              disabled={false}
+              activeText={'On'}
+              inActiveText={'Off'}
+              backgroundActive={'#009AD5'}
+              backgroundInactive={'gray'}
+              circleActiveColor={'#FFF'}
+              circleInActiveColor={'#009AD5'}
+            />
+            
+    
 
           <TouchableOpacity style = {styles.continue}
             onPress = {() => this.sendData()} >
@@ -228,14 +283,14 @@ sendData() {
               marginTop: 10,
               alignSelf: 'center',
               color: '#f62e2e',
-            }}>{this.props.edit_error}</Text>
+            }}>{this.state.error}</Text>
 
         </Form>
 
 
+            
+        </Animatable.View>
 
-
-        </KeyboardAvoidingView>
 
       </Container>
     );

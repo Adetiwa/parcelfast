@@ -62,6 +62,7 @@ import TimeAgo from 'react-native-timeago';
 import TabOne from "../tab/tabOne";
 import TabTwo from "../tab/tabTwo";
 import TabThree from "../tab/tabThree";
+import * as Animatable from 'react-native-animatable';
 
 //import Button from 'react-native-button';
 
@@ -131,6 +132,7 @@ componentDidMount() {
                 alignItems: 'center',
               }} />
             }
+            <Animatable.View animation='bounceIn'>
                     					 <Card 
                                style={styles.mb}>
                                   
@@ -185,13 +187,44 @@ componentDidMount() {
                                    </CardItem>
                                    
                                    </Card>
+                                   {thissingle[0].order_status === 'pending' &&
+                                    
+                                    <Card 
+                                      style={styles.mb}>
+    
+                                    <TableView>
+                                      <Cell cellStyle="RightDetail" title="A driver is yet to be assigned"/>
+                                   
+                                
+                                    
+                                  </TableView>
+                                    
+                                   </Card>
+                                   
+                                   }
+
+                                   {thissingle[0].order_status !== 'pending' &&
+                                    
+                                    <Card 
+                                      style={styles.mb}>
+    
+                                    <TableView>
+                                      <Cell cellStyle="RightDetail" title={`${thissingle[0].driver} with plate number ${thissingle[0].driver_plate_number} `}/>
+                                   
+                                
+                                    
+                                  </TableView>
+                                    
+                                   </Card>
+                                   
+                                   }
 
 
                                    <Card 
                                     style={styles.mb}>
    
                                    <TableView>
-                                  <Section header="BUGA RECEIPT" footer={`₦ ${thissingle[0].amount}`}>
+                                  <Section header="PARCELFAST RECEIPT" footer={`₦ ${thissingle[0].amount}`}>
                                     <Cell cellStyle="RightDetail" title="Base Fair" leftDetailColor="#6cc644" detail={`₦ ${thissingle[0].base}`}/>
                                     <Cell cellStyle="RightDetail" title="Distance" detail={`${thissingle[0].km} km`} />
                                     <Cell cellStyle="RightDetail" title="Time" detail={`${thissingle[0].min} min`} />
@@ -215,21 +248,8 @@ componentDidMount() {
                                    
                                    </Card>
 
-                                   {thissingle[0].status === 'pending' &&
-                                    
-                                    <Card 
-                                      style={styles.mb}>
-    
-                                    <TableView>
-                                      <Cell cellStyle="RightDetail" title="A driver is yet to be assigned"/>
-                                   
-                                
-                                    
-                                  </TableView>
-                                    
-                                   </Card>
-                                   
-                                   }
+                     
+                                   </Animatable.View> 
                                 
     </Content>
 </Container>

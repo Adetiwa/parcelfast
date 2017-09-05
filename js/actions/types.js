@@ -72,3 +72,9 @@ export const STATIC_IMAGE_ERROR = "static_image_error";
 
 export const SELECT_HISTORY = "select_history";
 export const LOGOUT = "logout";
+
+export const MATCH_ALERT = "match_alert";
+export const NO_NEW_MATCH = "no_new_match";
+export const MATCH_ALERT_ERROR = "match_alert_error";
+
+export const SCHEDULE = "schedule";

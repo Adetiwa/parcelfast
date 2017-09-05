@@ -62,6 +62,7 @@ import TabTwo from "../tab/tabTwo";
 import TabThree from "../tab/tabThree";
 
 //import Button from 'react-native-button';
+import * as Animatable from 'react-native-animatable'
 
 import styless from "./styles";
 const pickup = require("../../../img/pickup.png");
@@ -96,13 +97,23 @@ haha() {
           }
         }
 }
-  
+
+getColor(status) {
+  let color = "";
+  if (status === "pending") {
+    color = "red";
+  } else {
+    color = "green";
+  }
+  return color;
+}
   render () {
     return (
         
         
         <Container style={styles.container}>
           <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
+        
         <AndroidBackButton
           onPress={() => this.props.navigation.navigate('Map')}
          />
@@ -118,16 +129,20 @@ haha() {
           <Title style = {{color: '#888'}}>History</Title>
         </Body>
         <Right />
+        {this.props.history === null &&
+        <Image style = {{position: 'absolute',
+         top: 50, height: 10,}} source={require('../../../img/17.gif')} />
+        }
       </Header>
-  
+      
       <Content padder>
-      {this.props.history === '' &&
+      {this.props.history === null &&
               <ActivityIndicator style = {{
               justifyContent: 'center',
               alignItems: 'center',
             }} />
           }
-
+          <Animatable.View animation='pulse'>
  
                       <List
 
@@ -138,7 +153,7 @@ haha() {
                                   <TouchableOpacity
                                   onPress={() =>  this.selectHis(data.o_id)}
                                   >
-                           
+                                  
                                    <CardItem cardBody>
                                      <Image
                                        style={{
@@ -159,12 +174,12 @@ haha() {
                                             width: 10,
                                             height: 10,
                                             borderRadius: 10,
-                                            backgroundColor: 'red',
+                                            backgroundColor: this.getColor(data.order_status),
                                             marginRight: 10,
                                           }}
                                             ></View>
                                             <Text style = {{color: '#444'}}>
-                                            ₦{data.amount }</Text>
+                                            ₦{data.amount}</Text>
 
                                             <Text>
                                            { ((data.user_to).length > maxlimit) ? 
@@ -185,7 +200,9 @@ haha() {
 
                     							}
                     					/>
-    </Content>
+                              </Animatable.View>
+                              </Content>
+    
 
 </Container>
     );
