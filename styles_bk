@@ -1,6 +1,7 @@
 const React = require("react-native");
 import { Dimensions } from "react-native";
 var width = Dimensions.get("window").width;
+var { width, height } = Dimensions.get('window');
 
 const { StyleSheet } = React;
 
@@ -40,14 +41,27 @@ export default {
   },
   okayokay: {
     position: 'absolute',
-    bottom: 0,
-    zIndex: 100,
+    top: height,
+    backgroundColor: '#FFF',
+    height: 190,
+    zIndex: 10,
     left: 0,
+    borderTopColor: '#009AD5',
+    borderWidth: 1,
     right: 0,
-    //alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'column'
 
   }, 
+  text: {
+    color: '#111',
+    fontSize: 12,
+    textAlign: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   iconss: {
     margin: 10,
     padding: 20,
@@ -191,5 +205,118 @@ export default {
     marginBottom: 5,
   },
 
+  names: {
+        //14px 28px
+        height: 40,
+        //zIndex: 6000,
+        backgroundColor: '#FFF',
+        width:  0.75 * width,
+        borderColor: '#CCC',
+        shadowColor: '#888',
+        shadowOffset: { width: 5, height: 5},
+        shadowOpacity: 0.7,
+        elevation: 10,
+        color: '#111',
+        fontSize: 12,
+        //fontWeight: 0,
+        marginBottom: 0,
+        marginTop:  0,
+        borderWidth: 1,
+        textAlign: "center",
+        justifyContent: "center",
+        alignItems: "center",
+        //opacity: !this.props.hoveron && !this.props.input_done ? 1 : 0,
+        alignSelf:  "auto",
+    
+  },
+  names1: {
+    //14px 28px
+    height: 40,
+    right:  25,
+    left:-15,
+    zIndex: 6000,
+    backgroundColor: '#FFF',
+    width:  0.95 * width,
+    borderColor: '#CCC',
+    shadowColor: '#888',
+    shadowOffset: { width: 5, height: 5},
+    shadowOpacity: 0.7,
+    elevation: 10,
+    color: '#111',
+    fontSize: 12,
+    //fontWeight: 0,
+    marginBottom: 0,
+    marginTop:  0,
+    borderWidth: 1,
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    //opacity: !this.props.hoveron && !this.props.input_done ? 1 : 0,
+    opacity:  0,
+    alignSelf:  "auto",
+
+  },
+
+ 
+  dot: {
+    //top: this.props.hoveron ? 69 : 69 + 22 - 5,
+    //left: this.props.hoveron ? 29.5 : 29.5 + 22 - 5,
+   // opacity: this.props.hoveron ? 1 : 1,
+    //padding: 0,
+    zIndex: 1000,
+    position : 'absolute',
+    top:  15,
+    left: 15,
+    width: 10,
+    height: 10,
+    borderRadius: 10,
+    backgroundColor: '#009AD5',
+    marginRight: 10,
+  },
+  searchSection: {
+    flex: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+   
+ },
+ line: {
+    //position: 'absolute',
+    //color: 'red',
+    flexDirection: 'row',
+    width: 1,
+    height: 40,
+    flexDirection: 'row',
+    zIndex: 10,
+    backgroundColor: '#888',
+    marginRight: 10,
+    //top:  0,
+    //left: 0,
+    opacity: 0,
+ },
+ dot2: {
+  //top: this.props.hoveron ? 69 : 69 + 22 - 5,
+  //left: this.props.hoveron ? 29.5 : 29.5 + 22 - 5,
+ // opacity: this.props.hoveron ? 1 : 1,
+  //padding: 0,
+  zIndex: 10000,
+  position : 'absolute',
+  top: 15,
+  left: 12,
+  width: 10,
+  height: 10,
+  opacity: 0,
+  borderRadius: 10,
+  backgroundColor: 'black',
+  marginRight: 10,
+},
+searchSection2: {
+  flex: 1,
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+ 
+},
 
 };

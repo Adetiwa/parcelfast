@@ -114,7 +114,7 @@ const INITIAL_STATE =
     estimated_price: null,
     distanceInKM: 0,
     distanceInHR: 0,
-    //route: [],
+    route: [],
     route_set: false,
     pickup_coords: {},
     dropoff_coords: {},
@@ -123,6 +123,11 @@ const INITIAL_STATE =
       drop_off_name: '',
       drop_off_tel: '',
       extra: '',
+    },
+    prices: {
+      base_price: null,
+      per_km:null,
+      per_hr: null,
     },
     proceed: false,
     order_success: false,
@@ -162,7 +167,7 @@ export default (state = INITIAL_STATE, action) => {
     case SELECT_VEHICLE:
       return { ...state, vehicle: action.payload };
     case HOVER_ON_DESTINATION:
-      return { ...state, hoveron: true };
+      return { ...state, hoveron: true, route_set: false };
     case PICKUP_INPUT:
       return { ...state,
         pickup: action.payload,
@@ -317,9 +322,9 @@ export default (state = INITIAL_STATE, action) => {
     case STORE_HR:
         return {...state, distanceInHR: action.payload };
     case DRAW_ROUTE:
-        return { ...state, route: action.payload };
+        return { ...state, route: action.payload, route_set: true };
     case DRAWING_ROUTE:
-        return { ...state, route: action.payload, route_set: true};
+        return { ...state, route: action.payload};
     case DRAWING_ROUTE_ERROR:
         return { ...state, route: action.payload };
     case PICKUP_LONG_LAT_RESET:
@@ -363,7 +368,7 @@ export default (state = INITIAL_STATE, action) => {
         raw: null,
         base_price: '',
         per_hr: 0,
-        route: {},
+        route: [],
         done: false,
         estimated_price: null,
         pickup_coords: {},
