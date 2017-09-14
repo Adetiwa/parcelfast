@@ -96,6 +96,8 @@ var ImagesScreen = React.createClass({
         </View>
         <View style = {{
           flex: 3,
+          //backgroundColor: 'red',
+          width: '100%',
         }}>
           <Text style={styles.heading}>{data.Heading}</Text>
           <Text style={styles.text}>{data.text}</Text>
@@ -124,12 +126,16 @@ var styles = StyleSheet.create({
   },
   heading: {
     alignSelf: 'center',
+    textAlign: 'center',
     marginTop: 20,
+    fontSize: 20,
+    color: '#555',
   },
   text: {
     fontSize: 13,
     padding: 20,
     textAlign: 'center',
+    color: '#555',
   },
 });
 

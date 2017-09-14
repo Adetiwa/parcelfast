@@ -6,6 +6,9 @@ import { EMAIL_CHANGED,
    LOGIN_USER_ERROR,
    LOGIN_USER,
    NO_INPUT,
+   REGISTERING,
+   NEW_USER_SUCCESS,
+   NEW_USER_ERROR
  } from '../../actions/types';
 
 const INITIAL_STATE =
@@ -16,12 +19,26 @@ const INITIAL_STATE =
     error: '',
     user: null,
     status: false,
+    loadingReg: false,
+    errorReg: '',
+    statusReg: false,
   }
 
 export default (state = INITIAL_STATE, action) => {
   //console.log(action);
 
   switch(action.type) {
+    case REGISTERING:
+      return { ...state, loadingReg: true, errorReg: '' };
+    case NEW_USER_SUCCESS:
+      return { ...state,
+        ...INITIAL_STATE,
+         user: action.payload,
+         statusReg: true,
+
+      };
+    case NEW_USER_ERROR:
+      return { ...state, errorReg: action.payload, loadingReg: false };
     case EMAIL_CHANGED:
       return { ...state, email: action.payload };
     case PASSWORD_CHANGED:

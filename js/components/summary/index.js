@@ -12,6 +12,9 @@ import {  destinationChanged,
           StorePrice,
           submitOrder,
           reset,
+          onPayment,
+          charge_method,
+          getCard,
 
         } from '../../actions/Map';
 
@@ -35,6 +38,8 @@ import {
 
   Form
 } from "native-base";
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+
 import * as Animatable from 'react-native-animatable';
 
 import styles from "./styles";
@@ -42,12 +47,22 @@ import styles from "./styles";
 const dropoff = require("../../../img/dropoff.png");
 const deviceHeight = Dimensions.get("window").height;
 
-
+const radio_props = [
+  {label: 'CASH', value: 'CASH' },
+  {label: 'CARD', value: 'CARD' }
+];
 
 
 
 class Summary extends Component {
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: this.props.charge_type,
+      
+    }
+  
+  }
   componentWillMount() {
 
     this.props.fetchPrice(this.props.vehicle, this.props.emergency);
@@ -55,6 +70,12 @@ class Summary extends Component {
 
   componentDidMount(){
     this.props.reset();
+    if(!this.props.card_exist) {
+      this.props.getCard(this.props.user.userid);
+    }
+  }
+  componentWillUpdate() {
+    this.checkForShit();
   }
 
   formatDollar(num) {
@@ -81,7 +102,10 @@ class Summary extends Component {
       this.props.prices.base_price,
       this.props.prices.tollgate,
       this.props.prices.emergency,
-      this.props.vehicle
+      this.props.vehicle,
+      this.props.charge_type,
+      this.props.flutterwave_token,
+      this.props.transaction_id
     );
   }
 
@@ -92,8 +116,17 @@ class Summary extends Component {
       //this.props.navigation.navigate('ErrorPage');
     }
   }
+  checkForShit() {
+    if (!this.props.card_exist && (this.props.flutterwave_token !== null)) {
+      this.props.onPayment(true);
+      this.props.navigation.navigate('CardView');
+    }
+  }
 
-
+  choose_card(val){
+    this.props.charge_method(val);
+    
+  }
 
 
 
@@ -151,6 +184,7 @@ class Summary extends Component {
               <Text style ={{padding: 20, color: '#888', fontSize: 13,}}> A dispatcher
               will be assigned to you shortly </Text>
             </View>
+            
             <View style = {styles.cost}>
               <Text style = {{color: "#CCC"}}>
                   ESTIMATED COST
@@ -164,7 +198,8 @@ class Summary extends Component {
 
               <View style={styles.confirmButton}>
                 <TouchableOpacity style = {styles.continue}
-                  onPress = {() => this.placeOrder()} >
+                  onPress = {() => this.placeOrder()}
+                  disabled = {!this.props.card_exist ? true : false} >
                   <View style={styles.buttonContainer}>
                     <Text style = {styles.continueText}>CONFIRM</Text>
                   </View>
@@ -205,13 +240,17 @@ const mapStateToProps = ({ map }) => {
     distanceInHR,
     prices,
     order_info,
+    card,
     pickup_coords,
     dropoff_coords,
     type,
+    charge_type,
     edit_progress,
+    last_4,
+	  card_exist,
     screenshot,
     scheduled,
-    order_success,
+    order_success,flutterwave_token,transaction_id,
     error_submitting_order,
     error, region, user, distance_info, loading,emergency, status } = map;
   return {
@@ -240,9 +279,15 @@ const mapStateToProps = ({ map }) => {
     type,
     scheduled,
     order_success,
+    card,
+    charge_type,
     error_submitting_order,
     edit_progress,
     screenshot,
+    last_4,
+	  card_exist,
+    flutterwave_token,
+    transaction_id,
   };
 };
 
@@ -258,5 +303,8 @@ export default connect(mapStateToProps, {
   calculatePrice,
   StorePrice,
   reset,
+  getCard,
   submitOrder,
+  onPayment,
+  charge_method,
 })(Summary);

@@ -76,6 +76,22 @@ import {
    MATCH_ALERT,
    NO_NEW_MATCH,
    SCHEDULE,
+   CONNECTING_DRIVER,
+   NO_DRIVER,
+   DRIVER_AVAILABLE,
+   ERROR_NETWORK_DRIVER,
+   EMERGENCY,
+   CHARGE_TYPE,
+   ONPAYMENT,
+   CARD_UPDATE,
+   VERYFYING_CARD,
+   BAD_VERIFY,
+   GOOD_VERIFY,
+   ERROR_VERIFY,
+   CARD_EXIST,
+   NO_CARD,
+   ERROR_GETTING_CARD,
+   CHANGE_TYPE,
   } from '../types';
 
 
@@ -84,6 +100,13 @@ export const destinationChanged = (text) => {
   return {
     type: DESTINATION_INPUT,
     payload: text
+  };
+};
+
+export const charge_method = (val) => {
+  return {
+    type: CHARGE_TYPE,
+    payload: val
   };
 };
 
@@ -439,7 +462,7 @@ export const getHistory = (userid) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
-            if (responseJson.length === 0) {
+            if (responseJson.status === 'null') {
               dispatch({ type: FETCH_HISTORY_EMPTY, payload: responseJson });
             } else {
               dispatch({ type: FETCH_HISTORY_GOOD, payload: responseJson });
@@ -447,7 +470,7 @@ export const getHistory = (userid) => {
           })
           .catch((error) => {
             console.log("Error is "+error);
-            dispatch({ type: FETCH_HISTORY_BAD, payload: responseJson })
+            dispatch({ type: FETCH_HISTORY_BAD, payload: "Error occured getting history" })
           })
       }
   };
@@ -471,7 +494,7 @@ export const getHistory = (userid) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
-            if (responseJson.length === 0) {
+            if (responseJson.status === 'null') {
               dispatch({ type: FETCH_HISTORY_EMPTY_SINGLE, payload: responseJson });
             } else {
               dispatch({ type: FETCH_HISTORY_GOOD_SINGLE, payload: responseJson });
@@ -671,7 +694,14 @@ export const calculatePrice = (km, hr, price_per_km, price_per_hr, emergency) =>
     var num_emergency = Number(emergency);
 
     var price = (km_num * num_price_per_km) + (hr_num + num_price_per_hr) + num_emergency;
-    dispatch({ type: GETTING_PRICE });
+    dispatch({ type: GETTING_PRICE, payload: price });
+  }
+}
+
+export const updateCard = (card) => {
+  return {
+    type: CARD_UPDATE,
+    payload: card,
   }
 }
 
@@ -681,6 +711,13 @@ export const StorePrice = (price) => {
     payload: price,
   }
 }
+
+export const onPayment = (val) => {
+  return {
+    type: ONPAYMENT,
+    payload: val,
+  };
+};
 
 export const StoreKm = (km) => {
   return {
@@ -699,6 +736,18 @@ export const reset = () => {
   return {
     type: RESET,
     payload: null,
+  }
+}
+export const change_type = (val) => {
+  return {
+    type: CHANGE_TYPE,
+    payload: val,
+  }
+}
+export const setEmergency = (data) => {
+  return {
+    type: EMERGENCY,
+    payload: data,
   }
 }
 
@@ -747,7 +796,7 @@ export const getRoute = (pickup, destination) => {
 
 
 
-export const submitOrder = (user, pickup, destination, emergency, order_info, pickup_coords, dropoff_coords, type, scheduled, amount, km, min, screenshot, base, toll, emergency_cost, vehicle) => {
+export const submitOrder = (user, pickup, destination, emergency, order_info, pickup_coords, dropoff_coords, type, scheduled, amount, km, min, screenshot, base, toll, emergency_cost, vehicle, charge_type, flutterwave_token, transaction_id) => {
   if ((pickup === '') || (destination === '') || (pickup_coords === '') || (dropoff_coords === '') || (amount === 0) || (order_info === '')) {
       return (dispatch) => {
         dispatch({ type: ERROR_OVERALL, payload: null });
@@ -788,13 +837,17 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
               toll: toll,
               emergency_cost: emergency_cost,
               vehicle:vehicle,
+              charge_type: charge_type,
+              flutterwave_token:flutterwave_token,
+              transaction_id: transaction_id
+              
 
             })
           })
           .then((responsee) => responsee.json())
           .then((responseeJson) => {
             let status = responseeJson.status;
-            if (status === 'success') {
+            if (status === 'Successful') {
               dispatch({ type: ORDER_SUBMIT_SUCCESS, payload: responseeJson });
               console.log(JSON.stringify(responseeJson));
               //this.props.navigation.navigate('Profile', {name: 'Lucy'})
@@ -814,6 +867,75 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
 
 };
 
+export const getCard = (user) => {
+  //var array = card.expiry.split('/');
+  return (dispatch) => {
+      //login user
+      fetch('https://project.stackonly.com/app/api/get-card', {
+        method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: user,
+          })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson.has_card) {
+            dispatch({ type: CARD_EXIST, payload: responseJson });
+            console.log(JSON.stringify(responseJson));
+          } else {
+            dispatch({ type: NO_CARD, payload: responseJson });
+            console.log(JSON.stringify(responseJson));
+          }
+        })
+        .catch((error) => {
+          console.log("Error is "+error);
+          dispatch({ type: ERROR_GETTING_CARD, payload: "An error occured while getting card" })
+        })
+    }
+};
+
+
+export const verifyCard = (card, user) => {
+  //var array = card.expiry.split('/');
+  return (dispatch) => {
+      //login user
+      dispatch({ type: VERYFYING_CARD });
+      fetch('https://project.stackonly.com/app/api/tokenize', {
+
+        method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            number: card.values.number,
+            expiry: card.values.expiry,
+            cvc: card.values.cvc,
+            name: card.values.name,
+            user: user,
+            type: card.values.type
+          })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson.status !== 'success') {
+            dispatch({ type: BAD_VERIFY, payload: responseJson });
+            console.log(JSON.stringify(responseJson));
+          } else {
+            dispatch({ type: GOOD_VERIFY, payload: responseJson });
+            console.log(JSON.stringify(responseJson));
+          }
+        })
+        .catch((error) => {
+          console.log("Error is "+error);
+          dispatch({ type: ERROR_VERIFY, payload: "An error occured while verifying card" })
+        })
+    }
+};
 
 export const getNewMatch = (id) => {
   return (dispatch) => {
@@ -844,6 +966,35 @@ export const getNewMatch = (id) => {
         .catch((error) => {
           console.log("Error is "+error);
           dispatch({ type: MATCH_ALERT_ERROR, payload: "An error occured while getting match background" })
+        })
+    }
+};
+
+export const getDriver = (id) => {
+  return (dispatch) => {
+      //login user
+      dispatch({ type: CONNECTING_DRIVER, payload: "Connecting you to an available driver!" });
+      fetch('https://project.stackonly.com/app/api/driver', {
+
+        method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: id,
+          })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson.status === 'null') {
+            dispatch({ type: NO_DRIVER, payload: "NO DRIVER IS AVAILABLE AT THE MOMENT :(" });
+             } else {
+            dispatch({ type: DRIVER_AVAILABLE, payload: responseJson });
+             }
+        })
+        .catch((error) => {
+          dispatch({ type: ERROR_NETWORK_DRIVER, payload: "AN ERROR OCCURED. PROBABLY YOUR NETWORK" })
         })
     }
 };

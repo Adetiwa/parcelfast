@@ -12,16 +12,21 @@ import {  destinationChanged,
           calculatePrice,
           StorePrice,
           StoreKm,
+          charge_method,
           StoreHr,
+          getCard,
           saveScreenShot,
           getStaticImage,
           setDate,
           getNewMatch,
+          setEmergency,
+          change_type,
+          onPayment,
         } from '../../actions/Map';
 import Pulse from 'react-native-pulse';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { View, Image, Dimensions, Animated, PermissionsAndroid,
-  Platform, TextInput,AsyncStorage, StatusBar, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
+  Platform, TextInput,AsyncStorage,Easing, StatusBar, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 //import mapStyle from './mapStyle';
 import Header_Search from './header_search';
@@ -36,6 +41,8 @@ import {
   Title,
   Content,
   Button,
+  List,
+	ListItem,
   Item,
   Label,
   Input,
@@ -48,7 +55,6 @@ import {
   FooterTab,
   Text
 } from "native-base";
-import { ViewShot } from "react-native-view-shot";
 import isEqual from 'lodash/isEqual';
 //import PushNotification from 'react-native-push-notification';
 /*
@@ -76,15 +82,15 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const USER_TOKEN = "user_token";
 
 
-/*
+
 
 const regularJobKey = "regularJobKey";
 const exactJobKey = "exactJobKey";
 const foregroundJobKey = "foregroundJobKey";
+const lol = null;
 
 //run only on android
-if(Platform.OS == 'ooo') {
-  const lol = '';
+/*if(Platform.OS == 'android') {
   
   //const data = 0;
   // This has to run outside of the component definition since the component is never
@@ -139,7 +145,7 @@ if(Platform.OS == 'ooo') {
                       //group: "group", // (optional) add group to message
                       ongoing: false, // (optional) set whether this is an "ongoing" notification
                   
-                      /* iOS only properties *
+                      /* iOS only properties */
                     //  alertAction: // (optional) default: view
                     // category: // (optional) default: null
                       //userInfo: // (optional) default: null (object containing additional notification data)
@@ -151,7 +157,7 @@ if(Platform.OS == 'ooo') {
                       //soundName: 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
                       number: responseJson.count, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
                       //repeatType: 'day', // (Android only) Repeating interval. Could be one of `week`, `day`, `hour`, `minute, `time`. If specified as time, it should be accompanied by one more parameter 'repeatTime` which should the number of milliseconds between each interval
-                      actions: '["Call", "Message"]',  // (Android only) See the doc for notification actions to know more
+                      //actions: '["Call", "Message"]',  // (Android only) See the doc for notification actions to know more
                   });
   
                   }
@@ -188,6 +194,8 @@ class Map extends Component {
     isDateTimePickerVisible: false,
     mapSnapshot: null,
     map_ready: false,
+    expanded: false,
+    state: 'Money',
   }
   }
 
@@ -208,13 +216,17 @@ class Map extends Component {
 
 
   async componentWillMount() {
+        
+    this.animatedValue1 = new Animated.Value(0);
+    this.animatedValue2 = new Animated.Value(1);
+    
     this.props.fetchPrice(this.props.vehicle, this.props.emergency);
     const region = await this.props.getCurrentLocation()
     ///.then(() => {
      // this.props.update_region(this.props.region);
     //})
     //.then(() => {
-      this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
+    //  this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
       
     //})
     
@@ -229,18 +241,11 @@ class Map extends Component {
           // Error saving data
       }
     }
-    /*if(Platform.OS == 'android') {
-      BackgroundJob.schedule({
-        jobKey: exactJobKey,
-        period: 10000,
-        exact: true,
-        allowExecutionInForeground: true,
-      });
-    }*/
-    
   }
 
   componentWillUpdate() {
+       
+  
     if(!this.props.route_set) {
       //this.props.getCurrentLocation();
       //this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
@@ -253,22 +258,54 @@ class Map extends Component {
    // this.props.getCurrentLocation();
    lol = this.props.user.userid;
    
-     
+    this.props.getCard(this.props.user.userid);
     if(!this.props.route_set) {
       this.props.getCurrentLocation();
-      this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
+      //this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
       
      
     } else {
       
       this.calculatePriceThe(this.props.distanceInKM, this.props.distanceInHR, this.props.prices.per_km, this.props.prices.per_hr, this.props.prices.emergency, this.props.prices.base_price);
      }
-     setInterval (() => {
-      //this.props.getNewMatch(this.props.user.userid);
-      //console.log("Ran!!!!");
-    
-  
-    }, 10000);
+    /* setInterval (() => {
+      this.props.getNewMatch(this.props.user.userid);
+      if (!this.props.no_new_match) {
+        var responseJson = this.props.match_alert;
+        var dest = responseJson.user_to;
+        PushNotification.localNotification({
+          /* Android Only Properties *
+          id: '0', // (optional) Valid unique 32 bit integer specified as string. default: Autogenerated Unique ID
+          ticker: "Delivery assigned", // (optional)
+          autoCancel: false, // (optional) default: true
+          largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
+          smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"
+          bigText: "Delivery to "+dest+" has been assigned to a "+responseJson.driver+" "+responseJson.driver_plate_number+" "+responseJson.vehicle, // (optional) default: "message" prop
+          subText: "Delivery matched to "+responseJson.driver, // (optional) default: none
+          color: "#009AD5", // (optional) default: system default
+          vibrate: true, // (optional) default: true
+          vibration: 500, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
+          //tag: 'some_tag', // (optional) add tag to message
+          //group: "group", // (optional) add group to message
+          ongoing: false, // (optional) set whether this is an "ongoing" notification
+      
+          /* iOS only properties */
+        //  alertAction: // (optional) default: view
+        // category: // (optional) default: null
+          //userInfo: // (optional) default: null (object containing additional notification data)
+      
+          /* iOS and Android properties *
+          title: "Delivery assigned", // (optional, for iOS this is only used in apple watch, the title will be the app name on other iOS devices)
+          message: "Your delivery has been assigned", // (required)
+          playSound: false, // (optional) default: true
+          //soundName: 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
+          number: responseJson.count, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
+          //repeatType: 'day', // (Android only) Repeating interval. Could be one of `week`, `day`, `hour`, `minute, `time`. If specified as time, it should be accompanied by one more parameter 'repeatTime` which should the number of milliseconds between each interval
+          //actions: '["Call", "Message"]',  // (Android only) See the doc for notification actions to know more
+      });
+
+      }
+      }, 10000); */
 
   }
   updateState(e){
@@ -336,6 +373,58 @@ dist() {
         this.props.StorePrice(pricee);
         //console.log("Price is "+price);
 
+  }
+
+
+  callAnimate(t) {
+    this.setState({type: t });
+    if (!this.state.expanded) {
+      this.setState({expanded: true});
+      
+      Animated.parallel([  
+        Animated.timing(this.animatedValue1, {
+          toValue: -150,
+          duration: 250,
+          easing: Easing.inOut(Easing.ease),
+        }),
+        Animated.timing(this.animatedValue2, {
+          toValue: -190,
+          duration: 250,
+          easing: Easing.inOut(Easing.ease),
+        }),
+      ]).start();
+    } else {
+      this.setState({expanded: false});
+      Animated.parallel([  
+        Animated.timing(this.animatedValue1, {
+          toValue: 0,
+          duration: 250,
+          easing: Easing.inOut(Easing.ease),
+        }),
+        Animated.timing(this.animatedValue2, {
+          toValue: 0,
+          duration: 250,
+          easing: Easing.inOut(Easing.ease),
+        }),
+      ]).start();
+    }
+    
+  }
+  onSelect(type){
+    this.props.charge_method(type);
+    this.callAnimate('Money');
+  }
+
+  onSelect2(type){
+    if (type === 'normal') {
+      this.props.setEmergency(false);
+      this.props.change_type('normal');
+    } else {
+      this.props.setEmergency(true);
+      this.props.change_type('emergency');  
+    }
+    this.callAnimate('Life');
+    
   }
 
   renderProps() {
@@ -539,6 +628,12 @@ dist() {
 
 
 
+  getTheFuckOut() {
+    this.props.onPayment(true);
+    this.props.navigation.navigate('CardView');
+  
+}
+
 
   renderButtons() {
     if (!this.props.route_set) {
@@ -549,25 +644,25 @@ dist() {
               
               <TouchableOpacity
                 style = {{
-                  borderWidth:1,
                   borderColor:'rgba(0,0,0,0.2)',
                   alignItems:'center',
                   justifyContent:'center',
-                  width:80,
-                  height:80,
+                  width:70,
+                  height:70,
                   backgroundColor:'#fff',
-                  borderRadius:80,
-                  shadowColor: '#AAA',
+                  borderRadius:70,
+                  shadowColor: '#444',
                   elevation: 2,
-                  borderColor:  '#DDD',
-                  borderBottomWidth: 1,
-                  shadowOffset:{ width: 7, height: 2},
+                  borderWidth: 1,
+                  borderColor:  '#009AD5',
+                  //borderBottomWidth: 1,
+                  shadowOffset:{ width: 1, height: 1},
                   shadowOpacity:0.7,
                 }}
                 onPress={()=>this.choose('scooter', this.props.emergency)}
                 
                 >
-                <Image style = {{marginRight: 7}} source = {require("../../../img/taxi-icon.png")}/>
+                <Image  source = {require("../../../img/hitch-icon.png")}/>
               </TouchableOpacity>
                
               <TouchableOpacity
@@ -576,20 +671,20 @@ dist() {
                 borderColor:'rgba(0,0,0,0.2)',
                 alignItems:'center',
                 justifyContent:'center',
-                width:80,
-                height:80,
+                width:70,
+                height:70,
                 backgroundColor:'#fff',
-                borderRadius:80,
+                borderRadius:70,
                 shadowColor: '#AAA',
                 elevation: 2,
-                borderColor:  '#DDD',
-                borderBottomWidth: 1,
-                shadowOffset:{ width: 7, height: 2},
+                borderWidth: 1,
+                borderColor:  '#CCC',
+                shadowOffset:{ width: 1, height: 1},
                 shadowOpacity:0.7,
                 }}
                 onPress = {()=>this.choose('truck', this.props.emergency)}
                 >
-                <Image style = {{marginRight: 7}} source = {require("../../../img/hitch-icon_normal.png")}/>
+                <Image source = {require("../../../img/taxi-icon_normal.png")}/>
               </TouchableOpacity>
 
           </View>
@@ -603,21 +698,21 @@ dist() {
                 borderColor:'rgba(0,0,0,0.2)',
                 alignItems:'center',
                 justifyContent:'center',
-                width:80,
-                height:80,
+                width:70,
+                height:70,
                 backgroundColor:'#fff',
-                borderRadius:80,
+                borderRadius:70,
                 shadowColor: '#AAA',
                 elevation: 2,
-                borderColor:  '#DDD',
-                borderBottomWidth: 1,
-                shadowOffset:{ width: 7, height: 2},
+                borderColor:  '#CCC',
+                borderWidth: 1,
+                shadowOffset:{ width: 1, height: 1},
                 shadowOpacity:0.7,
                 }}
                 onPress={()=>this.choose('scooter')}
                 //onPress = {() => this.toggleScooter()}
                 >
-                <Image style = {{marginRight: 7}} source = {require("../../../img/taxi-icon.png")}/>
+                <Image source = {require("../../../img/hitch-icon_normal.png")}/>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -626,20 +721,20 @@ dist() {
                 borderColor:'rgba(0,0,0,0.2)',
                 alignItems:'center',
                 justifyContent:'center',
-                width:80,
-                height:80,
+                width:70,
+                height:70,
                 backgroundColor:'#fff',
-                borderRadius:80,
+                borderRadius:70,
                 shadowColor: '#AAA',
                 elevation: 2,
-                borderColor:  '#DDD',
-                borderBottomWidth: 1,
-                shadowOffset:{ width: 7, height: 2},
+                borderColor:  '#009AD5',
+                borderWidth: 1,
+                shadowOffset:{ width: 2, height: 2},
                 shadowOpacity:0.7,
                 }}
                 onPress = {()=>this.choose('truck')}
                 >
-                <Image style = {{marginRight: 7, }} source = {require("../../../img/hitch-icon_normal.png")}/>
+                <Image source = {require("../../../img/taxi-icon.png")}/>
               </TouchableOpacity>
             </View>
         );
@@ -649,18 +744,19 @@ dist() {
       if (this.props.vehicle === "scooter") {
         return (
           <View style = {styles.iconss}>
-
               <TouchableOpacity
                 onPress={()=>this.choose('scooter', this.props.emergency)}
                 >
                 <Image style = {{marginRight: 7}} source = {require("../../../img/hitch-icon.png")}/>
               </TouchableOpacity>
-
+              
+              
               <TouchableOpacity
                 onPress = {()=>this.choose('truck', this.props.emergency)}
                 >
                 <Image style = {{marginRight: 7}} source = {require("../../../img/taxi-icon_normal.png")}/>
               </TouchableOpacity>
+              
 
           </View>
         );
@@ -687,7 +783,24 @@ dist() {
 
 
   render() {
-
+    const animatedStyle = { 
+      //height: this.animatedValue 
+      transform: [
+        { translateY: this.animatedValue1 },
+        //{ scale: this.animatedValue2 }
+      ]
+    }
+    const animatedStyle2 = { 
+      //height: this.animatedValue 
+      transform: [
+        { translateY: this.animatedValue2 },
+        //{ scale: this.animatedValue2 }
+      ],
+      opacity: this.props.hoveron ? 0 : 1,
+      
+        //{ scale: this.animatedValue2 }
+      
+    }
     return (
 
       <Container style={styles.container}>
@@ -719,7 +832,7 @@ dist() {
                       onPress={this._showDateTimePicker}
                     >
 
-                      <Icon style = {{color: (this.props.scheduled === null) ? '#FFF': '#009AD5', backgroundColor: "transparent",}} name = "time"></Icon>
+                      <Icon style = {{color: (this.props.scheduled !== null) ? '#27D9A1': '#009AD5', backgroundColor: "transparent",}} name = "time"></Icon>
                     </TouchableOpacity>
 
                   }
@@ -741,14 +854,105 @@ dist() {
               <Text
                 style = {{
                   textAlign: 'center',
-                  color: "#555",
+                  color: this.props.vehicle === 'truck' ? '#27D9A1' : '#009AD5',
                   marginTop: 15,
                   fontSize: 15,
                 }}>
-                PICK-UP OPTIONS</Text>
+               {this.props.vehicle.toUpperCase()}</Text>
 
               {this.renderButtons()}
              
+              <View style = {{
+                zIndex: 10,
+                width: '100%',
+                height: '20%',
+                backgroundColor: '#FFF',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                justifyContent: 'center',
+                flexDirection: 'row',
+                alignItems: 'center',
+            }}>
+        
+              <View style = {{
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '50%',
+                  alignSelf: 'center',
+                  padding: 5,
+                  borderRightWidth: 1,
+                  borderRightColor: '#CCC',
+
+                 
+                  //flexDirection: 'row',
+              }}>
+                <TouchableOpacity
+                onPress = {() => this.callAnimate('Money')}
+                style = {{
+                  flexDirection: 'row',
+                  
+                }}>
+                {this.props.charge_type == 'CASH' ?
+                <Icon style = {{color: '#27D9A1', paddingRight: 10, fontSize: 20}}
+                name = "cash" /> :
+                <Icon style = {{color: '#009AD5', paddingRight: 10, fontSize: 20}}
+                name = "card" /> }
+                  <Text style = {{
+                    color: '#43496A', fontSize: 15
+                  }}>
+                    {this.props.charge_type.toLowerCase()}    
+                  </Text>
+                </TouchableOpacity>
+                </View>
+                <View style = {{
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '50%',
+                  
+                  alignSelf: 'center',
+                  padding: 5,
+                 
+                  //flexDirection: 'row',
+              }}>
+              <TouchableOpacity
+              onPress = {() => this.callAnimate('Life')}
+              style = {{
+                flexDirection: 'row',
+                
+              }}>
+              {this.props.type == 'normal' &&
+              <Icon style = {{color: '#009AD5', paddingRight: 10, fontSize: 20}}
+              name = "person" /> 
+              }
+              {this.props.type == 'scheduled' &&
+              <Icon style = {{color: '#27D9A1', paddingRight: 10, fontSize: 20}}
+              name = "time" /> 
+              }
+              {this.props.type == 'emergency' &&
+              <Icon style = {{color: '#f62e2e', paddingRight: 10, fontSize: 20}}
+              name = "time" /> 
+              }
+                <Text style = {{
+                  color: '#43496A', fontSize: 15
+                }}>
+                  {this.props.type}    
+                </Text>
+              </TouchableOpacity>
+                </View>
+              
+            </View>
+            
+              {(this.props.pickup !== '') && (this.props.destination !== '') &&
+                  <View style={{
+                    alignItems: 'center',
+
+                  }}>
+                    <Text style = {styles.continueText}>CONTINUE</Text>
+                  </View>
+                
+              }
               {(this.props.pickup !== '') && (this.props.destination !== '') &&
                 <TouchableOpacity style = {styles.continue}
                   onPress = {() => this.props.navigation.navigate('Pickup')} >
@@ -757,9 +961,95 @@ dist() {
                   </View>
                 </TouchableOpacity>
               }
+              {!this.props.card_exist && (this.props.charge_type === 'CARD') && this.getTheFuckOut()}
+        
 
+              <Animated.View
+              animation="slideInUp"
+              style={[styles.okayokayyy, animatedStyle2]}>
+              {this.state.type === 'Money' ?
+             
+              <View style = {{
+               width: '100%',
+               height: '100%',
+               justifyContent: 'center',
+               paddingRight: 20,
+               paddingLeft: 20,
+               
+             }}>
+             <ListItem
+             onPress = {() => this.onSelect('CASH')}
+             >
+             <Icon style = {{color: '#27D9A1', paddingRight: 10, fontSize: 20}}
+                    name = "cash" /> 
+                      <Text style = {{
+                        color: '#43496A', fontSize: 15
+                      }}> Cash 
+              </Text>
+             <Right>
+             {this.props.charge_type == 'CASH' && <Image source = {check}/>}
+             </Right>
+
+              </ListItem>
+              <ListItem
+              onPress = {() => this.onSelect('CARD')}
+              >
+              <Icon style = {{color: '#009AD5', paddingRight: 10, fontSize: 20}}
+                      name = "card" /> 
+                        <Text style = {{
+                          color: '#43496A', fontSize: 15
+                        }}> Card 
+                </Text>
+              <Right>
+              {this.props.charge_type == 'CARD' && <Image source = {check}/>}
+              </Right>
+
+          </ListItem>
+              </View>
+                :
+                <View style = {{
+               width: '100%',
+               height: '100%',
+               justifyContent: 'center',
+               paddingRight: 20,
+               paddingLeft: 20,
+               
+             }}>
+             <ListItem
+             onPress = {() => this.onSelect2('normal')}
+             >
+             <Icon style = {{color: '#27D9A1', paddingRight: 10, fontSize: 20}}
+                    name = "person" /> 
+                      <Text style = {{
+                        color: '#43496A', fontSize: 15
+                      }}> Normal 
+              </Text>
+             <Right>
+             {this.props.type == 'normal' && <Image source = {check}/>}
+             </Right>
+
+              </ListItem>
+              <ListItem
+              onPress = {() => this.onSelect2('emergency')}
+              >
+              <Icon style = {{color: '#009AD5', paddingRight: 10, fontSize: 20}}
+                      name = "time" /> 
+                        <Text style = {{
+                          color: '#43496A', fontSize: 15
+                        }}> Emergency 
+                </Text>
+              <Right>
+              {this.props.type == 'emergency' && <Image source = {check}/>}
+              </Right>
+
+          </ListItem>
+              </View>
+              }
+             </Animated.View>
             </View>
+            
         }
+          
         
         <DateTimePicker
           mode = 'datetime'
@@ -767,6 +1057,9 @@ dist() {
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
         />
+
+       
+         
 
       </Container>
     );
@@ -776,6 +1069,7 @@ dist() {
 Map.propTypes = {
   provider: MapView.ProviderPropType,
 };
+const check = require("../../../img/success.png");
 
 
 const trame = require("../../../img/TRAME.png");
@@ -947,14 +1241,16 @@ const mapStateToProps = ({ map }) => {
   const { destination, hoveron,
     pickup, vehicle,
     latitude,
+    type,
     longitude,
     latitudeDelta,
     route,
     estimated_price,
     longitudeDelta,
-    error, region,prices,
+    error, region,prices,charge_type,
     no_new_match,
     distanceInKM,
+    card_exist,
     scheduled,
     match_alert,
     distanceInHR,
@@ -977,13 +1273,16 @@ const mapStateToProps = ({ map }) => {
     longitudeDelta,
     estimated_price,
     emergency,route_set,
+    type,
     distanceInKM,
     scheduled,
     distanceInHR,
     prices,
     match_alert,
+    charge_type,
     raw,
     no_new_match,
+    card_exist,
   };
 };
 
@@ -999,11 +1298,16 @@ export default connect(mapStateToProps, {
   getRoute,
   calculatePrice,
   StorePrice,
+  getCard,
   setDate,
   StoreKm,
   saveScreenShot,
+  charge_method,
   StoreHr,
   getStaticImage,
   getNewMatch,
+  setEmergency,
+  change_type,
+  onPayment,
 
 })(Map);

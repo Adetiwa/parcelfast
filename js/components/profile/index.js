@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, ActivityIndicator, TouchableOpacity, StatusBar, Image, Text} from "react-native";
+import { View, ActivityIndicator, AsyncStorage, TouchableOpacity, StatusBar, Image, Text} from "react-native";
 import AndroidBackButton from "react-native-android-back-button";
 import { connect } from 'react-redux';
 
@@ -9,8 +9,8 @@ import {  destinationChanged,
           getCurrentLocation,
           get_name_of_loc,
           update_region,
-          getNewMatch,
           editUser,
+          clearEverything,
 
         } from '../../actions/Map';
 import UserAvatar from 'react-native-user-avatar';
@@ -42,6 +42,9 @@ import style from "./style";
 </Item>
 */
 
+const USER_TOKEN = "user_token";
+
+
 class Profile extends Component {
   constructor(props) {
   super(props);
@@ -54,13 +57,31 @@ class Profile extends Component {
 
 }
 
-componentDidMount() {
- 
+openModal() {
+  imagePicker.open({
+    takePhoto: true,
+    useLastPhoto: true,
+    chooseFromLibrary: true
+  }).then(({ uri, width, height }) => {
+    console.log('image asset', uri, width, height);
+  }, (error) => {
+    // Typically, user cancel  
+    console.log('error', error);
+  });
+}
+
+
+logout() {
+  this.props.navigation.navigate('Home');
+  const user = AsyncStorage.removeItem(USER_TOKEN);
+  //this.props.clearEverything();
+  
 }
 
   editProfile() {
     this.props.editUser(this.state.fullname, this.state.email, this.state.tel, this.state.password, this.props.user.token, this.props.user.userid);
   }
+
   render() {
     return (
       <Container style={style.container}>
@@ -82,7 +103,7 @@ componentDidMount() {
 
          </Body>
          <Right>
-           <Button transparent onPress={() => this.props.navigation.navigate('Home')}>
+           <Button transparent onPress={() => this.logout()}>
              <Text style = {{fontSize: 12, color: '#AAA',}}>LOG OUT</Text>
            </Button>
          </Right>
@@ -90,7 +111,8 @@ componentDidMount() {
        </Header>
 
         <Content>
-
+        {this.props.user !== null &&
+				
           <Form>
             <View
               style = {{
@@ -100,9 +122,13 @@ componentDidMount() {
 
               }}
               >
+              <TouchableOpacity
+              onPress = {() => this.openModal()}>
               <UserAvatar
               name={this.props.user.fullname}  src={this.props.user.profile_image} size={50} />
-							</View>
+							</TouchableOpacity>
+              </View>
+              
 
             <View style = {style.names}>
               <Item style = { {width: '100%'} } floatingLabel>
@@ -110,11 +136,6 @@ componentDidMount() {
                 <Input
                   ref = "fullname"
                   type="text"
-                  style = {{
-                    fontSize: 15,
-                    //fontWeight: 0,
-                    borderBottomColor: '#CCC',
-                  }}
                   onChangeText = {(input)=>this.setState({fullname: input})}
                   value = {this.state.fullname} />
               </Item>
@@ -125,11 +146,6 @@ componentDidMount() {
               <Input
                 ref = "email"
                 type="email"
-                style = {{
-                    fontSize: 15,
-                    //fontWeight: 0,
-                    borderBottomColor: '#CCC',
-                  }}
                 onChangeText = {(input)=>this.setState({email: input})}
                 value = {this.state.email}/>
             </Item>
@@ -138,11 +154,6 @@ componentDidMount() {
               <Input
                 ref = "tel"
                 type="tel"
-                style = {{
-                    fontSize: 15,
-                    //fontWeight: 0,
-                    borderBottomColor: '#CCC',
-                  }}
                 onChangeText = {(input)=>this.setState({tel: input})}
                 value = {this.state.tel}/>
             </Item>
@@ -152,15 +163,11 @@ componentDidMount() {
               <Input
                 onChangeText = {(input)=>this.setState({password: input})}
                 ref = "password"
-                style = {{
-                    fontSize: 15,
-                    //fontWeight: 0,
-                    borderBottomColor: '#CCC',
-                  }}
                 secureTextEntry={true}
                  />
             </Item>
           </Form>
+        }
 
             <TouchableOpacity style = {style.continue}
               onPress = {() => this.editProfile()} >
@@ -231,8 +238,8 @@ export default connect(mapStateToProps, {
   hoverondesc,
   select_vehicle,
   get_name_of_loc,
+  clearEverything,
   update_region,
   editUser,
-  getNewMatch,
 
 })(Profile);

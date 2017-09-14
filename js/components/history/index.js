@@ -71,6 +71,7 @@ const deviceHeight = Dimensions.get("window").height;
 
 const datas = [];
 const maxlimit = 20;
+const hold = true;
 class History extends Component {
 
 componentWillMount(){
@@ -82,7 +83,7 @@ componentDidMount() {
   this.haha();
   //console.log("Data is "+ JSON.stringify(datas));
 }
-
+//
 selectHis(data) {
   this.props.selectHistory(data);
   
@@ -112,21 +113,20 @@ getColor(status) {
         
         
         <Container style={styles.container}>
-          <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
-        
+         
         <AndroidBackButton
           onPress={() => this.props.navigation.navigate('Map')}
          />
-        <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#FFF"}}>
+        <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#009AD5"}}>
         <Left>
           <TouchableOpacity
               transparent onPress={() => this.props.navigation.navigate("DrawerOpen")}
             >
-              <Image source = {menu}/>
+              <Image source = {menu_white}/>
             </TouchableOpacity>
         </Left>
         <Body>
-          <Title style = {{color: '#888'}}>History</Title>
+          <Title style = {{color: '#FFF'}}>History</Title>
         </Body>
         <Right />
         {this.props.history === null &&
@@ -134,15 +134,27 @@ getColor(status) {
          top: 50, height: 10,}} source={require('../../../img/17.gif')} />
         }
       </Header>
+      {this.props.fetching &&
+        <View style={{
+          width: '100%',
+          height: '100%',
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#FFF',
+          zIndex: 10,
+          
+        }}>
+        <ActivityIndicator style = {{zIndex: 12,}}size='small' />
+        </View>
+    }
+        
+      {this.props.history_empty === false && !this.props.fetching &&
       
       <Content padder>
-      {this.props.history === null &&
-              <ActivityIndicator style = {{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }} />
-          }
-          <Animatable.View animation='pulse'>
+     
+       
+        <Animatable.View animation='pulse'>
  
                       <List
 
@@ -202,6 +214,30 @@ getColor(status) {
                     					/>
                               </Animatable.View>
                               </Content>
+      }
+      {this.props.history_empty === true && !this.props.fetching &&
+                              <View
+                              style = {{
+                                alignContent: 'center',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: '#FFF',
+                                flex: 1,
+                                
+                              }}>
+                              <View>
+                                <Image source = {empty}/>
+                              </View>
+                              <View>
+                                <Text
+                                style = {{
+                                  color: '#888',
+                                  fontSize: 14,
+                                }}> YOU HAVE NO HISTORY </Text>
+                              </View>
+                              
+                              </View>
+      }
     
 
 </Container>
@@ -211,8 +247,10 @@ getColor(status) {
 
 
 const trame = require("../../../img/TRAME.png");
+const empty = require("../../../img/empty-folder.png");
 
 const menu = require("../../../img/MENU.png");
+const menu_white = require("../../../img/MENU_WHITE.png");
 
 
 const mapStateToProps = ({ map }) => {
@@ -225,8 +263,8 @@ const mapStateToProps = ({ map }) => {
     estimated_price,
     distanceInKM,
     distanceInHR,
-    prices,
-    done,
+    prices,history_empty,
+    done,fetching,
     history,
     error, region, user, distance_info, loading,emergency, status } = map;
   return {
@@ -237,7 +275,7 @@ const mapStateToProps = ({ map }) => {
     distanceInKM,
     distanceInHR,
     hoveron,
-    distance_info,
+    distance_info,fetching,
     loading,
     region,
     user,
@@ -249,7 +287,7 @@ const mapStateToProps = ({ map }) => {
     emergency,
     prices,
     done,
-    estimated_price,
+    estimated_price,history_empty,
     history,
   };
 };

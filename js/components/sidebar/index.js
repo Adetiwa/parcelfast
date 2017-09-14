@@ -81,6 +81,8 @@ class SideBar extends Component {
 		return (
 			<Container>
 				<StatusBar backgroundColor='#009AD5' barStyle='light-content' />
+				{this.props.user !== null &&
+				
 				<View style = {{
 					backgroundColor: '#009AD5',
 					flex: 2,
@@ -111,6 +113,9 @@ class SideBar extends Component {
 
 				</ListItem>
 			</View>
+				}
+				{this.props.user !== null &&
+				
 			<View style = {{
 				flex: 7
 			}}>
@@ -146,6 +151,9 @@ class SideBar extends Component {
 					/>
 				</Content>
 			</View>
+				}
+				{this.props.user !== null &&
+				
 			<View style = {{
 				flex: 1,
 			}}>
@@ -169,6 +177,7 @@ class SideBar extends Component {
 			</ListItem>
 
 			</View>
+				}
 			</Container>
 		);
 	}

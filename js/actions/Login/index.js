@@ -7,7 +7,10 @@ import { EMAIL_CHANGED,
       LOGIN_USER_SUCCESS,
       LOGIN_USER_ERROR,
       LOGIN_USER,
-      NO_INPUT
+      NO_INPUT,
+      REGISTERING,
+      NEW_USER_SUCCESS,
+      NEW_USER_ERROR
      } from '../types';
 
 
@@ -24,6 +27,44 @@ export const passwordChanged = (text) => {
     payload: text
   };
 };
+
+
+
+export const register = (firstname, lastname, tel, email, password) => {
+  return (dispatch) => {
+      //login user
+      dispatch({ type: REGISTERING });
+      fetch('https://project.stackonly.com/app/api/register', {
+
+        method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fullname: firstname+ ' ' +lastname,
+            tel: tel,
+            email: email,
+            password: password,
+          })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson.status === 'success') {
+            dispatch({ type: NEW_USER_SUCCESS, payload: responseJson });
+            //dispatch(NavigationActions.navigate({ routeName: 'Map' }));
+          } else {
+            dispatch({ type: NEW_USER_ERROR, payload: responseJson.msg });
+            
+          } 
+        })
+        .catch((error) => {
+          console.log("Error is "+error);
+          dispatch({ type: NEW_USER_ERROR, payload: "An error occured while getting match background" })
+        })
+    }
+};
+
 
 
 export const loginUser = ({ email, password }) => {

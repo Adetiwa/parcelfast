@@ -2,10 +2,30 @@ import React, { Component } from "react";
 import {
   StyleSheet,
   Dimensions,
-  Image,
-  View,
+  Image,ActivityIndicator,
+  View,TouchableOpacity,
   StatusBar,
 } from "react-native";
+import { connect } from 'react-redux';
+import {  destinationChanged,
+          select_vehicle,
+          hoverondesc,
+          getCurrentLocation,
+          get_name_of_loc,
+          update_region,
+          fetchPrice,
+          getDistance,
+          calculatePrice,
+          StorePrice,
+          submitOrder,
+          updateCard,
+          reset,
+          verifyCard,
+          onPayment,
+          charge_method,
+
+        } from '../../actions/Map';
+
 import AndroidBackButton from "react-native-android-back-button";
 
 import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-input";
@@ -40,14 +60,22 @@ const s = StyleSheet.create({
     color: "black",
   },
 });
-
 const USE_LITE_CREDIT_CARD_INPUT = false;
 const menu = require("../../../img/MENU.png");
 
-export default class CardView extends Component {
+class CardView extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      card_data: null,
+    }
+  
+  }
   _onChange = formData => {
     /* eslint no-console: 0 */
-    console.log(JSON.stringify(formData, null, " "));
+    this.setState({card_data: formData});
+    this.props.updateCard(formData);
+    //console.log(JSON.stringify(formData, null, " "));
   };
 
   _onFocus = field => {
@@ -55,18 +83,28 @@ export default class CardView extends Component {
     console.log(field);
   };
 
+  nav() {
+    if (this.props.onpayment) {
+      if (!this.props.card_exist){
+        this.props.charge_method('CASH');
+      } 
+      this.props.navigation.navigate('Map');
+    } else {
+      this.props.navigation.navigate('Payment');
+    }
+  }
   render() {
     return (
       <View style={s.container}>
         <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
 
         <AndroidBackButton
-          onPress={() => this.props.navigation.navigate('Map')}
+          onPress={() => this.nav()}
          />
 
         <Header  style = {{borderBottomColor: "#FFF", backgroundColor: "#FFF"}}>
           <Left>
-            <Button transparent onPress={() => this.props.navigation.navigate('Payment')}>
+            <Button transparent onPress={() =>this.nav()}>
               <Icon name="arrow-back" style = {{color: 'black'}} />
             </Button>
           </Left>
@@ -75,7 +113,7 @@ export default class CardView extends Component {
           </Body>
           <Right />
         </Header>
-        <View style = {{marginTop: 20}}>
+        <View style = {{flex: 3, marginTop: 20}}>
 
         { USE_LITE_CREDIT_CARD_INPUT ?
           (<LiteCreditCardInput
@@ -93,7 +131,7 @@ export default class CardView extends Component {
 
                 requiresName
                 requiresCVC
-                requiresPostalCode
+                requiresPostalCode={false}
 
                 labelStyle={s.label}
                 inputStyle={s.input}
@@ -105,7 +143,141 @@ export default class CardView extends Component {
                 onChange={this._onChange} />)
         }
       </View>
+      {this.props.card_exist && this.nav()}
+      {this.props.card !== null &&
+      <View style = {{flex: 1,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      //alignContents: 'center',
+                      }}>
+                      <Text
+                      style = {{
+                        fontSize: 15,
+                        marginTop: 10,
+                        alignSelf: 'center',
+                        color: '#f62e2e',
+                        marginBottom: 15,
+                      }}
+                      >{this.props.card_status}</Text>
+                      <TouchableOpacity
+                      disabled = {this.props.load}
+                      onPress = {() => this.props.verifyCard(this.props.card,this.props.user.userid)}
+                      style = {{
+                          width: '80%',
+                          backgroundColor: '#FFF',
+                          height: '40%',
+                          borderColor: '#009AD5',
+                          borderWidth: 3,
+                          borderRadius: 50,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                      }}>
+                      {this.props.load ?
+                     
+                     <ActivityIndicator/> 
+                       :
+                    <Text
+                      style = {{
+                          color: '#009AD5',
+                          fontWeight: 'bold',
+                          fontSize: 20,
+                          textAlign: 'center',
+                      }}
+                      >Continue</Text>
+                    }
+          
+                      </TouchableOpacity>
+       
+      </View>
+      }
     </View>
     );
   }
 }
+
+
+
+
+const mapStateToProps = ({ map }) => {
+  const { destination, hoveron,
+    pickup, vehicle,
+    latitude,
+    longitude,
+    latitudeDelta,
+    longitudeDelta,
+    estimated_price,
+    distanceInKM,
+    distanceInHR,
+    load,
+    prices,
+    order_info,
+    card,
+    pickup_coords,
+    card_exist,
+    dropoff_coords,
+    type,
+    onpayment,card_status,
+    charge_type,
+    edit_progress,
+    screenshot,
+    scheduled,
+    order_success,flutterwave_token,transaction_id,
+    error_submitting_order,
+    error, region, user, distance_info, loading,emergency, status } = map;
+  return {
+    destination,
+    pickup,
+    vehicle,
+    onpayment,
+    error,
+    distanceInKM,
+    distanceInHR,
+    hoveron,
+    distance_info,
+    loading,
+    card_exist,
+    region,
+    user,
+    status,
+    latitude,
+    longitude,
+    latitudeDelta,
+    longitudeDelta,
+    emergency,
+    prices,
+    estimated_price,
+    order_info,
+    pickup_coords,
+    dropoff_coords,
+    type,
+    scheduled,card_status,
+    order_success,
+    card,load,
+    charge_type,
+    error_submitting_order,
+    edit_progress,
+    screenshot,
+    flutterwave_token,
+    transaction_id,
+  };
+};
+
+export default connect(mapStateToProps, {
+  destinationChanged,
+  getCurrentLocation,
+  hoverondesc,
+  select_vehicle,
+  get_name_of_loc,
+  update_region,
+  fetchPrice,
+  getDistance,
+  calculatePrice,
+  StorePrice,
+  updateCard,
+  reset,
+  
+  verifyCard,
+  submitOrder,
+  onPayment,
+  charge_method,
+})(CardView);

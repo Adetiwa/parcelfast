@@ -4,7 +4,7 @@ import {  destinationChanged,
           select_vehicle,
           hoverondesc,
           getCurrentLocation,
-          get_name_of_loc,
+          get_name_of_loc,setEmergency,
           update_region,
           fetchPrice,
           getStaticImage,
@@ -16,11 +16,10 @@ import {  destinationChanged,
           save_summary_state,
 
         } from '../../actions/Map';
-
-import { View, Image, TextInput, KeyboardAvoidingView,  Dimensions, Platform , StatusBar , TouchableOpacity} from "react-native";
+import Dropdown from 'react-native-modal-select-option';
+import { View, Image,Separator,TextInput, KeyboardAvoidingView,  Dimensions, Platform , StatusBar , TouchableOpacity} from "react-native";
 import AndroidBackButton from "react-native-android-back-button";
 import { KeyboardAwareScrollView, Form } from 'react-native-form-generator'
-import { Switch } from 'react-native-switch';
 import {
   Container,
   Header,
@@ -50,6 +49,17 @@ const deviceHeight = Dimensions.get("window").height;
   <Image style = {styles.footer} source = {trame}/>
   */
 
+  const propsDropdown = {
+    defaultValue: {value: 5, label: 'Kebumen'},
+    options: [
+      {value: 'Normal', label: 'Normal'},
+      {value: 'Emergency', label: 'Emergency'},
+    ],
+    label: 'Type of Service',
+    animationType: 'none',
+  };
+  
+  
 class Pickup extends Component {
 
   constructor(props) {
@@ -62,6 +72,8 @@ class Pickup extends Component {
     extra: this.props.order_info.extra,
     emergency: false,
     error: '',
+    selectedOption: {value: this.props.type, label: 'Normal'},
+    isShowingOptions: false,
   }
 
 }
@@ -107,14 +119,6 @@ componentWillUnmount() {
 
 }
 
-handleFormChange(formData){
-    //formData will be a json object that will contain
-    // refs of every field
-    //formData.first_name
-    //formData.last_name
-    this.setState({formData:formData})
-}
-
 sendData() {
   if ((this.state.pick_up_name === '') || (this.state.pick_up_tel === '') || (this.state.drop_off_name === '') || (this.state.drop_off_tel === '') || (this.state.extra === '')) {
     this.setState({error: "All inputs are required"});
@@ -126,13 +130,34 @@ sendData() {
 }
 
 
-
-
+_onShow(value) {
+  this.setState({
+    isShowingOptions: value,
+  });
+}
+_onSelect(item, isShow) {
+  this.setState({
+    isShowingOptions: isShow,
+    selectedOption: item,
+  });
+  if (item.value == 'Emergency') {
+    this.props.setEmergency(true);
+  } else {
+    this.props.setEmergency(false);
+  }
+  console.log("SELECTED IS "+item.value);
+}
 
 
 
   render() {
     return (
+      <KeyboardAvoidingView 
+       behavior="padding"
+       style = {{
+        flex: 1,
+        
+      }}>
       <Container style={styles.container}>
         <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
 
@@ -245,7 +270,7 @@ sendData() {
               returnKeyType = "next"
               style = {{
               fontSize: 15,
-              //fontWeight: 0,
+              //marginBottom: 20,
               borderBottomColor: '#CCC',
               }}
               onChangeText = {(input)=>this.setState({extra: input})}
@@ -256,27 +281,14 @@ sendData() {
            
               />
             </Item>
-            
-            <Switch
-              value={true}
-              onValueChange={(val) => this.setState({emergency: val})}
-              disabled={false}
-              activeText={'On'}
-              inActiveText={'Off'}
-              backgroundActive={'#009AD5'}
-              backgroundInactive={'gray'}
-              circleActiveColor={'#FFF'}
-              circleInActiveColor={'#009AD5'}
-            />
-            
-    
-
+   
           <TouchableOpacity style = {styles.continue}
             onPress = {() => this.sendData()} >
             <View style={styles.buttonContainer}>
               <Text style = {styles.continueText}>NEXT</Text>
             </View>
           </TouchableOpacity>
+
           <Text
             style = {{
               fontSize: 15,
@@ -286,16 +298,17 @@ sendData() {
             }}>{this.state.error}</Text>
 
         </Form>
-
-
-            
+        
         </Animatable.View>
 
 
       </Container>
+      </KeyboardAvoidingView>
+        
     );
   }
 }
+
 const trame = require("../../../img/TRAME.png");
 //this.props.navigation.navigate('Summary')
 const menu = require("../../../img/MENU.png");
@@ -312,7 +325,7 @@ const mapStateToProps = ({ map }) => {
     route_set,
     raw,
     distance_info,
-    proceed,
+    proceed, scheduled,
     order_info,
     edit_error, loading,emergency, status } = map;
   return {
@@ -324,6 +337,7 @@ const mapStateToProps = ({ map }) => {
     loading,
     region,
     user,
+    scheduled,
     status,
     latitude,
     longitude,
@@ -354,4 +368,5 @@ export default connect(mapStateToProps, {
   StoreKm,
   StoreHr,
   save_summary_state,
+  setEmergency,
 })(Pickup);

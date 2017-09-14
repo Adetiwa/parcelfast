@@ -25,7 +25,23 @@ import styles from "./styles";
 
 class Login extends Component {
 
+/*
+ <View style =  {styles.buttons}>
 
+          <TouchableOpacity style={styles.login}>
+
+            <Icon style={{color: '#FFF'}} name="logo-facebook" />
+          </TouchableOpacity>
+
+
+          <TouchableOpacity style={styles.register}>
+
+            <Icon style={{color: '#FFF'}} name="logo-googleplus" />
+          </TouchableOpacity>
+
+
+          </View>
+  */
  onEmailChange(text) {
    this.props.emailChanged(text);
  }
@@ -90,21 +106,7 @@ checkForLog() {
         <Content style = {{
           padding: 20,
         }}>
-          <View style =  {styles.buttons}>
-
-          <TouchableOpacity style={styles.login}>
-
-            <Icon style={{color: '#FFF'}} name="logo-facebook" />
-          </TouchableOpacity>
-
-
-          <TouchableOpacity style={styles.register}>
-
-            <Icon style={{color: '#FFF'}} name="logo-googleplus" />
-          </TouchableOpacity>
-
-
-          </View>
+         
           <Form>
             <Item floatingLabel>
               <Label>Email</Label>
@@ -130,15 +132,13 @@ checkForLog() {
             {this.checkForLog()}
           </Form>
 
-
-
-          <Text style = {{
-            fontSize: 20,
-            alignSelf: 'center',
-            color: 'red',
-          }}>
-            {this.props.error}
-          </Text>
+          <Text
+            style = {{
+              fontSize: 15,
+              marginTop: 10,
+              alignSelf: 'center',
+              color: '#f62e2e',
+            }}>{this.props.error}</Text>
 
 
         </Content>

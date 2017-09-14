@@ -62,6 +62,23 @@ import {
   MATCH_ALERT,
   NO_NEW_MATCH,
   SCHEDULE,
+  CONNECTING_DRIVER,
+  NO_DRIVER,
+  DRIVER_AVAILABLE,
+  ERROR_NETWORK_DRIVER,
+  EMERGENCY,
+  CARD_UPDATE,
+  ONPAYMENT,
+  CHARGE_TYPE,
+  VERYFYING_CARD,
+  BAD_VERIFY,
+  GOOD_VERIFY,
+  ERROR_VERIFY,
+  CARD_EXIST,
+  NO_CARD,
+  ERROR_GETTING_CARD,
+  CHANGE_TYPE,
+  NEW_USER_SUCCESS,
 } from '../../actions/types';
 
 import { Dimensions } from "react-native";
@@ -89,6 +106,7 @@ const INITIAL_STATE =
     longitudeDelta: LONGITUDE_DELTA,
     user: null,
     status: false,
+    statusReg: false,
     region: {},
     location_name: '',
     current_hover: '',
@@ -147,11 +165,72 @@ const INITIAL_STATE =
     match_alert: null,
     no_new_match: true,
     match_error: '',
+    driver_message: '',
+    driver_available: false,
+    driver_error: false,
+    driver_matched: null,
+    charge_type: 'CASH',
+    transaction_id: null,
+    card: null,
+    flutterwave_token: null,
+    onpayment: false,
+    load: false,
+    card_status: null,
+    card_exist: false,
+    card_type: '',
+    last_4: 0,
 }
 
 export default (state = INITIAL_STATE, action) => {
   console.log(action);
   switch(action.type) {
+  case CHANGE_TYPE: 
+    return {...state, type: action.payload, scheduled: null};
+  case CARD_EXIST: 
+    return {...state,
+      last_4: action.payload.last_4,
+      flutterwave_token: action.payload.token,
+      transaction_id: action.payload.trans_id,
+      card_type: action.payload.type,
+      card_exist: true };
+  case NO_CARD: 
+    return {...state, card_exist: false };
+  case VERYFYING_CARD: 
+      return {...state, card_status: '', load: true };
+ case ERROR_GETTING_CARD: 
+      return {...state, card_status: action.payload,
+        load: false, card_exist: false };
+  case BAD_VERIFY: 
+      return {...state, card_status: action.payload.msg,
+        load: false };
+    case GOOD_VERIFY: 
+      return {...state,
+      last_4: action.payload.last_4,
+      flutterwave_token: action.payload.token,
+      card_type: action.payload.type,
+      card_exist: true, card_status: action.payload.msg, 
+      transaction_id: action.payload.transaction_id,
+      load: false };
+    case ERROR_VERIFY: 
+    return {...state, card_status: action.payload,
+      load: false };
+
+    case CARD_UPDATE:
+      return { ...state, card: action.payload };
+    case ONPAYMENT: 
+      return { ...state, onpayment: true };
+    case CHARGE_TYPE: 
+      return { ...state, charge_type: action.payload };
+    case EMERGENCY:
+      return {...state, emergency: action.payload};
+    case CONNECTING_DRIVER:
+      return { ...state, driver_message: action.payload };
+    case NO_DRIVER: 
+      return { ...state, driver_message: action.payload, driver_available: false, };
+    case DRIVER_AVAILABLE:
+      return { ...state, driver_matched: action.payload, driver_message: action.payload.driver.toUpperCase()+' HAS BEEN ASSIGNED TO YOU :)', driver_available: true };
+    case ERROR_NETWORK_DRIVER:
+      return { ...state, driver_message: action.paylod, driver_error: true };
     case MATCH_ALERT:
       return { ...state, match_alert: action.payload };
     case MATCH_ALERT_ERROR:
@@ -173,6 +252,13 @@ export default (state = INITIAL_STATE, action) => {
         pickup: action.payload,
         predictions: null,
         current_hover: 'pickup',
+      };
+    case NEW_USER_SUCCESS:
+      return { ...state,
+        ...INITIAL_STATE,
+         user: action.payload,
+         statusReg: true,
+
       };
     case LOGIN_USER_SUCCESS:
       return { ...state,
@@ -253,7 +339,8 @@ export default (state = INITIAL_STATE, action) => {
 
   case FETCHING_PRICES:
           return { ...state,
-            fetching_prices: true
+            fetching_prices: true,
+            emergency_cost: 0,
           };
     case FETCH_PRICE_GOOD:
           return { ...state,
@@ -346,6 +433,7 @@ export default (state = INITIAL_STATE, action) => {
         return { ...state, order_success: true,
            error_submitting_order: false,
            edit_progress: false,
+           done: false,
           };
     case ERROR_OVERALL:
       return { ...state,
@@ -355,33 +443,72 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, error_submitting_order: false };
     case CLEAR_MAP_DATA:
       return { ...state,
+        done: true,
         destination: '',
         pickup: '',
         hoveron: false,
-        distance_info: {},
-        route_set: false,
-        destination: '',
-        pickup: '',
-        per_km: 0,
-        distanceInHR: 0,
-        distanceInKM: 0,
+        userLocation: null,
+        vehicle: 'scooter',
+        input_done: false,
+        loading: false,
+        error: '',
         raw: null,
-        base_price: '',
-        per_hr: 0,
-        route: [],
-        done: false,
+        status: false,
+        region: {},
+        location_name: '',
+        current_hover: '',
+        predictions: null,
+        prediction_error: '',
+        pickup_location: '',
+        destination_location: '',
+        error_geoecoding: '',
+        fetching_prices: false,
+        fetch_error: '',
+        emergency: false,
+        edit_progress: false,
+        edit_error: '',
+        edit_success: false,
+        getting_distance: false,
+        distance_info: {},
+        distance_error: false,
         estimated_price: null,
+        distanceInKM: 0,
+        screenshot: '',
+        distanceInHR: 0,
+        route: [],
+        route_set: false,
         pickup_coords: {},
         dropoff_coords: {},
-        order_info: {},
+        type: 'normal',
+        order_info: {
+          drop_off_name: '',
+          drop_off_tel: '',
+          extra: '',
+        },
+        prices: {
+          base_price: null,
+          per_km:null,
+          per_hr: null,
+        },
+        proceed: false,
         order_success: false,
         error_submitting_order: false,
-        done: true,
-        proceed: false,
-        screenshot: null,
-        order_success: false,
-        raw: null,
+        scheduled: null,
+        history: {},
+        history_empty: false,
         selected: null,
+        history_single: null,
+        history_empty_single: null,
+        match_alert: null,
+        no_new_match: true,
+        match_error: '',
+        driver_message: '',
+        driver_available: false,
+        driver_error: false,
+        driver_matched: null,
+        charge_type: 'CASH',
+        onpayment: false,
+        load: false,
         
       };
     case SCREEN_SHOT: 
@@ -394,13 +521,13 @@ export default (state = INITIAL_STATE, action) => {
     case STATIC_IMAGE_ERROR:  
       return { ...state, screenshot: action.payload };
     case FETCHING_HISTORY:
-      return { ...state, fetching: true };
+      return { ...state, fetching: true, history_empty: false };
     case FETCH_HISTORY_GOOD:
-      return { ...state, history: action.payload };
+      return { ...state, history: action.payload, fetching: false, };
     case FETCH_HISTORY_EMPTY:
-      return { ...state, history_empty: true };
+      return { ...state, history_empty: true, fetching: false, };
     case FETCH_HISTORY_BAD:
-      return { ...state, history_error: true };
+      return { ...state, history_error: true, fetching: false, };
     case FETCHING_HISTORY_SINGLE:
       return { ...state, fetching: true };
     case FETCH_HISTORY_GOOD_SINGLE:

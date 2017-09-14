@@ -78,3 +78,33 @@ export const NO_NEW_MATCH = "no_new_match";
 export const MATCH_ALERT_ERROR = "match_alert_error";
 
 export const SCHEDULE = "schedule";
+export const CONNECTING_DRIVER = "connecting_driver";
+export const NO_DRIVER = "no_driver";
+export const DRIVER_AVAILABLE = "driver_available";
+export const ERROR_NETWORK_DRIVER = "error_network_driver";
+
+
+
+
+export const REGISTERING = "registering";
+export const NEW_USER_SUCCESS = "new_user_success";
+export const NEW_USER_ERROR = "new_user_error";
+
+export const EMERGENCY = "emergency";
+
+export const CHARGE_TYPE = "charge_type";
+export const ONPAYMENT = "onpayment";
+export const CARD_UPDATE = 'card_update';
+
+
+export const VERYFYING_CARD = "veriifying_card";
+export const BAD_VERIFY = "bad_verify";
+export const GOOD_VERIFY = 'good_verify';
+export const ERROR_VERIFY = 'error_verify';
+
+export const CARD_EXIST = "card_exist";
+export const NO_CARD = "no_card";
+export const ERROR_GETTING_CARD = "error_getting_card";
+
+
+export const CHANGE_TYPE = "change_type";

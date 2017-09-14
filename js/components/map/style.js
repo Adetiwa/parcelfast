@@ -1,7 +1,6 @@
 const React = require("react-native");
 import { Dimensions } from "react-native";
-var width = Dimensions.get("window").width;
-
+var { width, height } = Dimensions.get('window');
 const { StyleSheet } = React;
 
 export default {
@@ -48,12 +47,30 @@ export default {
     justifyContent: 'space-between',
 
   }, 
+  
+  okayokayyy: {
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: '#FFF',
+    borderTopWidth:1,
+    borderTopColor: '#777',
+    zIndex: 1000,
+    top: height/2.7,
+    bottom:0,
+    left: 0,
+    right: 0,
+    height: 190,
+    //alignItems: 'center',
+    justifyContent: 'space-between',
+
+  }, 
   iconss: {
-    margin: 10,
-    padding: 20,
+    margin: 0,
+    padding: 10,
     flexDirection: "row",
     justifyContent: "center",
     alignContent: 'center',
+    alignItems: 'center',
   },
   iconssRoute: {
     margin: 30,
@@ -61,6 +78,7 @@ export default {
     flexDirection: "row",
     justifyContent: "space-between",
     alignContent: 'center',
+    alignItems: 'center',
   },
   buttonContainer: {
     justifyContent: "center",
