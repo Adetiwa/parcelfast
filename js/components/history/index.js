@@ -126,7 +126,7 @@ getColor(status) {
             </TouchableOpacity>
         </Left>
         <Body>
-          <Title style = {{color: '#FFF'}}>History</Title>
+          <Title style = {{color: '#FFF', fontWeight: '100'}}>History</Title>
         </Body>
         <Right />
         {this.props.history === null &&

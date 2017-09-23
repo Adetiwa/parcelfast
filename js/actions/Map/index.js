@@ -92,9 +92,20 @@ import {
    NO_CARD,
    ERROR_GETTING_CARD,
    CHANGE_TYPE,
+   GETTING_PRICE_ON,
+   FETCH_PRICE_ERROR,
+   FROM_PAYMENT,
+   CHANGE_TOKEN,
   } from '../types';
 
 
+
+export const from_where = (val) => {
+    return {
+      type: FROM_PAYMENT,
+      payload: val
+    };
+};
 
 export const destinationChanged = (text) => {
   return {
@@ -114,7 +125,7 @@ export const save_summary_state = (data) => {
     if ((data.pick_up_name === '') || (data.pick_up_tel === '') || (data.drop_off_name === '') || (data.drop_off_tel === '') || (data.extra === '')) {
         return (dispatch) => {
         dispatch({ type: EDIT_NO_INPUT, payload: null });
-        
+
         }
     } else {
         return (dispatch) => {
@@ -311,7 +322,7 @@ export const geocodeTheAddress_pickup = (address) => {
       })
       .catch((error) => {
         console.log(error);
-        dispatch({ type: ERROR_GEOCODING, payload: responseJson.status })
+        dispatch({ type: ERROR_GEOCODING, payload: "ERROR GEOCODING" })
       })
   }
 }
@@ -346,7 +357,7 @@ export const geocodeTheAddress_dest = (address) => {
       })
       .catch((error) => {
         console.log(error);
-        dispatch({ type: ERROR_GEOCODING, payload: responseJson.status })
+        dispatch({ type: ERROR_GEOCODING, payload: "Error geocoding" })
       })
   }
 }
@@ -382,7 +393,7 @@ export const getAddressPrediction = (input) => {
             })
             .catch((error) => {
               console.log(error);
-              dispatch({ type: GET_SUGGESTIONS_EMPTY, payload: responseJson.predictions })
+              dispatch({ type: GET_SUGGESTIONS_EMPTY, payload: "Error" })
             })
         }
 
@@ -434,7 +445,7 @@ export const loginUser = ({ email, password }) => {
           })
           .catch((error) => {
             console.log(error);
-            dispatch({ type: LOGIN_USER_ERROR, payload: responseJson })
+            dispatch({ type: LOGIN_USER_ERROR, payload: "Error login in" })
           })
 
 
@@ -503,7 +514,7 @@ export const getHistory = (userid) => {
           })
           .catch((error) => {
             console.log("Error is "+error);
-            dispatch({ type: FETCH_HISTORY_BAD_SINGLE, payload: responseJson })
+            dispatch({ type: FETCH_HISTORY_BAD_SINGLE, payload: "History error" })
           })
       }
   };
@@ -548,7 +559,7 @@ export const fetchPrice = (vehicle, emergency) => {
           })
           .catch((error) => {
             console.log(error);
-            dispatch({ type: FETCH_PRICE_BAD, payload: responseJson })
+            dispatch({ type: FETCH_PRICE_ERROR, payload: true })
           })
 
 
@@ -598,7 +609,7 @@ export const editUser = (fullname, email, tel, password, token, userid) => {
           })
           .catch((error) => {
             console.log(error);
-            dispatch({ type: EDIT_USER_ERROR, payload: responseeJson })
+            dispatch({ type: EDIT_USER_ERROR, payload: "Error editting" })
           })
 
 
@@ -613,7 +624,7 @@ export const getDistance = (pickup, destination) => {
 
     return (dispatch) => {
         //login user
-        dispatch({ type: GETTING_DISTANCE });
+        dispatch({ type: GETTING_DISTANCE, payload: true });
         var api_keey = "AIzaSyAOV8tYnxNbd37Ds9NmwF6mSjpy78kFdkg";
 
         fetch('https://maps.googleapis.com/maps/api/distancematrix/json?origins='+pickup+'&destinations='+destination+'&mode=driving&region=NG&fare=NGN&language=en-EN&key='+api_keey, {
@@ -642,7 +653,7 @@ export const getDistance = (pickup, destination) => {
           })
           .catch((error) => {
             console.log(error);
-            dispatch({ type: DISTANCE_FETCH_ERROR, payload: responseJson })
+            dispatch({ type: DISTANCE_FETCH_ERROR, payload: "Error getting distance" })
           })
 
 
@@ -652,41 +663,25 @@ export const getDistance = (pickup, destination) => {
 
 
 export const getStaticImage = (route) => {
-  
+
       return (dispatch) => {
           //login user
-          dispatch({ type: STATIC_IMAGE });
           var api_key = "AIzaSyDz8hAJiNiqCVaoNaNcJC8GyxgU_2u6tXA";
-          
-          fetch('https://maps.googleapis.com/maps/api/staticmap?size=960x400&path=enc:'+route+'&key='+api_key, {
-              headers: {
-              },
-           })
-            .then((response) => {
-              if (response.status === 200) {
-                  var url = response.url;
-                  dispatch({ type: STATIC_IMAGE_SUCCESS, payload: url });
-              } else {
-                dispatch({ type: STATIC_IMAGE_ERROR, payload: "Google didn't return a good image Fam" })
-              }
-              
-            })
-            .catch((error) => {
-              console.log(error);
-              dispatch({ type: STATIC_IMAGE_ERROR, payload: responseJson })
-            })
-  
+          url = 'https://maps.googleapis.com/maps/api/staticmap?size=960x400&path=enc:'+route+'&key='+api_key;
+
+          dispatch({ type: STATIC_IMAGE_SUCCESS, payload: url });
+
        }
   };
 
 
-  
+
 
 
 export const calculatePrice = (km, hr, price_per_km, price_per_hr, emergency) => {
   return (dispatch) => {
 
-
+    dispatch({ type: GETTING_PRICE_ON, payload: price });
     var km_num = Number(km);
     var hr_num = Number(hr);
     var num_price_per_km = Number(price_per_km);
@@ -695,6 +690,8 @@ export const calculatePrice = (km, hr, price_per_km, price_per_hr, emergency) =>
 
     var price = (km_num * num_price_per_km) + (hr_num + num_price_per_hr) + num_emergency;
     dispatch({ type: GETTING_PRICE, payload: price });
+    dispatch({ type: STORE_KM, payload: Math.ceil(km_num) });
+    dispatch({ type: STORE_HR, payload: Math.ceil(hr_num*60) });
   }
 }
 
@@ -840,7 +837,7 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
               charge_type: charge_type,
               flutterwave_token:flutterwave_token,
               transaction_id: transaction_id
-              
+
 
             })
           })
@@ -859,7 +856,7 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
           })
           .catch((error) => {
             console.log(error);
-            dispatch({ type: ERROR_OVERALL, payload: responseeJson })
+            dispatch({ type: ERROR_OVERALL, payload: "error submitting order" })
           })
         }
 
@@ -995,6 +992,35 @@ export const getDriver = (id) => {
         })
         .catch((error) => {
           dispatch({ type: ERROR_NETWORK_DRIVER, payload: "AN ERROR OCCURED. PROBABLY YOUR NETWORK" })
+        })
+    }
+};
+
+
+
+export const onChangeToken = (user, token) => {
+  return (dispatch) => {
+      //login user
+      dispatch({ type: CHANGE_TOKEN, payload: token });
+      fetch('https://project.stackonly.com/app/api/fcm-change-token', {
+
+        method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: user,
+            token: token,
+          })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log("Good!");
+        })
+        .catch((error) => {
+          console.log('An error occured');
+          //dispatch({ type: ERROR_NETWORK_DRIVER, payload: "AN ERROR OCCURED. PROBABLY YOUR NETWORK" })
         })
     }
 };

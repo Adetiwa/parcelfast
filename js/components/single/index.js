@@ -114,14 +114,14 @@ componentDidMount() {
           onPress={() => this.props.navigation.navigate('History')}
          />
 
-        <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#FFF"}}>
+        <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#0397dd"}}>
           <Left>
           <Button transparent onPress={() => this.props.navigation.navigate('History')}>
-          <Icon  style = {{color: '#888'}} name="arrow-back" />
+          <Icon  style = {{color: '#FFF'}} name="arrow-back" />
         </Button>
           </Left>
           <Body>
-            <Title  style = {{color: '#888'}}> Trip details </Title>
+            <Title  style = {{color: '#FFF', fontWeight: '100'}}> Trip details </Title>
           </Body>
           <Right />
         </Header>

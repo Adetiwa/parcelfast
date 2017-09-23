@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StatusBar, ActivityIndicator, TouchableOpacity} from "react-native";
+import { View, Image, StatusBar, ActivityIndicator, TouchableOpacity} from "react-native";
 import { connect } from 'react-redux';
 import { emailChanged, passwordChanged, loginUser } from '../../actions/Login';
 import AndroidBackButton from "react-native-android-back-button";
@@ -66,7 +66,9 @@ renderButt() {
   } else {
     return (
 
-      <TouchableOpacity style = {styles.continue}
+      <TouchableOpacity style = {{
+        marginTop: 40,
+      }}
         onPress={this.onButtonPress.bind(this)}
          >
         <View style={styles.buttonContainer}>
@@ -91,22 +93,26 @@ checkForLog() {
         <AndroidBackButton
           onPress={() => this.props.navigation.navigate('Home')}
          />
-        <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#FFF"}}>
-          <Left>
-            <Button transparent onPress={() => this.props.navigation.navigate('Home')}>
-              <Icon style = {{color: '#888'}} name="arrow-back" />
-            </Button>
-          </Left>
-          <Body>
-            <Title style = {{color: '#888'}}> Login</Title>
-          </Body>
-          <Right />
-        </Header>
-
-        <Content style = {{
+         <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#0397dd"}}>
+         <Left>
+           <Button transparent onPress={() => this.props.navigation.navigate('Home')}>
+             <Icon style = {{color: '#FFF'}} name="arrow-back" />
+           </Button>
+         </Left>
+         <Body>
+           <Title style = {{color: '#FFF', fontWeight: '100'}}> Login</Title>
+         </Body>
+         <Right />
+       </Header>
+     
+       <View style = {{
+         flex: 1,
+         marginTop: 20,
+       }}>
+      
+         <Content style = {{
           padding: 20,
         }}>
-         
           <Form>
             <Item floatingLabel>
               <Label>Email</Label>
@@ -127,7 +133,7 @@ checkForLog() {
                 onChangeText = {this.onPasswordChange.bind(this)}
              />
             </Item>
-
+            
             {this.renderButt()}
             {this.checkForLog()}
           </Form>
@@ -142,10 +148,13 @@ checkForLog() {
 
 
         </Content>
+        </View>
       </Container>
     );
   }
 }
+const head = require("../../../img/head-logo.png");
+
 
 const mapStateToProps = ({ auth }) => {
   const { email, password, error, loading, status } = auth;

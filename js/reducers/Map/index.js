@@ -79,6 +79,10 @@ import {
   ERROR_GETTING_CARD,
   CHANGE_TYPE,
   NEW_USER_SUCCESS,
+  GETTING_PRICE_ON,
+  FETCH_PRICE_ERROR,
+  FROM_PAYMENT,
+  CHANGE_TOKEN,
 } from '../../actions/types';
 
 import { Dimensions } from "react-native";
@@ -129,7 +133,8 @@ const INITIAL_STATE =
     getting_distance: false,
     distance_info: {},
     distance_error: false,
-    estimated_price: null,
+    estimated_price: 0,
+    fetch_price_error: false,
     distanceInKM: 0,
     distanceInHR: 0,
     route: [],
@@ -179,53 +184,59 @@ const INITIAL_STATE =
     card_exist: false,
     card_type: '',
     last_4: 0,
+    from_payment: false,
+    fcm_token: null,
 }
 
 export default (state = INITIAL_STATE, action) => {
   console.log(action);
   switch(action.type) {
-  case CHANGE_TYPE: 
+  case CHANGE_TOKEN:
+    return { ...state, fcm_token: action.payload };
+  case FROM_PAYMENT:
+    return {...state, from_payment: action.payload };
+  case CHANGE_TYPE:
     return {...state, type: action.payload, scheduled: null};
-  case CARD_EXIST: 
+  case CARD_EXIST:
     return {...state,
       last_4: action.payload.last_4,
       flutterwave_token: action.payload.token,
       transaction_id: action.payload.trans_id,
       card_type: action.payload.type,
       card_exist: true };
-  case NO_CARD: 
+  case NO_CARD:
     return {...state, card_exist: false };
-  case VERYFYING_CARD: 
+  case VERYFYING_CARD:
       return {...state, card_status: '', load: true };
- case ERROR_GETTING_CARD: 
+ case ERROR_GETTING_CARD:
       return {...state, card_status: action.payload,
         load: false, card_exist: false };
-  case BAD_VERIFY: 
+  case BAD_VERIFY:
       return {...state, card_status: action.payload.msg,
         load: false };
-    case GOOD_VERIFY: 
+    case GOOD_VERIFY:
       return {...state,
       last_4: action.payload.last_4,
       flutterwave_token: action.payload.token,
       card_type: action.payload.type,
-      card_exist: true, card_status: action.payload.msg, 
+      card_exist: true, card_status: action.payload.msg,
       transaction_id: action.payload.transaction_id,
       load: false };
-    case ERROR_VERIFY: 
+    case ERROR_VERIFY:
     return {...state, card_status: action.payload,
       load: false };
 
     case CARD_UPDATE:
       return { ...state, card: action.payload };
-    case ONPAYMENT: 
+    case ONPAYMENT:
       return { ...state, onpayment: true };
-    case CHARGE_TYPE: 
+    case CHARGE_TYPE:
       return { ...state, charge_type: action.payload };
     case EMERGENCY:
       return {...state, emergency: action.payload};
     case CONNECTING_DRIVER:
       return { ...state, driver_message: action.payload };
-    case NO_DRIVER: 
+    case NO_DRIVER:
       return { ...state, driver_message: action.payload, driver_available: false, };
     case DRIVER_AVAILABLE:
       return { ...state, driver_matched: action.payload, driver_message: action.payload.driver.toUpperCase()+' HAS BEEN ASSIGNED TO YOU :)', driver_available: true };
@@ -241,7 +252,7 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state,
         current_hover: 'destination',
         destination: action.payload };
-    case SCHEDULE:    
+    case SCHEDULE:
         return { ...state, scheduled: action.payload, type: 'scheduled'  };
     case SELECT_VEHICLE:
       return { ...state, vehicle: action.payload };
@@ -341,6 +352,7 @@ export default (state = INITIAL_STATE, action) => {
           return { ...state,
             fetching_prices: true,
             emergency_cost: 0,
+            fetch_price_error: false,
           };
     case FETCH_PRICE_GOOD:
           return { ...state,
@@ -350,7 +362,9 @@ export default (state = INITIAL_STATE, action) => {
             toll_gate: action.payload.toll_gate,
             base_price: action.payload.base_price,
             prices: action.payload,
-            fetch_error: "",
+            fetch_error: false,
+            fetching_prices: false,
+
           };
     case FETCH_PRICE_BAD:
           return {
@@ -360,8 +374,14 @@ export default (state = INITIAL_STATE, action) => {
             emergency_cost: action.payload.emergency,
             toll_gate: action.payload.toll_gate,
             base_price: action.payload.base_price,
-            fetch_error: "error fetching price",
+            fetch_error: true,
+            fetching_prices: false,
           };
+    case FETCH_PRICE_ERROR:
+        return {
+          ...state, fetch_price_error: action.payload,
+          fetching_prices: false,
+        }
     case SAVE_STATE:
           return {
             ...state,
@@ -392,16 +412,21 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, getting_distance: true };
     case DISTANCE_FETCH_SUCCESS:
       return { ...state,
-        distance_info: action.payload
+        distance_info: action.payload,
+        getting_distance: false,
+        distance_error: false,
        };
-    case DISTANCE_FETCH_SUCCESS:
+    case DISTANCE_FETCH_ERROR:
       return { ...state,
         distance_info: action.payload,
         distance_error: true,
+        getting_distance: false,
       };
     case GETTING_PRICE:
       return { ...state,
         estimated_price: action.payload };
+    case GETTING_PRICE_ON:
+        return { ...state, estimated_price: 0 };
     case STORE_PRICE:
       return {...state, estimated_price: action.payload };
     case STORE_KM:
@@ -452,7 +477,7 @@ export default (state = INITIAL_STATE, action) => {
         input_done: false,
         loading: false,
         error: '',
-        raw: null,
+        raw: '',
         status: false,
         region: {},
         location_name: '',
@@ -463,7 +488,7 @@ export default (state = INITIAL_STATE, action) => {
         destination_location: '',
         error_geoecoding: '',
         fetching_prices: false,
-        fetch_error: '',
+        fetch_error: false,
         emergency: false,
         edit_progress: false,
         edit_error: '',
@@ -509,16 +534,16 @@ export default (state = INITIAL_STATE, action) => {
         charge_type: 'CASH',
         onpayment: false,
         load: false,
-        
+
       };
-    case SCREEN_SHOT: 
+    case SCREEN_SHOT:
       return {...state, screenshot: action.payload };
-     
-    case DRAW_ROUTE_RAW: 
+
+    case DRAW_ROUTE_RAW:
       return { ...state, raw: action.payload };
     case STATIC_IMAGE_SUCCESS:
       return { ...state, screenshot: action.payload };
-    case STATIC_IMAGE_ERROR:  
+    case STATIC_IMAGE_ERROR:
       return { ...state, screenshot: action.payload };
     case FETCHING_HISTORY:
       return { ...state, fetching: true, history_empty: false };

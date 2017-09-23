@@ -69,7 +69,7 @@ class CardView extends Component {
     this.state = {
       card_data: null,
     }
-  
+
   }
   _onChange = formData => {
     /* eslint no-console: 0 */
@@ -87,7 +87,7 @@ class CardView extends Component {
     if (this.props.onpayment) {
       if (!this.props.card_exist){
         this.props.charge_method('CASH');
-      } 
+      }
       this.props.navigation.navigate('Map');
     } else {
       this.props.navigation.navigate('Payment');
@@ -102,14 +102,14 @@ class CardView extends Component {
           onPress={() => this.nav()}
          />
 
-        <Header  style = {{borderBottomColor: "#FFF", backgroundColor: "#FFF"}}>
+        <Header  style = {{borderBottomColor: "#FFF", backgroundColor: "#0397DD"}}>
           <Left>
             <Button transparent onPress={() =>this.nav()}>
-              <Icon name="arrow-back" style = {{color: 'black'}} />
+              <Icon name="arrow-back" style = {{color: '#FFF'}} />
             </Button>
           </Left>
           <Body>
-            <Title>Payment</Title>
+            <Title style = {{color: '#FFF', fontWeight: '100'}}>Payment</Title>
           </Body>
           <Right />
         </Header>
@@ -143,7 +143,7 @@ class CardView extends Component {
                 onChange={this._onChange} />)
         }
       </View>
-      {this.props.card_exist && this.nav()}
+      {this.props.card_exist && !this.props.from_payment && this.nav()}
       {this.props.card !== null &&
       <View style = {{flex: 1,
                       justifyContent: 'center',
@@ -166,28 +166,26 @@ class CardView extends Component {
                           width: '80%',
                           backgroundColor: '#FFF',
                           height: '40%',
-                          borderColor: '#009AD5',
-                          borderWidth: 3,
-                          borderRadius: 50,
+                          backgroundColor: '#0397DD',
                           justifyContent: 'center',
                           alignItems: 'center',
                       }}>
                       {this.props.load ?
-                     
-                     <ActivityIndicator/> 
+
+                     <ActivityIndicator/>
                        :
                     <Text
                       style = {{
-                          color: '#009AD5',
-                          fontWeight: 'bold',
+                          color: '#FFF',
+                          fontWeight: '200',
                           fontSize: 20,
                           textAlign: 'center',
                       }}
-                      >Continue</Text>
+                      >CONTINUE</Text>
                     }
-          
+
                       </TouchableOpacity>
-       
+
       </View>
       }
     </View>
@@ -219,7 +217,7 @@ const mapStateToProps = ({ map }) => {
     onpayment,card_status,
     charge_type,
     edit_progress,
-    screenshot,
+    screenshot,from_payment,
     scheduled,
     order_success,flutterwave_token,transaction_id,
     error_submitting_order,
@@ -258,7 +256,7 @@ const mapStateToProps = ({ map }) => {
     edit_progress,
     screenshot,
     flutterwave_token,
-    transaction_id,
+    transaction_id,from_payment,
   };
 };
 
@@ -275,7 +273,7 @@ export default connect(mapStateToProps, {
   StorePrice,
   updateCard,
   reset,
-  
+
   verifyCard,
   submitOrder,
   onPayment,

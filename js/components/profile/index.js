@@ -99,7 +99,7 @@ logout() {
            </Button>
          </Left>
          <Body>
-           <Title style = {{color: '#888'}}>Profile</Title>
+           <Title style = {{color: '#888', fontWeight: '100'}}>Profile</Title>
 
          </Body>
          <Right>

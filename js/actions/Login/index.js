@@ -10,7 +10,8 @@ import { EMAIL_CHANGED,
       NO_INPUT,
       REGISTERING,
       NEW_USER_SUCCESS,
-      NEW_USER_ERROR
+      NEW_USER_ERROR,
+      CANCEL_ERROR_MSG,
      } from '../types';
 
 
@@ -68,6 +69,7 @@ export const register = (firstname, lastname, tel, email, password) => {
 
 
 export const loginUser = ({ email, password }) => {
+    
   if (email === '' || password === '') {
       return (dispatch) => {
         dispatch({ type: NO_INPUT, payload: null });

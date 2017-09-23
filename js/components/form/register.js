@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StatusBar, ActivityIndicator, TouchableOpacity} from "react-native";
+import { View, StatusBar, Image, ActivityIndicator, TouchableOpacity} from "react-native";
 
 import { connect } from 'react-redux';
 import { register } from '../../actions/Login';
@@ -50,6 +50,14 @@ class Register extends Component {
     this.props.navigation.navigate('Map');
   
 }
+    <Text
+            style = {{
+              fontSize: 15,
+              marginTop: 10,
+              alignSelf: 'center',
+              color: '#f62e2e',
+            }}>{this.state.error || this.props.errorReg}</Text>
+       
 */
 
   sendData() {
@@ -92,21 +100,24 @@ class Register extends Component {
   render() {
     return (
       <Container style={styles.container}>
-        <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
         <AndroidBackButton
           onPress={() => this.props.navigation.navigate('Home')}
          />
-        <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#FFF"}}>
+        <Header style = {{borderBottomColor: "#FFF", backgroundColor: "#0397dd"}}>
           <Left>
             <Button transparent onPress={() => this.props.navigation.navigate('Home')}>
-              <Icon style = {{color: '#888'}} name="arrow-back" />
+              <Icon style = {{color: '#FFF'}} name="arrow-back" />
             </Button>
           </Left>
           <Body>
-            <Title style = {{color: '#888'}}> Register</Title>
+            <Title style = {{color: '#FFF', fontWeight: '100'}}> Register</Title>
           </Body>
           <Right />
         </Header>
+        <View style = {{
+         flex: 1,
+         marginTop: 20,
+       }}>
         
         <Content style = {{
           padding: 20,
@@ -186,19 +197,16 @@ class Register extends Component {
             
           
           </Form>
-            
-          <Text
-            style = {{
-              fontSize: 15,
-              marginTop: 10,
-              alignSelf: 'center',
-              color: '#f62e2e',
-            }}>{this.state.error || this.props.errorReg}</Text>
-        </Content>
+            {this.state.error !== '' && 
+            alert(this.state.error)
+            }
+       </Content>
+        </View>
       </Container>
     );
   }
 }
+const head = require("../../../img/head-logo.png");
 
 const mapStateToProps = ({ auth }) => {
   const { email, password, errorReg, loadingReg, statusReg } = auth;

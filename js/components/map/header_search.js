@@ -136,7 +136,7 @@ class Header_Search extends Component {
         zIndex: 6000,
         backgroundColor: '#FFF',
         width: this.props.hoveron ? 0.95 * width : 0.95 * width,
-        borderColor: this.props.hoveron ? '#CCC' : '#CCC',
+        borderColor: this.props.hoveron ? '#CCC' : 'transparent',
         shadowColor: this.props.hoveron ? '#FFF' : '#888',
         shadowOffset: this.props.hoveron ? { width: 0, height: 0} : { width: 5, height: 5},
         shadowOpacity: this.props.hoveron ? 0 : 0.7,
@@ -159,7 +159,7 @@ class Header_Search extends Component {
         zIndex: 6000,
         backgroundColor: '#FFF',
         width: this.props.hoveron ? 0.95 * width : 0.95 * width,
-        borderColor: this.props.hoveron ? '#CCC' : '#CCC',
+        borderColor: this.props.hoveron ? '#CCC' : 'transparent',
         shadowColor: this.props.hoveron ? '#FFF' : '#888',
         shadowOffset: this.props.hoveron ? { width: 0, height: 0} : { width: 5, height: 5},
         shadowOpacity: this.props.hoveron ? 0 : 0.7,
@@ -233,11 +233,8 @@ class Header_Search extends Component {
         opacity: this.props.hoveron ? 1 : 0,
       },
       dot: {
-        //top: this.props.hoveron ? 69 : 69 + 22 - 5,
-        //left: this.props.hoveron ? 29.5 : 29.5 + 22 - 5,
-       // opacity: this.props.hoveron ? 1 : 1,
-        //padding: 0,
         zIndex: 10000,
+        elevation: 10,
         position : 'absolute',
         top: this.props.hoveron ? 62 : 15,
         left: this.props.hoveron ? 22 : 12,
@@ -252,7 +249,7 @@ class Header_Search extends Component {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-       
+
      },
      line: {
         position: 'absolute',
@@ -273,6 +270,7 @@ class Header_Search extends Component {
       //left: this.props.hoveron ? 29.5 : 29.5 + 22 - 5,
      // opacity: this.props.hoveron ? 1 : 1,
       //padding: 0,
+      elevation: 10,
       zIndex: 10000,
       position : 'absolute',
       top: this.props.hoveron ? 15 : 15,
@@ -289,10 +287,10 @@ class Header_Search extends Component {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-     
+
    },
     backButton: {
-      
+
     },
     }
   }
@@ -300,7 +298,7 @@ class Header_Search extends Component {
   render() {
     const animatableStyles = this.getAnimatableStyles()
 
-    
+
     return (
 
 
@@ -309,7 +307,7 @@ class Header_Search extends Component {
                       <AndroidBackButton
                           onPress={() => this.props.input_everything()}
                          />
-                         <Button 
+                         <Button
                          style = {{position: 'absolute',
                           left: -5,
                           top: 10,

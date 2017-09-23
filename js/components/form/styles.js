@@ -67,7 +67,7 @@ export default {
   buttonContainer: {
     justifyContent: "center",
     alignItems: 'center',
-    backgroundColor: '#009AD5',
+    backgroundColor: '#0397dd',
     width: "70%",
     padding: 10,
   },
@@ -98,7 +98,7 @@ export default {
 
   },
   buttonContainer: {
-    backgroundColor: '#009AD5',
+    backgroundColor: '#0397dd',
     paddingVertical: 15,
   },
   roww: {

@@ -108,3 +108,11 @@ export const ERROR_GETTING_CARD = "error_getting_card";
 
 
 export const CHANGE_TYPE = "change_type";
+export const GETTING_PRICE_ON = "getting_price_on";
+export const FETCH_PRICE_ERROR = "fetch_price_error";
+
+export const CANCEL_ERROR_MSG = "cancel_error_msg";
+
+export const FROM_PAYMENT = "from_p";
+
+export const CHANGE_TOKEN = "change_token";

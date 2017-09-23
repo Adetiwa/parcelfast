@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Image, View,Platform, StatusBar,AsyncStorage,Text, Dimensions } from "react-native";
+import { Image, View, StatusBar,AsyncStorage,Text, Dimensions } from "react-native";
 import { connect } from 'react-redux';
 import {  destinationChanged,
           select_vehicle,
@@ -19,7 +19,6 @@ const SCREEN_HEIGHT = height;
 const image = require("../../../img/head-logo.png");
 const USER_TOKEN = "user_token";
 
-
 class SplashPage extends Component {
 
     state = {
@@ -28,20 +27,33 @@ class SplashPage extends Component {
 
 
     getToken() {
-
+      
     }
-
-  async componentDidMount() {
-
+  
+     async componentDidMount() {
+      pubnub = new PubNub({
+        publishKey : "pub-c-ec13d9d1-3969-4fed-9783-4364b338f1db",
+        subscribeKey : "sub-c-c9d8331c-9175-11e7-8fea-b28b0a09174f"
+      }); 
+     
+      var publishConfig = { 
+        channel : "pubnub_onboarding_channel", 
+        message : "Hellloo From JavaScript SDK"
+      } 
+     
+      pubnub.publish(publishConfig, function(status, response) { 
+        console.log(status, response); 
+      });
+      
         var navigator = this.props.navigator;
         setTimeout (() => {
           const user = AsyncStorage.getItem(USER_TOKEN)
           .then((data)=> {
             if (data !== null) {
               // We have data!!
-
+              
              // console.log("Data saved is "+JSON.stringify(data));
-
+              
                 this.props.setUser(JSON.parse(data));
                 this.props.navigation.navigate('Map');
             } else {
@@ -54,7 +66,7 @@ class SplashPage extends Component {
             }
           })
 
-
+        
           //load = async () => {
             //const token = AsyncStorage.getItem('user_access_token');
             //console.log("TOken is "+JSON.stringify(token));
@@ -64,7 +76,7 @@ class SplashPage extends Component {
              // this.props.setUser(token);
              // this.props.navigation.navigate('Map');
             //}
-
+               
 
           //}
         }, 2000);
@@ -83,15 +95,14 @@ class SplashPage extends Component {
 
                 </View>
 
-
+               
                 <Text style = {{
                   fontWeight: '800',
                   fontSize: 50,
-                  //fontFamily: 'HelveticaNeue-Bold',
                   color: '#FFF',
                   textAlign: 'center',
                 }}> ParcelFast </Text>
-
+              
             </View>
         );
     }

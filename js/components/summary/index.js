@@ -59,24 +59,42 @@ class Summary extends Component {
     super(props);
     this.state = {
       value: this.props.charge_type,
-      
+
     }
-  
-  }
-  componentWillMount() {
 
-    this.props.fetchPrice(this.props.vehicle, this.props.emergency);
   }
 
-  componentDidMount(){
+  async componentWillMount() {
+
+  }
+
+
+  async componentDidMount(){
     this.props.reset();
-    if(!this.props.card_exist) {
-      this.props.getCard(this.props.user.userid);
+
+    if (this.props.fetch_price_error) {
+      const pricee = await this.props.fetchPrice(this.props.vehicle, this.props.emergency);
     }
+
+    var km_num = Number(this.props.distanceInKM);
+    var hr_num = Number(this.props.distanceInHR);
+    var num_price_per_km = Number(this.props.prices.per_km);
+    var num_price_per_hr = Number((this.props.prices.per_hr)/60);
+    var num_emergency = Number(this.props.prices.emergency);
+    var num_base = Number(this.props.prices.base_price);
+
+    var price = (km_num * num_price_per_km) + (hr_num * num_price_per_hr) + num_emergency + num_base;
+    var pricee= Math.ceil(price);
+    this.props.StorePrice(pricee);
+
   }
-  componentWillUpdate() {
-    this.checkForShit();
-  }
+
+  calculatePriceThe () {
+
+
+
+}
+
 
   formatDollar(num) {
       var p = num.toFixed(2).split(".");
@@ -116,16 +134,10 @@ class Summary extends Component {
       //this.props.navigation.navigate('ErrorPage');
     }
   }
-  checkForShit() {
-    if (!this.props.card_exist && (this.props.flutterwave_token !== null)) {
-      this.props.onPayment(true);
-      this.props.navigation.navigate('CardView');
-    }
-  }
 
   choose_card(val){
     this.props.charge_method(val);
-    
+
   }
 
 
@@ -147,13 +159,13 @@ class Summary extends Component {
             </Button>
           </Left>
           <Body>
-            <Title  style = {{color: '#888'}}> SUMMARY </Title>
+            <Title  style = {{color: '#888', fontWeight: '100'}}> SUMMARY </Title>
           </Body>
           <Right />
         </Header>
 
 
-        <Animatable.View animation='bounceIn' style ={styles.mainContainer}>
+        <View style ={styles.mainContainer}>
               {this.props.edit_progress &&
                 <ActivityIndicator style = {{
                 justifyContent: 'center',
@@ -184,22 +196,28 @@ class Summary extends Component {
               <Text style ={{padding: 20, color: '#888', fontSize: 13,}}> A dispatcher
               will be assigned to you shortly </Text>
             </View>
-            
+
             <View style = {styles.cost}>
               <Text style = {{color: "#CCC"}}>
                   ESTIMATED COST
               </Text>
+              {(this.props.pickup !== '') && (this.props.destination !== '') &&
+              (!this.props.distance_error) && (!this.props.getting_distance) &&
+              (!this.props.fetching_prices) && (!this.props.fetch_error) &&
+
               <View style={styles.costText}>
+
                 <Text style={styles.costTextText}>
 
                   ₦ {this.props.estimated_price}
                 </Text>
               </View>
+            }
 
               <View style={styles.confirmButton}>
                 <TouchableOpacity style = {styles.continue}
                   onPress = {() => this.placeOrder()}
-                  disabled = {!this.props.card_exist ? true : false} >
+                  disabled = {this.props.estimated_price === 0 && (this.props.fetch_price_error === true) ? true : false} >
                   <View style={styles.buttonContainer}>
                     <Text style = {styles.continueText}>CONFIRM</Text>
                   </View>
@@ -211,7 +229,7 @@ class Summary extends Component {
 
 
 
-        </Animatable.View>
+        </View>
 
       </Container>
     );
@@ -246,6 +264,7 @@ const mapStateToProps = ({ map }) => {
     type,
     charge_type,
     edit_progress,
+    fetch_price_error,
     last_4,
 	  card_exist,
     screenshot,
@@ -283,6 +302,7 @@ const mapStateToProps = ({ map }) => {
     charge_type,
     error_submitting_order,
     edit_progress,
+    fetch_price_error,
     screenshot,
     last_4,
 	  card_exist,

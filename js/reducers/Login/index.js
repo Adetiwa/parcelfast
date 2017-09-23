@@ -8,7 +8,8 @@ import { EMAIL_CHANGED,
    NO_INPUT,
    REGISTERING,
    NEW_USER_SUCCESS,
-   NEW_USER_ERROR
+   NEW_USER_ERROR,
+   CANCEL_ERROR_MSG,
  } from '../../actions/types';
 
 const INITIAL_STATE =
@@ -37,6 +38,8 @@ export default (state = INITIAL_STATE, action) => {
          statusReg: true,
 
       };
+    case CANCEL_ERROR_MSG: 
+        return { ...state, error: '' };
     case NEW_USER_ERROR:
       return { ...state, errorReg: action.payload, loadingReg: false };
     case EMAIL_CHANGED:

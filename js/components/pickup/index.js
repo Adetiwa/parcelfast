@@ -45,21 +45,8 @@ import styles from "./styles";
 
 const pickup = require("../../../img/pickup.png");
 const deviceHeight = Dimensions.get("window").height;
-/*
-  <Image style = {styles.footer} source = {trame}/>
-  */
 
-  const propsDropdown = {
-    defaultValue: {value: 5, label: 'Kebumen'},
-    options: [
-      {value: 'Normal', label: 'Normal'},
-      {value: 'Emergency', label: 'Emergency'},
-    ],
-    label: 'Type of Service',
-    animationType: 'none',
-  };
-  
-  
+
 class Pickup extends Component {
 
   constructor(props) {
@@ -72,33 +59,38 @@ class Pickup extends Component {
     extra: this.props.order_info.extra,
     emergency: false,
     error: '',
-    selectedOption: {value: this.props.type, label: 'Normal'},
     isShowingOptions: false,
   }
 
 }
 
-  componentDidMount() {
-    if (this.props.pickup !== '' && this.props.destination !== '' && this.props.route_set) {
-      this.props.getDistance(this.props.pickup, this.props.destination);
-      this.props.getStaticImage(this.props.raw);
-    }
-
-
+  async componentDidMount() {
+      const l = await this.props.getDistance(this.props.pickup, this.props.destination);
+      const lo = await this.props.getStaticImage(this.props.raw);
+      //this.price();
   }
 
-componentWillUnmount() {
-  this.props.fetchPrice(this.props.vehicle, this.props.emergency);
+
+
+async price() {
+  //const price = await this.props.fetchPrice(this.props.vehicle, this.props.emergency);
 
   var a = this.props.distance_info;
   var distance = a[0].elements[0].distance.value;
   var time = a[0].elements[0].duration.value;
+  var km_num = Number(distance);
+  var hr_num = Number(time);
+  this.props.StoreKm(Math.ceil(km_num));
+  this.props.StoreHr(Math.ceil(hr_num*60));
 
-  var km = Number(distance/1000);
-  var time = Number(time/3600);
+  //this.props.StoreKm(Number(Math.ceil(distance)));
+  //this.props.StoreHr(Number(Math.ceil(time*60)));
+
+  /*var km = Number(distance/1000);
+  var time = Number(time/3600);*/
 
 
-  this.calculatePriceThe(km, time, this.props.prices.per_km, this.props.prices.per_hr, this.props.prices.emergency, this.props.prices.base_price);
+  //this.props.calculatePrice(km, time, this.props.prices.per_km, this.props.prices.per_hr, this.props.prices.emergency, this.props.prices.base_price);
 }
 
  calculatePriceThe (km, hr, price_per_km, price_per_hr, emergency, base) {
@@ -130,34 +122,9 @@ sendData() {
 }
 
 
-_onShow(value) {
-  this.setState({
-    isShowingOptions: value,
-  });
-}
-_onSelect(item, isShow) {
-  this.setState({
-    isShowingOptions: isShow,
-    selectedOption: item,
-  });
-  if (item.value == 'Emergency') {
-    this.props.setEmergency(true);
-  } else {
-    this.props.setEmergency(false);
-  }
-  console.log("SELECTED IS "+item.value);
-}
-
-
-
   render() {
     return (
-      <KeyboardAvoidingView 
-       behavior="padding"
-       style = {{
-        flex: 1,
-        
-      }}>
+
       <Container style={styles.container}>
         <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
 
@@ -172,14 +139,12 @@ _onSelect(item, isShow) {
             </Button>
           </Left>
           <Body>
-            <Title style = {{fontSize: 15, color: '#888'}}> <Image source = {pickup}/> Pickup Info </Title>
+            <Title style = {{fontSize: 15, color: '#888', fontWeight: '100'}}> <Image source = {pickup}/> Pickup Info </Title>
           </Body>
           <Right />
         </Header>
 
-
         <Animatable.View animation='pulse'  style ={styles.mainContainer}>
-          
           <Form
             style = {styles.forms}
             label="Personal Information">
@@ -201,7 +166,7 @@ _onSelect(item, isShow) {
               ref='pickup_collector'
               />
             </Item>
-          
+
 
             <Item floatingLabel>
               <Input
@@ -219,7 +184,7 @@ _onSelect(item, isShow) {
               placeholderTextColor="#CCC"
               ref='pickup_collector_tel'
               //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
-           
+
               />
             </Item>
 
@@ -238,7 +203,7 @@ _onSelect(item, isShow) {
               onChangeText = {(input)=>this.setState({drop_off_name: input})}
               placeholderTextColor="#CCC"
               ref='dropoff_collector'
-              
+
               />
             </Item>
 
@@ -258,7 +223,7 @@ _onSelect(item, isShow) {
               placeholderTextColor="#CCC"
               ref='dropoff_collector_tel'
               //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
-           
+
               />
             </Item>
 
@@ -278,10 +243,10 @@ _onSelect(item, isShow) {
               value={this.state.extra}
               ref='extra_shit'
               //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
-           
+
               />
             </Item>
-   
+
           <TouchableOpacity style = {styles.continue}
             onPress = {() => this.sendData()} >
             <View style={styles.buttonContainer}>
@@ -298,13 +263,13 @@ _onSelect(item, isShow) {
             }}>{this.state.error}</Text>
 
         </Form>
-        
+
         </Animatable.View>
 
 
       </Container>
-      </KeyboardAvoidingView>
-        
+
+
     );
   }
 }
@@ -325,6 +290,7 @@ const mapStateToProps = ({ map }) => {
     route_set,
     raw,
     distance_info,
+    estimated_price,
     proceed, scheduled,
     order_info,
     edit_error, loading,emergency, status } = map;
@@ -342,6 +308,7 @@ const mapStateToProps = ({ map }) => {
     latitude,
     longitude,
     latitudeDelta,
+    estimated_price,
     longitudeDelta,
     emergency,
     order_info,

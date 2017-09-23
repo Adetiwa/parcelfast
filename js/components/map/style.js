@@ -31,7 +31,7 @@ export default {
     shadowOpacity:0.7,
   },
   checks: {
-    flex: 0.5,
+    flex: 0.6,
     backgroundColor: '#FFF',
     elevation: 1,
 
