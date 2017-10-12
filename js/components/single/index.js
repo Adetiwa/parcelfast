@@ -7,7 +7,7 @@ import {
   Image,
   ActivityIndicator,
   Switch,
-  TextInput,  
+  TextInput,
   ScrollView,
   StatusBar,
 
@@ -57,7 +57,11 @@ import {
           TableView,
         } from 'react-native-tableview-simple';
 import AndroidBackButton from "react-native-android-back-button";
+import UserAvatar from 'react-native-user-avatar';
+
 //import { Card, Button } from 'react-native-material-design';
+import Communications from 'react-native-communications';
+
 import TimeAgo from 'react-native-timeago';
 import TabOne from "../tab/tabOne";
 import TabTwo from "../tab/tabTwo";
@@ -80,15 +84,15 @@ componentWillMount(){
   //this.props.getThisHistory(this.props.selected);
 
   var chose = this.props.selected;
-  
+
   var a = this.props.history;
-  
+
   var aFiltered = a.filter(function(elem, index){
     return elem.o_id == chose;
   });
   thissingle = aFiltered
   console.log(thissingle[0].url);
-  
+
 }
 
 
@@ -100,15 +104,72 @@ componentDidMount() {
 
 }
 
+textRenderer(text) {
+  if (text === 'null') {
+    return (
+      <View style = {{
+        backgroundColor: '#009AD5',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>Dispatcher yet to commence trip</Text>
+    </View>
+    )
+  } else if(text === 'pickup') {
+    return (
+      <View style = {{
+        backgroundColor: '#009AD5',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>Dispatcher heading to pickup</Text>
+    </View>
+    )
+  }  else if(text === 'dropoff') {
+    return (
+      <View style = {{
+        backgroundColor: '#43496A',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>Dispatcher heading to dropoff</Text>
+    </View>
+    )
+  }  else if(text === 'complete') {
+    return (
+      <View style = {{
+        backgroundColor: '#27D9A1',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>Delivery completed!</Text>
+    </View>
+    )
+  }
+}
 
-  
+
+getColor(status) {
+  let color = "";
+  if (status === "pending") {
+    color = "red";
+  } else {
+    color = "green";
+  }
+  return color;
+}
+
   render () {
       //  const { params } = this.props.navigation.state;
-       
+
     return (
-      
+
         <Container style={styles.container}>
-          
+
         <StatusBar backgroundColor='#009AD5' barStyle='light-content' />
           <AndroidBackButton
           onPress={() => this.props.navigation.navigate('History')}
@@ -133,9 +194,9 @@ componentDidMount() {
               }} />
             }
             <Animatable.View animation='bounceIn'>
-                    					 <Card 
+                    					 <Card
                                style={styles.mb}>
-                                  
+
                                    <CardItem cardBody>
                                      <Image
                                        style={{
@@ -147,16 +208,16 @@ componentDidMount() {
                                        source={{uri: thissingle[0].url}}
                                      />
                                    </CardItem>
-                           
+
                                    <CardItem style={{ paddingVertical: 0 }}>
-                                     
+
                                      <Body>
                                      <Button iconLeft transparent>
                                      <View style = {{
                                           width: 10,
                                           height: 10,
                                           borderRadius: 10,
-                                          backgroundColor: 'red',
+                                          backgroundColor: this.getColor(thissingle[0].order_status),
                                           marginRight: 10,
                                           justifyContent: 'flex-start',
                                         }}
@@ -169,7 +230,7 @@ componentDidMount() {
                                             width: 10,
                                             height: 10,
                                             //borderRadius: 10,
-                                            backgroundColor: 'red',
+                                            backgroundColor: this.getColor(thissingle[0].order_status),
                                             marginRight: 10,
                                           }}
                                             ></View>
@@ -177,55 +238,112 @@ componentDidMount() {
                                            {thissingle[0].user_to }</Text>
                                        </Button>
                                        <View style = {{
-                                         
+
                                        }}
                                          >
 
                                          </View>
                                      </Body>
-                                     
+
                                    </CardItem>
-                                   
+
                                    </Card>
                                    {thissingle[0].order_status === 'pending' &&
-                                    
-                                    <Card 
+
+                                    <Card
                                       style={styles.mb}>
-    
+
                                     <TableView>
                                       <Cell cellStyle="RightDetail" title="A driver is yet to be assigned"/>
-                                   
-                                
-                                    
+
+
+
                                   </TableView>
-                                    
+
                                    </Card>
-                                   
+
                                    }
 
                                    {thissingle[0].order_status !== 'pending' &&
-                                    
-                                    <Card 
-                                      style={styles.mb}>
-    
-                                    <TableView>
-                                      <Cell cellStyle="RightDetail" title={`${thissingle[0].driver} with plate number ${thissingle[0].driver_plate_number} `}/>
-                                   
-                                
-                                    
-                                  </TableView>
-                                    
-                                   </Card>
-                                   
+
+                                   <Card style = {{width: '100%', marginTop: 30,
+                                      }}>
+                                        <CardItem>
+                                          <Left>
+                                          <UserAvatar
+                                          name={thissingle[0].driver}  src={thissingle[0].driver_pic} size={50} />
+                                          {thissingle[0].driver_status !== 'complete' &&
+                                              <Body>
+                                              <Text style = {{
+                                                  fontSize: 12,
+                                                  color: '#333',
+                                              }}
+                                              >{thissingle[0].driver}</Text>
+                                              <Text style = {{
+                                                  fontSize: 12,
+                                                  color: '#333',
+                                              }}
+                                              >{thissingle[0].driver_tel}</Text>
+                                              <TouchableOpacity
+                                                onPress={() => Communications.phonecall(thissingle[0].driver_tel, true)}>
+                                                <Text style = {{
+                                                  color: '#555',
+                                                  fontSize: 12,
+                                                }}><Icon style = {{color: '#555', paddingRight: 10, fontSize: 15}}
+                                                name = "call" /> Call </Text>
+                                              </TouchableOpacity>
+                                              <TouchableOpacity
+                                                onPress={() => Communications.text(thissingle[0].driver_tel)}>
+                                                <Text style = {{
+                                                  color: '#555',
+                                                  fontSize: 12,
+                                                }}><Icon style = {{color: '#555', paddingRight: 10, fontSize: 15}}
+                                                name = "text" /> Message </Text>
+                                              </TouchableOpacity>
+                                              
+                                            </Body>
+                                          }
+                                          </Left>
+                                          <Right>
+                                            <Body>
+                                            <Text style = {{
+                                                  color: '#555',
+                                                  fontSize: 12,
+                                                }}>
+                                                {thissingle[0].driver_plate_number}
+
+                                                </Text>
+
+                                              </Body>
+                                            </Right>
+                                        </CardItem>
+
+
+
+                                        <CardItem style={{ paddingVertical: 0 }}>
+                                          <Left>
+                                              <Text
+                                              style = {{
+                                                  fontSize: 12,
+                                                  color: '#333',
+                                              }}>{thissingle[0].driver_vehicle}</Text>
+                                            </Left>
+
+                                          <Right>
+                                            {this.textRenderer(thissingle[0].driver_status)}
+                                              </Right>
+                                        </CardItem>
+                                      </Card>
+
                                    }
 
 
-                                   <Card 
+                                   <Card
                                     style={styles.mb}>
-   
+
                                    <TableView>
                                   <Section header="PARCELFAST RECEIPT" footer={`₦ ${thissingle[0].amount}`}>
-                                    <Cell cellStyle="RightDetail" title="Base Fair" leftDetailColor="#6cc644" detail={`₦ ${thissingle[0].base}`}/>
+                                    <Cell cellStyle="RightDetail" title="Base Fare" leftDetailColor="#6cc644" detail={`₦ ${thissingle[0].base}`}/>
                                     <Cell cellStyle="RightDetail" title="Distance" detail={`${thissingle[0].km} km`} />
                                     <Cell cellStyle="RightDetail" title="Time" detail={`${thissingle[0].min} min`} />
                                     <Cell cellStyle="RightDetail" title="Toll" detail={`₦ ${thissingle[0].toll}`} />
@@ -236,21 +354,21 @@ componentDidMount() {
                                       accessory="Checkmark"
                                       title="CASH"
                                      />
-                                    
+
                                     <Cell cellStyle="RightDetail" title="Total" detail={`₦ ${thissingle[0].amount}`} />
-                                    
-                                    
+
+
                                   </Section>
-        
-                               
-                                  
+
+
+
                                 </TableView>
-                                   
+
                                    </Card>
 
-                     
-                                   </Animatable.View> 
-                                
+
+                                   </Animatable.View>
+
     </Content>
 </Container>
     );

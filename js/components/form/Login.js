@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { View, Image, StatusBar, ActivityIndicator, TouchableOpacity} from "react-native";
+import { View, Image, NetInfo, StatusBar, ActivityIndicator, TouchableOpacity} from "react-native";
 import { connect } from 'react-redux';
-import { emailChanged, passwordChanged, loginUser } from '../../actions/Login';
+import { emailChanged, passwordChanged, loginUser, network_change } from '../../actions/Login';
 import AndroidBackButton from "react-native-android-back-button";
+import SnackBar from 'react-native-snackbar-dialog';
 
 import {
   Container,
@@ -24,6 +25,25 @@ import {
 import styles from "./styles";
 
 class Login extends Component {
+
+  componentWillMount(){
+    NetInfo.isConnected.addEventListener('change', this.handleConnectionChange);
+    
+        NetInfo.isConnected.fetch().done(
+          (isConnected) => {  this.props.network_change(isConnected); }
+        );
+  }
+  
+  componentWillUnmount() {
+    NetInfo.isConnected.removeEventListener('change', this.handleConnectionChange);
+}
+
+handleConnectionChange = (isConnected) => {
+       // this.setState({ status: isConnected });
+        this.props.network_change(isConnected);
+        //console.log(`is connected: ${this.state.status}`);
+}
+
 
 /*
  <View style =  {styles.buttons}>
@@ -117,6 +137,9 @@ checkForLog() {
             <Item floatingLabel>
               <Label>Email</Label>
               <Input
+                autoCapitalize="none"
+                keyboardType="email-address"
+                editable={this.props.loading ? false : true}
                 //ref= {(el) => { this.username = el; }}
                 //onChangeText={(username) => this.setState({username})}
                 value={this.props.email}
@@ -126,6 +149,8 @@ checkForLog() {
             <Item floatingLabel last>
               <Label>Password</Label>
               <Input
+                autoCapitalize="none"
+                editable={this.props.loading ? false : true}
                 //ref= {(pass) => { this.password = pass; }}
                 //onChangeText={(password) => this.setState({password})}
                 value={this.props.password}
@@ -149,6 +174,21 @@ checkForLog() {
 
         </Content>
         </View>
+        {!this.props.network_connected &&
+        SnackBar.show('Network Unavailable', {
+        confirmText: 'Retry',
+        duration: 100000,
+        onConfirm: () => {
+          //console.log('Thank you')
+          //
+          NetInfo.isConnected.fetch().done(
+            (isConnected) => {  this.props.network_change(isConnected); }
+          );
+        }
+      })
+      }
+      {this.props.network_connected && SnackBar.dismiss()}
+  
       </Container>
     );
   }
@@ -157,13 +197,14 @@ const head = require("../../../img/head-logo.png");
 
 
 const mapStateToProps = ({ auth }) => {
-  const { email, password, error, loading, status } = auth;
+  const { email, password, error,network_connected, loading, status } = auth;
   return {
     email,
     password,
     error,
     loading,
-    status
+    status,
+    network_connected,
   };
 };
 
@@ -171,4 +212,5 @@ export default connect(mapStateToProps, {
   emailChanged,
   passwordChanged,
   loginUser,
+  network_change,
 })(Login);

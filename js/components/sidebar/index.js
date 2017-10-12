@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Image, StatusBar } from "react-native";
+import { Image, StatusBar, Linking } from "react-native";
 import {  destinationChanged,
           select_vehicle,
           hoverondesc,
@@ -82,7 +82,7 @@ class SideBar extends Component {
 			<Container>
 				<StatusBar backgroundColor='#009AD5' barStyle='light-content' />
 				{this.props.user !== null &&
-				
+
 				<View style = {{
 					backgroundColor: '#009AD5',
 					flex: 2,
@@ -115,7 +115,7 @@ class SideBar extends Component {
 			</View>
 				}
 				{this.props.user !== null &&
-				
+
 			<View style = {{
 				flex: 7
 			}}>
@@ -153,7 +153,7 @@ class SideBar extends Component {
 			</View>
 				}
 				{this.props.user !== null &&
-				
+
 			<View style = {{
 				flex: 1,
 			}}>
@@ -161,16 +161,21 @@ class SideBar extends Component {
         style = {{
           borderBottomWidth: 0,
         }}
-        onPress={() => this.props.navigation.navigate('Map')}>
-						<Left>
+        //onPress={() => this.props.navigation.navigate('Map')}
+        onPress={ ()=>{ Linking.openURL('http://parcelfast.ng/app/dispatcher/signup')}}>
+        <Left>
+          <Icon
+                style = {{color: "#009AD5", fontSize: 30}}
+                name='car'
+              />
 
-							<Text style = {{
-								color: '#444',
-								fontSize: 13,
-								textAlign: 'right',
-								borderBottomWidth: 0,
-							}}>About ParcelFast</Text>
-						</Left>
+            <Text style = {{
+              color: '#009AD5',
+              fontSize: 13,
+              textAlign: 'right',
+              borderBottomWidth: 0,
+            }}>Drive with ParcelFast</Text>
+          </Left>
 
 
 

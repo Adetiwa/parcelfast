@@ -15,11 +15,13 @@ import {  destinationChanged,
           onPayment,
           charge_method,
           getCard,
+          network_change,
 
         } from '../../actions/Map';
 
-import { View, Image,ActivityIndicator, StatusBar, TextInput,  Dimensions, Platform , TouchableOpacity} from "react-native";
+import { View, NetInfo, Image,ActivityIndicator, StatusBar, TextInput,  Dimensions, Platform , TouchableOpacity} from "react-native";
 import AndroidBackButton from "react-native-android-back-button";
+import SnackBar from 'react-native-snackbar-dialog';
 
 import {
   Container,
@@ -64,8 +66,13 @@ class Summary extends Component {
 
   }
 
-  async componentWillMount() {
-
+ componentWillMount() {
+    NetInfo.isConnected.addEventListener('change', this.handleConnectionChange);
+    
+        NetInfo.isConnected.fetch().done(
+          (isConnected) => {  this.props.network_change(isConnected); }
+        );
+ 
   }
 
 
@@ -87,6 +94,13 @@ class Summary extends Component {
     var pricee= Math.ceil(price);
     this.props.StorePrice(pricee);
 
+  }
+
+
+  handleConnectionChange = (isConnected) => {
+        // this.setState({ status: isConnected });
+          this.props.network_change(isConnected);
+          //console.log(`is connected: ${this.state.status}`);
   }
 
   calculatePriceThe () {
@@ -230,7 +244,21 @@ class Summary extends Component {
 
 
         </View>
-
+        {!this.props.network_connected &&
+        SnackBar.show('Network Unavailable', {
+        confirmText: 'Retry',
+        duration: 100000,
+        onConfirm: () => {
+          //console.log('Thank you')
+          //
+          NetInfo.isConnected.fetch().done(
+            (isConnected) => {  this.props.network_change(isConnected); }
+          );
+        }
+      })
+      }
+      {this.props.network_connected && SnackBar.dismiss()}
+  
       </Container>
     );
   }
@@ -257,6 +285,7 @@ const mapStateToProps = ({ map }) => {
     distanceInKM,
     distanceInHR,
     prices,
+    network_connected,
     order_info,
     card,
     pickup_coords,
@@ -308,6 +337,7 @@ const mapStateToProps = ({ map }) => {
 	  card_exist,
     flutterwave_token,
     transaction_id,
+    network_connected,
   };
 };
 
@@ -327,4 +357,5 @@ export default connect(mapStateToProps, {
   submitOrder,
   onPayment,
   charge_method,
+  network_change,
 })(Summary);

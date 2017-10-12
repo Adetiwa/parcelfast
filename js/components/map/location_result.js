@@ -10,11 +10,12 @@ import { destinationChanged,
           input_everything,
           getDistance,
           getRoute,
+          empty_predictions,
         } from '../../actions/Map';
 import Prediction from '../../../node_modules/react-native-google-place-autocomplete/lib/Prediction';
 import AndroidBackButton from "react-native-android-back-button";
 
-import { View, Image, Dimensions,ScrollView, Animated, PermissionsAndroid,
+import { View, Image,ActivityIndicator, Dimensions,ScrollView, Animated, PermissionsAndroid,
   Platform, TextInput, StyleSheet,
   LayoutAnimation,
   StatusBar, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
@@ -30,9 +31,7 @@ import { View, Image, Dimensions,ScrollView, Animated, PermissionsAndroid,
   	Right,
   	Badge,
     Button,
-    
-
-  	StyleProvider,
+    StyleProvider,
   	getTheme,
   	variables,
   } from "native-base";
@@ -132,6 +131,9 @@ class Location extends Component {
                     <AndroidBackButton
                         onPress={() => this.props.input_everything()}
                        />
+                       {this.props.loading_prediction === false ?
+                       
+                      
                     <List
 
                     						dataArray={datas}
@@ -144,6 +146,23 @@ class Location extends Component {
 
                     							</ListItem>}
                     					/>
+
+                              :
+
+                              <View style={{
+                                width: '100%',
+                                height: '100%',
+                                flex: 1,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#FFF',
+                                zIndex: 10,
+                      
+                              }}>
+                              <ActivityIndicator style = {{zIndex: 12,}}size='small' />
+                              </View>
+
+                                }
 
 
                     </ScrollView>
@@ -163,7 +182,7 @@ const mapStateToProps = ({ map }) => {
     pickup,
     current_hover,
      vehicle, error,predictions,
-     prediction_error,
+     prediction_error,loading_prediction,
      pickup_location,
      destination_location,
      error_geoecoding,
@@ -179,7 +198,7 @@ const mapStateToProps = ({ map }) => {
     status,
     predictions,
     prediction_error,
-    pickup_location,
+    pickup_location, loading_prediction,
     destination_location,
     error_geoecoding,
   };
@@ -192,6 +211,7 @@ export default connect(mapStateToProps, {
   set_suggestion_dest,
   set_suggestion_pick,
   geocodeTheAddress_pickup,
+  empty_predictions,
   geocodeTheAddress_dest,
   input_everything,
   getDistance,

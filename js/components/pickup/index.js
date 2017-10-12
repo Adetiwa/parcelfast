@@ -17,27 +17,23 @@ import {  destinationChanged,
 
         } from '../../actions/Map';
 import Dropdown from 'react-native-modal-select-option';
-import { View, Image,Separator,TextInput, KeyboardAvoidingView,  Dimensions, Platform , StatusBar , TouchableOpacity} from "react-native";
+import { View, Image,Text, Separator,TextInput, KeyboardAvoidingView,  Dimensions, Platform , StatusBar , TouchableOpacity} from "react-native";
 import AndroidBackButton from "react-native-android-back-button";
-import { KeyboardAwareScrollView, Form } from 'react-native-form-generator'
+import { KeyboardAwareScrollView} from 'react-native-form-generator'
 import {
   Container,
   Header,
   Title,
   Content,
   Button,
-  Icon,
-  Text,
+  Item,
+  Label,
+  Input,
   Body,
   Left,
   Right,
-  IconNB,
-  Item,
-  Input,
-  Label,
-
-
-
+  Icon,
+  Form
 } from "native-base";
 import * as Animatable from 'react-native-animatable'
 
@@ -112,7 +108,7 @@ async price() {
 }
 
 sendData() {
-  if ((this.state.pick_up_name === '') || (this.state.pick_up_tel === '') || (this.state.drop_off_name === '') || (this.state.drop_off_tel === '') || (this.state.extra === '')) {
+  if ((this.state.pick_up_name === '') || (this.state.pick_up_tel === '') || (this.state.drop_off_name === '') || (this.state.drop_off_tel === '')) {
     this.setState({error: "All inputs are required"});
   } else {
     this.props.save_summary_state(this.state);
@@ -145,13 +141,20 @@ sendData() {
         </Header>
 
         <Animatable.View animation='pulse'  style ={styles.mainContainer}>
-          <Form
-            style = {styles.forms}
-            label="Personal Information">
+        <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <Content>
+          <View
+              style = {{
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignContent: 'center',
 
+              }}
+              >
+            
             <Item floatingLabel>
+            <Label>Name of Pickup collector</Label>
               <Input
-              placeholder="Name of Pickup collector"
               underlineColorAndroid= 'transparent'
               value={this.state.pick_up_name}
               style = {{
@@ -169,8 +172,9 @@ sendData() {
 
 
             <Item floatingLabel>
-              <Input
-              placeholder="Telephone"
+            <Label>Tel of Pickup collector</Label>
+            
+              <TextInput
               underlineColorAndroid= 'transparent'
               onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
@@ -189,8 +193,8 @@ sendData() {
             </Item>
 
             <Item floatingLabel>
-              <Input
-              placeholder="Name of Drop-off collector"
+            <Label>Name of Drop-off collector</Label>
+              <TextInput
               underlineColorAndroid= 'transparent'
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
@@ -208,8 +212,8 @@ sendData() {
             </Item>
 
             <Item floatingLabel>
-              <Input
-              placeholder="Drop-off Collector Number"
+            <Label>Tel of Drop-off collector</Label>
+              <TextInput
               underlineColorAndroid= 'transparent'
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
@@ -228,8 +232,8 @@ sendData() {
             </Item>
 
             <Item floatingLabel>
-              <Input
-              placeholder="Extra comments"
+            <Label>Extra Comments (optional)</Label>
+              <TextInput
               underlineColorAndroid= 'transparent'
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
@@ -261,9 +265,9 @@ sendData() {
               alignSelf: 'center',
               color: '#f62e2e',
             }}>{this.state.error}</Text>
-
-        </Form>
-
+          </View>
+        </Content>
+        </KeyboardAvoidingView>
         </Animatable.View>
 
 

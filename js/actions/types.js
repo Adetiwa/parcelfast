@@ -116,3 +116,13 @@ export const CANCEL_ERROR_MSG = "cancel_error_msg";
 export const FROM_PAYMENT = "from_p";
 
 export const CHANGE_TOKEN = "change_token";
+export const NETWORK = "network";
+
+export const SELECT_SUPPORT = "select_support";
+
+export const FETCHING_SUPPORT = "fetching_support";
+export const FETCH_SUPPORT_GOOD = "fetch_support_good";
+export const FETCH_SUPPORT_EMPTY = "fetch_support_empty";
+
+export const EMPTY_PREDICTIONS = "empty_predictions";
+export const GETTING_PREDICTION = "getting_predications";

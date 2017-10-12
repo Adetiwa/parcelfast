@@ -10,6 +10,7 @@ import { EMAIL_CHANGED,
    NEW_USER_SUCCESS,
    NEW_USER_ERROR,
    CANCEL_ERROR_MSG,
+   NETWORK,
  } from '../../actions/types';
 
 const INITIAL_STATE =
@@ -23,12 +24,16 @@ const INITIAL_STATE =
     loadingReg: false,
     errorReg: '',
     statusReg: false,
+    network_connected: true,
+    
   }
 
 export default (state = INITIAL_STATE, action) => {
   //console.log(action);
 
   switch(action.type) {
+    case NETWORK: 
+    return {...state, network_connected: action.payload, loading: false, loadingReg: false };
     case REGISTERING:
       return { ...state, loadingReg: true, errorReg: '' };
     case NEW_USER_SUCCESS:

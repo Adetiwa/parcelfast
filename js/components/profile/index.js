@@ -14,7 +14,6 @@ import {  destinationChanged,
 
         } from '../../actions/Map';
 import UserAvatar from 'react-native-user-avatar';
-import Spinner from 'react-native-spinkit';
 import {
   Container,
   Header,

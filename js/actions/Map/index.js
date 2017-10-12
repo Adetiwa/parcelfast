@@ -96,15 +96,36 @@ import {
    FETCH_PRICE_ERROR,
    FROM_PAYMENT,
    CHANGE_TOKEN,
+   NETWORK,
+   SELECT_SUPPORT,
+   FETCHING_SUPPORT,
+   FETCH_SUPPORT_GOOD,
+   FETCH_SUPPORT_EMPTY,
+   EMPTY_PREDICTIONS,
+   GETTING_PREDICTION,
   } from '../types';
 
 
+  
+  export const empty_predictions = (val) => {
+    return {
+      type: EMPTY_PREDICTIONS,
+      payload: val
+    };
+};
 
-export const from_where = (val) => {
+  export const from_where = (val) => {
     return {
       type: FROM_PAYMENT,
       payload: val
     };
+};
+
+export const network_change = (val) => {
+  return {
+    type: NETWORK,
+    payload: val
+  };
 };
 
 export const destinationChanged = (text) => {
@@ -178,6 +199,13 @@ export const selectHistory = (history_id) => {
   };
 }
 
+
+export const selectSupport = (support_id) => {
+  return {
+    type: SELECT_SUPPORT,
+    payload: support_id,
+  };
+}
 
 
 
@@ -269,6 +297,7 @@ export const get_name_of_loc = (lat, long) => {
       })
       .then((response) => response.json())
       .then((responseJson) => {
+        dispatch({ type: NETWORK, payload: true });
         let status = responseJson.status;
         if (status === 'OK') {
           //responseJson.predictions.fi
@@ -284,7 +313,7 @@ export const get_name_of_loc = (lat, long) => {
 
       })
       .catch((error) => {
-        console.log(error);
+        dispatch({ type: NETWORK, payload: false });
         dispatch({ type: GET_NAME_OF_LOCATION, payload: "" })
       })
   }
@@ -306,6 +335,8 @@ export const geocodeTheAddress_pickup = (address) => {
       })
       .then((response) => response.json())
       .then((responseJson) => {
+        dispatch({ type: NETWORK, payload: true });
+        
         let status = responseJson.status;
         if (status === 'OK') {
           //responseJson.predictions.fi
@@ -321,7 +352,7 @@ export const geocodeTheAddress_pickup = (address) => {
 
       })
       .catch((error) => {
-        console.log(error);
+        dispatch({ type: NETWORK, payload: false });
         dispatch({ type: ERROR_GEOCODING, payload: "ERROR GEOCODING" })
       })
   }
@@ -341,6 +372,8 @@ export const geocodeTheAddress_dest = (address) => {
       })
       .then((response) => response.json())
       .then((responseJson) => {
+        dispatch({ type: NETWORK, payload: true });
+        
         let status = responseJson.status;
         if (status === 'OK') {
           //responseJson.predictions.fi
@@ -356,21 +389,28 @@ export const geocodeTheAddress_dest = (address) => {
 
       })
       .catch((error) => {
-        console.log(error);
+        dispatch({ type: NETWORK, payload: false });
         dispatch({ type: ERROR_GEOCODING, payload: "Error geocoding" })
       })
   }
 }
 
+function cleanString(input) {
+  input = input.replace(/ /g, '-'); // Replaces all spaces with hyphens.
 
+   return input.replace(/[^A-Za-z0-9\-]/g, ''); // Removes special chars.
+}
 
 /***** Predictions *****/
 
 export const getAddressPrediction = (input) => {
         return(dispatch) => {
+          dispatch({ type: GETTING_PREDICTION, payload: true });
+          //dispatch({ type: EMPTY_PREDICTIONS, payload: true });
+          
           //Required parameters
           var api_key = "AIzaSyCCcOcMglhvXnRsniygV44jmi5QzMdfyVI";
-          fetch('https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+input+'&libraries=places&region=NG&language=pt_BR&key='+api_key, {
+          fetch('https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+cleanString(input)+'&libraries=places&region=NG&language=pt_BR&key='+api_key, {
 
             method: 'POST',
               headers: {
@@ -380,6 +420,9 @@ export const getAddressPrediction = (input) => {
             })
             .then((response) => response.json())
             .then((responseJson) => {
+              dispatch({ type: NETWORK, payload: true });
+              dispatch({ type: GETTING_PREDICTION, payload: false });
+              
               let status = responseJson.status;
               if (status !== 'ZERO_RESULTS') {
                 //responseJson.predictions.fi
@@ -392,13 +435,12 @@ export const getAddressPrediction = (input) => {
 
             })
             .catch((error) => {
-              console.log(error);
+              dispatch({ type: NETWORK, payload: false });
               dispatch({ type: GET_SUGGESTIONS_EMPTY, payload: "Error" })
             })
         }
-
-
-    }
+      }
+    
 
 
 /***** End ****/
@@ -419,7 +461,7 @@ export const loginUser = ({ email, password }) => {
     return (dispatch) => {
         //login user
         dispatch({ type: LOGIN_USER });
-        fetch('https://project.stackonly.com/app/api/user', {
+        fetch('http://parcelfast.ng/app/admin/api/user', {
 
           method: 'POST',
             headers: {
@@ -433,6 +475,8 @@ export const loginUser = ({ email, password }) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
             let status = responseJson.status;
             if (status === 'success') {
               dispatch({ type: LOGIN_USER_SUCCESS, payload: responseJson });
@@ -444,7 +488,7 @@ export const loginUser = ({ email, password }) => {
 
           })
           .catch((error) => {
-            console.log(error);
+            dispatch({ type: NETWORK, payload: false });
             dispatch({ type: LOGIN_USER_ERROR, payload: "Error login in" })
           })
 
@@ -460,7 +504,7 @@ export const getHistory = (userid) => {
     return (dispatch) => {
         //login user
         dispatch({ type: FETCHING_HISTORY });
-        fetch('https://project.stackonly.com/app/api/history', {
+        fetch('http://parcelfast.ng/app/admin/api/history', {
 
           method: 'POST',
             headers: {
@@ -473,6 +517,8 @@ export const getHistory = (userid) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
             if (responseJson.status === 'null') {
               dispatch({ type: FETCH_HISTORY_EMPTY, payload: responseJson });
             } else {
@@ -480,8 +526,42 @@ export const getHistory = (userid) => {
             }
           })
           .catch((error) => {
-            console.log("Error is "+error);
+            dispatch({ type: NETWORK, payload: false });
             dispatch({ type: FETCH_HISTORY_BAD, payload: "Error occured getting history" })
+          })
+      }
+  };
+
+
+  export const getsupport = () => {
+    return (dispatch) => {
+        //login user
+        dispatch({ type: FETCHING_SUPPORT });
+        fetch('http://parcelfast.ng/app/admin/api/support', {
+
+          method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+             // userid: userid,
+            })
+          })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
+            if (responseJson.status === 'null') {
+              dispatch({ type: FETCH_SUPPORT_EMPTY, payload: responseJson });
+            } else {
+              dispatch({ type: FETCH_SUPPORT_GOOD, payload: responseJson });
+            }
+          })
+          .catch((error) => {
+            dispatch({ type: FETCH_SUPPORT_BAD, payload: "Error occured getting history" });
+            dispatch({ type: NETWORK, payload: false });
+       
           })
       }
   };
@@ -492,7 +572,7 @@ export const getHistory = (userid) => {
     return (dispatch) => {
         //login user
         dispatch({ type: FETCHING_HISTORY_SINGLE });
-        fetch('https://project.stackonly.com/app/api/singlehistory', {
+        fetch('http://parcelfast.ng/app/admin/api/singlehistory', {
 
           method: 'POST',
             headers: {
@@ -505,6 +585,8 @@ export const getHistory = (userid) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
             if (responseJson.status === 'null') {
               dispatch({ type: FETCH_HISTORY_EMPTY_SINGLE, payload: responseJson });
             } else {
@@ -513,7 +595,7 @@ export const getHistory = (userid) => {
             }
           })
           .catch((error) => {
-            console.log("Error is "+error);
+            dispatch({ type: NETWORK, payload: false });
             dispatch({ type: FETCH_HISTORY_BAD_SINGLE, payload: "History error" })
           })
       }
@@ -533,7 +615,7 @@ export const fetchPrice = (vehicle, emergency) => {
     return (dispatch) => {
         //login user
         dispatch({ type: FETCHING_PRICES });
-        fetch('https://project.stackonly.com/app/api/price', {
+        fetch('http://parcelfast.ng/app/admin/api/price', {
 
           method: 'POST',
             headers: {
@@ -547,6 +629,8 @@ export const fetchPrice = (vehicle, emergency) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
             let status = responseJson.status;
             if (status === 'success') {
               dispatch({ type: FETCH_PRICE_GOOD, payload: responseJson });
@@ -558,8 +642,9 @@ export const fetchPrice = (vehicle, emergency) => {
 
           })
           .catch((error) => {
-            console.log(error);
             dispatch({ type: FETCH_PRICE_ERROR, payload: true })
+            dispatch({ type: NETWORK, payload: false });
+            
           })
 
 
@@ -580,7 +665,7 @@ export const editUser = (fullname, email, tel, password, token, userid) => {
     return (dispatch) => {
         //login user
         dispatch({ type: EDITTING_USER });
-        fetch('https://project.stackonly.com/app/api/edit', {
+        fetch('http://parcelfast.ng/app/admin/api/edit', {
 
           method: 'POST',
             headers: {
@@ -598,6 +683,8 @@ export const editUser = (fullname, email, tel, password, token, userid) => {
           })
           .then((responsee) => responsee.json())
           .then((responseeJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
             let status = responseeJson.status;
             if (status === 'success') {
               dispatch({ type: EDIT_USER_SUCCESS, payload: responseeJson });
@@ -608,7 +695,7 @@ export const editUser = (fullname, email, tel, password, token, userid) => {
 
           })
           .catch((error) => {
-            console.log(error);
+            dispatch({ type: NETWORK, payload: false });
             dispatch({ type: EDIT_USER_ERROR, payload: "Error editting" })
           })
 
@@ -639,6 +726,8 @@ export const getDistance = (pickup, destination) => {
           .then((responseJson) => {
             let status = responseJson.status;
             if (status === 'OK') {
+              dispatch({ type: NETWORK, payload: true });
+              
               dispatch({ type: DISTANCE_FETCH_SUCCESS, payload: responseJson.rows });
               var a = responseJson.rows;
               var distance = a[0].elements[0].distance.value;
@@ -652,7 +741,8 @@ export const getDistance = (pickup, destination) => {
 
           })
           .catch((error) => {
-            console.log(error);
+            dispatch({ type: NETWORK, payload: false });
+            
             dispatch({ type: DISTANCE_FETCH_ERROR, payload: "Error getting distance" })
           })
 
@@ -776,6 +866,8 @@ export const getRoute = (pickup, destination) => {
   fetch(url)
       .then(response => response.json())
       .then(responseJson => {
+        dispatch({ type: NETWORK, payload: true });
+        
           if (responseJson.routes.length) {
               dispatch({type: DRAW_ROUTE_RAW, payload: responseJson.routes[0].overview_polyline.points });
               dispatch({ type: DRAW_ROUTE, payload: decode(responseJson.routes[0].overview_polyline.points) }); // definition below
@@ -783,6 +875,8 @@ export const getRoute = (pickup, destination) => {
           }
       }).catch(e => {
         //console.warn(e);
+        dispatch({ type: NETWORK, payload: false });
+        
         dispatch({ type: DRAWING_ROUTE_ERROR });
 
       }
@@ -803,7 +897,7 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
     return (dispatch) => {
         //login user
         dispatch({ type: EDITTING_USER });
-        fetch('https://project.stackonly.com/app/api/submit-orders', {
+        fetch('http://parcelfast.ng/app/admin/api/submit-orders', {
 
           method: 'POST',
             headers: {
@@ -843,6 +937,8 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
           })
           .then((responsee) => responsee.json())
           .then((responseeJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
             let status = responseeJson.status;
             if (status === 'Successful') {
               dispatch({ type: ORDER_SUBMIT_SUCCESS, payload: responseeJson });
@@ -855,7 +951,9 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
 
           })
           .catch((error) => {
-            console.log(error);
+            dispatch({ type: NETWORK, payload: false });
+            
+            
             dispatch({ type: ERROR_OVERALL, payload: "error submitting order" })
           })
         }
@@ -868,7 +966,7 @@ export const getCard = (user) => {
   //var array = card.expiry.split('/');
   return (dispatch) => {
       //login user
-      fetch('https://project.stackonly.com/app/api/get-card', {
+      fetch('http://parcelfast.ng/app/admin/api/get-card', {
         method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -880,6 +978,8 @@ export const getCard = (user) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+          dispatch({ type: NETWORK, payload: true });
+          
           if (responseJson.has_card) {
             dispatch({ type: CARD_EXIST, payload: responseJson });
             console.log(JSON.stringify(responseJson));
@@ -889,7 +989,8 @@ export const getCard = (user) => {
           }
         })
         .catch((error) => {
-          console.log("Error is "+error);
+          dispatch({ type: NETWORK, payload: false });
+          
           dispatch({ type: ERROR_GETTING_CARD, payload: "An error occured while getting card" })
         })
     }
@@ -901,7 +1002,7 @@ export const verifyCard = (card, user) => {
   return (dispatch) => {
       //login user
       dispatch({ type: VERYFYING_CARD });
-      fetch('https://project.stackonly.com/app/api/tokenize', {
+      fetch('http://parcelfast.ng/app/admin/api/tokenize', {
 
         method: 'POST',
           headers: {
@@ -919,6 +1020,8 @@ export const verifyCard = (card, user) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+          dispatch({ type: NETWORK, payload: true });
+          
           if (responseJson.status !== 'success') {
             dispatch({ type: BAD_VERIFY, payload: responseJson });
             console.log(JSON.stringify(responseJson));
@@ -928,7 +1031,8 @@ export const verifyCard = (card, user) => {
           }
         })
         .catch((error) => {
-          console.log("Error is "+error);
+          dispatch({ type: NETWORK, payload: false });
+          
           dispatch({ type: ERROR_VERIFY, payload: "An error occured while verifying card" })
         })
     }
@@ -938,7 +1042,7 @@ export const getNewMatch = (id) => {
   return (dispatch) => {
       //login user
       //dispatch({ type: FETCHING_HISTORY_SINGLE });
-      fetch('https://project.stackonly.com/app/api/new-order', {
+      fetch('http://parcelfast.ng/app/admin/api/new-order', {
 
         method: 'POST',
           headers: {
@@ -951,6 +1055,8 @@ export const getNewMatch = (id) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+          dispatch({ type: NETWORK, payload: true });
+          
           if (responseJson.status === 'null') {
             dispatch({ type: NO_NEW_MATCH, payload: true });
             console.log(JSON.stringify(responseJson));
@@ -961,7 +1067,7 @@ export const getNewMatch = (id) => {
           }
         })
         .catch((error) => {
-          console.log("Error is "+error);
+          dispatch({ type: NETWORK, payload: false });
           dispatch({ type: MATCH_ALERT_ERROR, payload: "An error occured while getting match background" })
         })
     }
@@ -971,7 +1077,7 @@ export const getDriver = (id) => {
   return (dispatch) => {
       //login user
       dispatch({ type: CONNECTING_DRIVER, payload: "Connecting you to an available driver!" });
-      fetch('https://project.stackonly.com/app/api/driver', {
+      fetch('http://parcelfast.ng/app/admin/api/driver', {
 
         method: 'POST',
           headers: {
@@ -984,6 +1090,8 @@ export const getDriver = (id) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+          dispatch({ type: NETWORK, payload: true });
+          
           if (responseJson.status === 'null') {
             dispatch({ type: NO_DRIVER, payload: "NO DRIVER IS AVAILABLE AT THE MOMENT :(" });
              } else {
@@ -991,6 +1099,7 @@ export const getDriver = (id) => {
              }
         })
         .catch((error) => {
+          dispatch({ type: NETWORK, payload: false });
           dispatch({ type: ERROR_NETWORK_DRIVER, payload: "AN ERROR OCCURED. PROBABLY YOUR NETWORK" })
         })
     }
@@ -1002,7 +1111,7 @@ export const onChangeToken = (user, token) => {
   return (dispatch) => {
       //login user
       dispatch({ type: CHANGE_TOKEN, payload: token });
-      fetch('https://project.stackonly.com/app/api/fcm-change-token', {
+      fetch('http://parcelfast.ng/app/admin/api/fcm-change-token', {
 
         method: 'POST',
           headers: {
@@ -1016,10 +1125,12 @@ export const onChangeToken = (user, token) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+          dispatch({ type: NETWORK, payload: true });
+          
           console.log("Good!");
         })
         .catch((error) => {
-          console.log('An error occured');
+          dispatch({ type: NETWORK, payload: false });
           //dispatch({ type: ERROR_NETWORK_DRIVER, payload: "AN ERROR OCCURED. PROBABLY YOUR NETWORK" })
         })
     }

@@ -12,8 +12,16 @@ import { EMAIL_CHANGED,
       NEW_USER_SUCCESS,
       NEW_USER_ERROR,
       CANCEL_ERROR_MSG,
+      NETWORK,
      } from '../types';
 
+
+  export const network_change = (val) => {
+    return {
+      type: NETWORK,
+      payload: val
+    };
+  };
 
 export const emailChanged = (text) => {
   return {
@@ -35,7 +43,7 @@ export const register = (firstname, lastname, tel, email, password) => {
   return (dispatch) => {
       //login user
       dispatch({ type: REGISTERING });
-      fetch('https://project.stackonly.com/app/api/register', {
+      fetch('http://parcelfast.ng/app/admin/api/register', {
 
         method: 'POST',
           headers: {
@@ -51,6 +59,8 @@ export const register = (firstname, lastname, tel, email, password) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+          dispatch({ type: NETWORK, payload: true });
+          
           if (responseJson.status === 'success') {
             dispatch({ type: NEW_USER_SUCCESS, payload: responseJson });
             //dispatch(NavigationActions.navigate({ routeName: 'Map' }));
@@ -60,7 +70,7 @@ export const register = (firstname, lastname, tel, email, password) => {
           } 
         })
         .catch((error) => {
-          console.log("Error is "+error);
+          dispatch({ type: NETWORK, payload: false });
           dispatch({ type: NEW_USER_ERROR, payload: "An error occured while getting match background" })
         })
     }
@@ -79,7 +89,7 @@ export const loginUser = ({ email, password }) => {
     return (dispatch) => {
         //login user
         dispatch({ type: LOGIN_USER });
-        fetch('https://project.stackonly.com/app/api/user', {
+        fetch('http://parcelfast.ng/app/admin/api/user', {
 
           method: 'POST',
             headers: {
@@ -93,6 +103,8 @@ export const loginUser = ({ email, password }) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
             let status = responseJson.status;
             if (status === 'success') {
               //AsyncStorage.setItem('user_access_token', responseJson.token);
@@ -106,7 +118,7 @@ export const loginUser = ({ email, password }) => {
 
           })
           .catch((error) => {
-            console.log(error);
+            dispatch({ type: NETWORK, payload: false });
             dispatch({ type: LOGIN_USER_ERROR, payload: responseJson })
           })
 

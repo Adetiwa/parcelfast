@@ -91,9 +91,10 @@ import History from "./components/history";
 import Payment from "./components/payment";
 import SplashPage from "./components/splashscreen";
 import ErrorPage from "./components/error";
-import Test from "./components/test";
+import Test from "./components/test"; 
 import Single from "./components/single";
-//import Jobs from "./components/cron"; 
+import Support from "./components/support";
+import SingleSupport from "./components/SingleSupport";
 
 const AppNavigator = StackNavigator(
 	{
@@ -180,7 +181,8 @@ const AppNavigator = StackNavigator(
 		ErrorPage: {screen: ErrorPage},
 		Test: {screen: Test},
 		Single: {screen: Single},
-		//Jobs: { screen: Jobs },
+		Support: {screen: Support},
+		SingleSupport: { screen: SingleSupport },
 
 	},
 	{

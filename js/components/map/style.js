@@ -46,8 +46,8 @@ export default {
     //alignItems: 'center',
     justifyContent: 'space-between',
 
-  }, 
-  
+  },
+
   okayokayyy: {
     position: 'absolute',
     bottom: 0,
@@ -63,7 +63,7 @@ export default {
     //alignItems: 'center',
     justifyContent: 'space-between',
 
-  }, 
+  },
   iconss: {
     margin: 0,
     padding: 10,
@@ -90,7 +90,7 @@ export default {
   continue: {
     justifyContent: "center",
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 15,
   },
   continueText: {
     color: '#FFF',

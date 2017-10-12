@@ -47,6 +47,8 @@ import History from "./components/history";
 import Orders from "./components/orders";
 import Payment from "./components/payment";
 import Single from "./components/single";
+import Support from "./components/support";
+import SingleSupport from "./components/SingleSupport";
 
 const DrawerExample = DrawerNavigator(
   {
@@ -93,7 +95,8 @@ const DrawerExample = DrawerNavigator(
     Payment: {screen: Payment},
     Orders: { screen: Orders },
     Single: { screen: Single},
-
+    Support: { screen: Support },
+    SingleSupport: { screen: SingleSupport },
   },
   {
     initialRouteName: "Home",

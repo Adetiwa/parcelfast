@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { View, StatusBar, Image, ActivityIndicator, TouchableOpacity} from "react-native";
+import { View,NetInfo, StatusBar, Image, ActivityIndicator, TouchableOpacity} from "react-native";
 
 import { connect } from 'react-redux';
-import { register } from '../../actions/Login';
+import { register,network_change } from '../../actions/Login';
 
 import AndroidBackButton from "react-native-android-back-button";
+import SnackBar from 'react-native-snackbar-dialog';
 
 import {
   Container,
@@ -43,6 +44,7 @@ class Register extends Component {
     this.checkForLog();
   }
 
+
 /*
 {this.props.statusReg && this.getTheFuckOut()}
         
@@ -60,14 +62,22 @@ class Register extends Component {
        
 */
 
+validateEmail = (email) => {
+  var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+};
+
   sendData() {
     this.setState({error: ""});
     if ((this.state.firstname === '') || (this.state.lastname === '') || (this.state.email === '') || (this.state.tel === '') || (this.state.password === '')) {
       this.setState({error: "All inputs are required"});
     } else {
-    //  this.props.save_summary_state(this.state);
-      this.props.register(this.state.firstname, this.state.lastname, this.state.tel, this.state.email, this.state.password);
-    }
+      if (!this.validateEmail(this.state.email)) {
+        this.setState({error: "Enter a Valid Email Address"});
+      } else {
+        this.props.register(this.state.firstname, this.state.lastname, this.state.tel, this.state.email, this.state.password);
+      }
+    } 
     //console.log(JSON.stringify(this.state));
   }
   renderButt() {
@@ -82,7 +92,8 @@ class Register extends Component {
       return (
   
         <TouchableOpacity style = {styles.continue}
-            onPress = {() => this.sendData()} >
+            onPress = {() => this.sendData()}
+          >
             <View style={styles.buttonContainer}>
               <Text style = {styles.continueText}>REGISTER</Text>
             </View>
@@ -90,7 +101,27 @@ class Register extends Component {
       );
     }
   }
+
+  componentWillMount() {
+    NetInfo.isConnected.addEventListener('change', this.handleConnectionChange);
+    
+        NetInfo.isConnected.fetch().done(
+          (isConnected) => {  this.props.network_change(isConnected); }
+        );
+  }
   
+  componentWillUnmount() {
+    NetInfo.isConnected.removeEventListener('change', this.handleConnectionChange);
+}
+
+handleConnectionChange = (isConnected) => {
+       // this.setState({ status: isConnected });
+        this.props.network_change(isConnected);
+        //console.log(`is connected: ${this.state.status}`);
+}
+
+
+
   checkForLog() {
     if (this.props.statusReg) {
       this.props.navigation.navigate('Map');
@@ -129,6 +160,7 @@ class Register extends Component {
                 <Input
                 underlineColorAndroid= 'transparent'
                 disabled = {this.props.loadingReg ? true : false}
+                editable={this.props.loadingReg ? false : true}
                 value={this.state.firstname}
                 //onSubmitEditing= {() => this.tel.focus()}
                 returnKeyType = "next"
@@ -141,6 +173,7 @@ class Register extends Component {
                 <Label>Lastname</Label>
                 <Input
                 underlineColorAndroid= 'transparent'
+                editable={this.props.loadingReg ? false : true}
                 disabled = {this.props.loadingReg ? true : false}
                 value={this.state.last}
                 //onSubmitEditing= {() => this.tel.focus()}
@@ -156,6 +189,7 @@ class Register extends Component {
               <Input
                 underlineColorAndroid= 'transparent'
                 value={this.state.email}
+                editable={this.props.loadingReg ? false : true}
                 keyboardType = "email-address"
                 disabled = {this.props.loadingReg ? true : false}
                 //onSubmitEditing= {() => this.tel.focus()}
@@ -172,6 +206,7 @@ class Register extends Component {
                 keyboardType = "phone-pad"
                 disabled = {this.props.loadingReg ? true : false}
                 //onSubmitEditing= {() => this.tel.focus()}
+                editable={this.props.loadingReg ? false : true}
                 returnKeyType = "next"
                 onChangeText = {(input)=>this.setState({tel: input})}
                 placeholderTextColor="#CCC"
@@ -185,6 +220,7 @@ class Register extends Component {
                 underlineColorAndroid= 'transparent'
                 disabled = {this.props.loadingReg ? true : false}
                 value={this.state.password}
+                editable={this.props.loadingReg ? false : true}
                 onSubmitEditing= {() => this.tel.focus()}
                 returnKeyType = "next"
                 onChangeText = {(input)=>this.setState({password: input})}
@@ -198,10 +234,34 @@ class Register extends Component {
           
           </Form>
             {this.state.error !== '' && 
-            alert(this.state.error)
+            
+            <Text
+              style = {{
+                fontSize: 15,
+                marginTop: 10,
+                alignSelf: 'center',
+                color: '#f62e2e',
+              }}>{this.state.error}</Text>
+
+
             }
        </Content>
         </View>
+        {!this.props.network_connected &&
+        SnackBar.show('Network Unavailable', {
+        confirmText: 'Retry',
+        duration: 100000,
+        onConfirm: () => {
+          //console.log('Thank you')
+          //
+          NetInfo.isConnected.fetch().done(
+            (isConnected) => {  this.props.network_change(isConnected); }
+          );
+        }
+      })
+      }
+      {this.props.network_connected && SnackBar.dismiss()}
+  
       </Container>
     );
   }
@@ -209,17 +269,18 @@ class Register extends Component {
 const head = require("../../../img/head-logo.png");
 
 const mapStateToProps = ({ auth }) => {
-  const { email, password, errorReg, loadingReg, statusReg } = auth;
+  const { email, password,network_connected, errorReg, loadingReg, statusReg } = auth;
   return {
     email,
     password,
     errorReg,
     loadingReg,
-
+    network_connected,
     statusReg,
   };
 };
 
 export default connect(mapStateToProps, {
-  register
+  register,
+  network_change
 })(Register);

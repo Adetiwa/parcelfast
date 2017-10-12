@@ -10,12 +10,13 @@ import {
   StyleSheet,
   Image,
   ActivityIndicator,
-  
+  NetInfo,
   ScrollView,
   StatusBar,
 
 } from 'react-native';
 import { connect } from 'react-redux';
+import SnackBar from 'react-native-snackbar-dialog';
 import {  destinationChanged,
           select_vehicle,
           hoverondesc,
@@ -31,6 +32,7 @@ import {  destinationChanged,
           save_summary_state,
           selectHistory,
           getHistory,
+          network_change,
 
         } from '../../actions/Map';
         import {
@@ -60,7 +62,7 @@ import TimeAgo from 'react-native-timeago';
 import TabOne from "../tab/tabOne";
 import TabTwo from "../tab/tabTwo";
 import TabThree from "../tab/tabThree";
-
+import Communications from 'react-native-communications';
 //import Button from 'react-native-button';
 import * as Animatable from 'react-native-animatable'
 
@@ -73,20 +75,31 @@ const datas = [];
 const maxlimit = 20;
 const hold = true;
 class History extends Component {
-
+  constructor(props) {
+    super(props);
+    this.state = {
+     
+      status: true,
+    }
+  
+  }
 componentWillMount(){
   this.props.getHistory(this.props.user.userid);
+
+  NetInfo.isConnected.addEventListener('change', this.handleConnectionChange);
   
+      NetInfo.isConnected.fetch().done(
+        (isConnected) => {  this.props.network_change(isConnected); }
+      );
 }
 
 componentDidMount() {
   this.haha();
-  //console.log("Data is "+ JSON.stringify(datas));
-}
+  }
 //
 selectHis(data) {
   this.props.selectHistory(data);
-  
+
   this.props.navigation.navigate('Single');
 }
 
@@ -99,6 +112,17 @@ haha() {
         }
 }
 
+componentWillUnmount() {
+    NetInfo.isConnected.removeEventListener('change', this.handleConnectionChange);
+}
+
+handleConnectionChange = (isConnected) => {
+       // this.setState({ status: isConnected });
+        this.props.network_change(isConnected);
+        //console.log(`is connected: ${this.state.status}`);
+}
+
+
 getColor(status) {
   let color = "";
   if (status === "pending") {
@@ -108,12 +132,62 @@ getColor(status) {
   }
   return color;
 }
+
+
+
+textRenderer(text) {
+  if (text === 'null') {
+    return (
+      <View style = {{
+        backgroundColor: '#009AD5',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>Dispatcher yet to commence trip</Text>
+    </View>
+    )
+  } else if(text === 'pickup') {
+    return (
+      <View style = {{
+        backgroundColor: '#009AD5',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>Dispatcher heading to pickup</Text>
+    </View>
+    )
+  }  else if(text === 'dropoff') {
+    return (
+      <View style = {{
+        backgroundColor: '#43496A',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>Dispatcher heading to dropoff</Text>
+    </View>
+    )
+  }  else if(text === 'complete') {
+    return (
+      <View style = {{
+        backgroundColor: '#27D9A1',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>Delivery completed!</Text>
+    </View>
+    )
+  }
+}
   render () {
     return (
-        
-        
+
+
         <Container style={styles.container}>
-         
+
         <AndroidBackButton
           onPress={() => this.props.navigation.navigate('Map')}
          />
@@ -143,29 +217,29 @@ getColor(status) {
           justifyContent: 'center',
           backgroundColor: '#FFF',
           zIndex: 10,
-          
+
         }}>
         <ActivityIndicator style = {{zIndex: 12,}}size='small' />
         </View>
     }
-        
+    
       {this.props.history_empty === false && !this.props.fetching &&
-      
+
       <Content padder>
-     
-       
+
+
         <Animatable.View animation='pulse'>
- 
+          
                       <List
 
                     						dataArray={this.props.history}
                     						renderRow={data =>
-                    					 <Card 
+                    					 <Card
                                style={styles.mb}>
                                   <TouchableOpacity
                                   onPress={() =>  this.selectHis(data.o_id)}
                                   >
-                                  
+
                                    <CardItem cardBody>
                                      <Image
                                        style={{
@@ -177,9 +251,9 @@ getColor(status) {
                                        source={{uri: data.url}}
                                      />
                                    </CardItem>
-                           
+
                                    <CardItem style={{ paddingVertical: 0 }}>
-                                     
+
                                      <Body>
                                        <Button iconLeft transparent>
                                        <View style = {{
@@ -194,8 +268,8 @@ getColor(status) {
                                             ₦{data.amount}</Text>
 
                                             <Text>
-                                           { ((data.user_to).length > maxlimit) ? 
-                                              (((data.user_to).substring(0,maxlimit-3)) + '...') : 
+                                           { ((data.user_to).length > maxlimit) ?
+                                              (((data.user_to).substring(0,maxlimit-3)) + '...') :
                                               data.user_to }</Text>
                                        </Button>
                                      </Body>
@@ -206,8 +280,30 @@ getColor(status) {
                                        }}
                                          ><TimeAgo time={data.date} /></Text>
                                      </Right>
+
                                    </CardItem>
                                    </TouchableOpacity>
+                                   {data.order_status !== 'pending' &&
+                                   <View style = {{
+                                     paddingBottom: 5,
+                                     paddingLeft: 5,
+                                     flexDirection: 'row',
+                                     justifyContent: 'space-between'
+                                   }}>
+                                   {this.textRenderer(data.driver_status)}
+                                   <TouchableOpacity
+                                     onPress={() => Communications.phonecall(data.driver_tel, true)}>
+                                     <Icon style = {{color: '#555', paddingRight: 10, fontSize: 20}}
+                                     name = "call" />
+                                   </TouchableOpacity>
+                                   <TouchableOpacity
+                                     onPress={() => Communications.text(data.driver_tel)}>
+                                     <Icon style = {{color: '#555', paddingRight: 10, fontSize: 20}}
+                                     name = "text" />
+                                   </TouchableOpacity>
+                                 </View>
+
+                                  }
                                  </Card>
 
                     							}
@@ -223,7 +319,7 @@ getColor(status) {
                                 alignItems: 'center',
                                 backgroundColor: '#FFF',
                                 flex: 1,
-                                
+
                               }}>
                               <View>
                                 <Image source = {empty}/>
@@ -235,11 +331,24 @@ getColor(status) {
                                   fontSize: 14,
                                 }}> YOU HAVE NO HISTORY </Text>
                               </View>
-                              
+
                               </View>
       }
-    
-
+      {!this.props.network_connected &&
+        SnackBar.show('Network Unavailable', {
+        confirmText: 'Retry',
+        duration: 100000,
+        onConfirm: () => {
+          //console.log('Thank you')
+          //
+          NetInfo.isConnected.fetch().done(
+            (isConnected) => {  this.props.network_change(isConnected); }
+          );
+        }
+      })
+      }
+      {this.props.network_connected && SnackBar.dismiss()}
+     
 </Container>
     );
   }
@@ -262,6 +371,7 @@ const mapStateToProps = ({ map }) => {
     longitudeDelta,
     estimated_price,
     distanceInKM,
+    network_connected,
     distanceInHR,
     prices,history_empty,
     done,fetching,
@@ -274,6 +384,7 @@ const mapStateToProps = ({ map }) => {
     error,
     distanceInKM,
     distanceInHR,
+    network_connected,
     hoveron,
     distance_info,fetching,
     loading,
@@ -303,6 +414,7 @@ export default connect(mapStateToProps, {
   getDistance,
   calculatePrice,
   StorePrice,
+  network_change,
   getHistory,
   selectHistory,
 })(History);

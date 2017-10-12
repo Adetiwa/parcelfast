@@ -16,7 +16,9 @@ const {width, height} = Dimensions.get("window");
 const SCREEN_WIDTH = width;
 const SCREEN_HEIGHT = height;
 
-const image = require("../../../img/head-logo.png");
+const image = require("../../../img/flashscreen.png");
+const text = require("../../../img/parcelfasttext.png");
+
 const USER_TOKEN = "user_token";
 
 
@@ -64,6 +66,16 @@ class SplashPage extends Component {
              // this.props.setUser(token);
              // this.props.navigation.navigate('Map');
             //}
+            /*
+                <Text style = {{
+                  fontWeight: '800',
+                  fontSize: 50,
+                  fontFamily: 'open-sans bold',
+                  color: '#FFF',
+                  textAlign: 'center',
+                }}> ParcelFast </Text>
+
+                */
 
 
           //}
@@ -77,22 +89,27 @@ class SplashPage extends Component {
               style = {{
                   alignContent: 'center',
                   justifyContent: 'center',
+                  flexDirection: 'column'
+                }} >
+                <View  style = {{
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 10,
+                  marginLeft: SCREEN_WIDTH/20,
                 }} >
                 <Image
+                style = {{
+                  resizeMode: 'contain',
+                
+                }}
                 source={image}/>
+                </View>
 
+                
+                </View>
                 </View>
 
 
-                <Text style = {{
-                  fontWeight: '800',
-                  fontSize: 50,
-                  //fontFamily: 'HelveticaNeue-Bold',
-                  color: '#FFF',
-                  textAlign: 'center',
-                }}> ParcelFast </Text>
-
-            </View>
         );
     }
 }

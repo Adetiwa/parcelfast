@@ -57,6 +57,7 @@ import {
   STATIC_IMAGE_SUCCESS,
   STATIC_IMAGE_ERROR,
   SELECT_HISTORY,
+  SELECT_SUPPORT,
   LOGOUT,
   MATCH_ALERT_ERROR,
   MATCH_ALERT,
@@ -75,6 +76,7 @@ import {
   GOOD_VERIFY,
   ERROR_VERIFY,
   CARD_EXIST,
+  NETWORK,
   NO_CARD,
   ERROR_GETTING_CARD,
   CHANGE_TYPE,
@@ -83,7 +85,12 @@ import {
   FETCH_PRICE_ERROR,
   FROM_PAYMENT,
   CHANGE_TOKEN,
-} from '../../actions/types';
+  FETCHING_SUPPORT,
+  FETCH_SUPPORT_GOOD,
+  FETCH_SUPPORT_EMPTY,
+  EMPTY_PREDICTIONS,
+  GETTING_PREDICTION,
+ } from '../../actions/types';
 
 import { Dimensions } from "react-native";
 const {width, height} = Dimensions.get("window");
@@ -158,13 +165,17 @@ const INITIAL_STATE =
     scheduled: null,
     done: false,
     history: {},
+    support: null,
     //history_single,
     fetching: false,
     history_empty: false,
     history_error: false,
+    support_empty: false,
+    support_error: false,
     screenshot: null,
     raw: null,
     selected: null,
+    selected_support: null,
     history_single: null,
     history_empty_single: null,
     match_alert: null,
@@ -186,11 +197,18 @@ const INITIAL_STATE =
     last_4: 0,
     from_payment: false,
     fcm_token: null,
+    network_connected: true,
+    loading_prediction: false,
+    
 }
 
 export default (state = INITIAL_STATE, action) => {
   console.log(action);
   switch(action.type) {
+  case GETTING_PREDICTION:
+    return {...state, loading_prediction: action.payload };
+  case NETWORK: 
+    return {...state, network_connected: action.payload };
   case CHANGE_TOKEN:
     return { ...state, fcm_token: action.payload };
   case FROM_PAYMENT:
@@ -264,6 +282,8 @@ export default (state = INITIAL_STATE, action) => {
         predictions: null,
         current_hover: 'pickup',
       };
+    case EMPTY_PREDICTIONS: 
+        return {...state, predictions: null};
     case NEW_USER_SUCCESS:
       return { ...state,
         ...INITIAL_STATE,
@@ -526,6 +546,7 @@ export default (state = INITIAL_STATE, action) => {
         history_empty_single: null,
         match_alert: null,
         no_new_match: true,
+        support_empty: false,
         match_error: '',
         driver_message: '',
         driver_available: false,
@@ -536,7 +557,7 @@ export default (state = INITIAL_STATE, action) => {
         load: false,
 
       };
-    case SCREEN_SHOT:
+     case SCREEN_SHOT:
       return {...state, screenshot: action.payload };
 
     case DRAW_ROUTE_RAW:
@@ -551,7 +572,14 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, history: action.payload, fetching: false, };
     case FETCH_HISTORY_EMPTY:
       return { ...state, history_empty: true, fetching: false, };
-    case FETCH_HISTORY_BAD:
+    case FETCHING_SUPPORT:
+      return { ...state, fetching: true, support_empty: false };
+    case FETCH_SUPPORT_GOOD:
+      return { ...state, support: action.payload, fetching: false, };
+    case FETCH_SUPPORT_EMPTY:
+      return { ...state, support_empty: true, fetching: false, };
+   
+      case FETCH_HISTORY_BAD:
       return { ...state, history_error: true, fetching: false, };
     case FETCHING_HISTORY_SINGLE:
       return { ...state, fetching: true };
@@ -563,6 +591,8 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, history_error: true };
     case SELECT_HISTORY:
       return { ...state, selected: action.payload };
+    case SELECT_SUPPORT:
+      return { ...state, selected_support: action.payload };
     case LOGOUT:
       return { ...state, ...INITIAL_STATE };
     default:

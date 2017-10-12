@@ -9,7 +9,7 @@ import { destinationChanged,
           getAddressPrediction,
           geocodeTheAddress_pickup,
           geocodeTheAddress_dest,
-          getDistance,
+          getDistance,empty_predictions,
           getRoute,
         } from '../../actions/Map';
 import { View, Image, Dimensions, Animated, PermissionsAndroid,
@@ -75,15 +75,17 @@ class Header_Search extends Component {
 
 
   onDestChange(text) {
-    this.props.destinationChanged(text);
+    //this.props.empty_predictions(true);
     this.props.getAddressPrediction(text);
+    this.props.destinationChanged(text);
     //this.props.geocodeTheAddress_dest(this.props.destination);
 
   }
 
   onPickupChange(text) {
-    this.props.pickupChanged(text);
+    //this.props.empty_predictions(true);
     this.props.getAddressPrediction(text);
+    this.props.pickupChanged(text);
     //this.props.geocodeTheAddress_pickup(this.props.destination);
   }
 
@@ -409,7 +411,7 @@ export default connect(mapStateToProps, {
   select_vehicle,
   pickupChanged,
   input_everything,
-  get_name_of_loc,
+  get_name_of_loc,empty_predictions,
   getAddressPrediction,
   geocodeTheAddress_pickup,
   geocodeTheAddress_dest,
