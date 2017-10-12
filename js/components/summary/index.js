@@ -233,7 +233,7 @@ class Summary extends Component {
                   onPress = {() => this.placeOrder()}
                   disabled = {this.props.estimated_price === 0 && (this.props.fetch_price_error === true) ? true : false} >
                   <View style={styles.buttonContainer}>
-                    <Text style = {styles.continueText}>CONFIRM</Text>
+                    <Text style = {styles.continueText}>DELIVER</Text>
                   </View>
                 </TouchableOpacity>
               </View>

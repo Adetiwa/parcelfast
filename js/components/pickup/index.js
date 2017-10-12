@@ -108,8 +108,10 @@ async price() {
 }
 
 sendData() {
+   this.setState({error: ""});
   if ((this.state.pick_up_name === '') || (this.state.pick_up_tel === '') || (this.state.drop_off_name === '') || (this.state.drop_off_tel === '')) {
     this.setState({error: "All inputs are required"});
+    console.log(JSON.stringify(this.state));
   } else {
     this.props.save_summary_state(this.state);
     this.props.navigation.navigate('Summary');
@@ -142,8 +144,8 @@ sendData() {
 
         <Animatable.View animation='pulse'  style ={styles.mainContainer}>
         <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-        <Content>
-          <View
+        <Form>
+        <View
               style = {{
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -174,9 +176,8 @@ sendData() {
             <Item floatingLabel>
             <Label>Tel of Pickup collector</Label>
             
-              <TextInput
+              <Input
               underlineColorAndroid= 'transparent'
-              onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
               style = {{
               fontSize: 15,
@@ -194,7 +195,7 @@ sendData() {
 
             <Item floatingLabel>
             <Label>Name of Drop-off collector</Label>
-              <TextInput
+              <Input
               underlineColorAndroid= 'transparent'
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
@@ -213,7 +214,7 @@ sendData() {
 
             <Item floatingLabel>
             <Label>Tel of Drop-off collector</Label>
-              <TextInput
+              <Input
               underlineColorAndroid= 'transparent'
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
@@ -233,7 +234,7 @@ sendData() {
 
             <Item floatingLabel>
             <Label>Extra Comments (optional)</Label>
-              <TextInput
+              <Input
               underlineColorAndroid= 'transparent'
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
@@ -266,8 +267,8 @@ sendData() {
               color: '#f62e2e',
             }}>{this.state.error}</Text>
           </View>
-        </Content>
-        </KeyboardAvoidingView>
+        </Form>
+         </KeyboardAvoidingView>
         </Animatable.View>
 
 
