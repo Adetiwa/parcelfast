@@ -21,7 +21,7 @@ import {  destinationChanged,
 
 import { View, NetInfo, Image,ActivityIndicator, StatusBar, TextInput,  Dimensions, Platform , TouchableOpacity} from "react-native";
 import AndroidBackButton from "react-native-android-back-button";
-import SnackBar from 'react-native-snackbar-dialog';
+''
 
 import {
   Container,
@@ -231,9 +231,9 @@ class Summary extends Component {
               <View style={styles.confirmButton}>
                 <TouchableOpacity style = {styles.continue}
                   onPress = {() => this.placeOrder()}
-                  disabled = {this.props.estimated_price === 0 && (this.props.fetch_price_error === true) ? true : false} >
+                  disabled = {this.props.estimated_price === null && (this.props.fetch_error === true) ? true : false} >
                   <View style={styles.buttonContainer}>
-                    <Text style = {styles.continueText}>DELIVER</Text>
+                    <Text style = {styles.continueText}>{this.props.estimated_price === null && (this.props.fetch_error === true) ? 'ERROR OCCURED !' : 'DELIVER'}</Text>
                   </View>
                 </TouchableOpacity>
               </View>
@@ -244,22 +244,7 @@ class Summary extends Component {
 
 
         </View>
-        {!this.props.network_connected &&
-        SnackBar.show('Network Unavailable', {
-        confirmText: 'Retry',
-        duration: 100000,
-        onConfirm: () => {
-          //console.log('Thank you')
-          //
-          NetInfo.isConnected.fetch().done(
-            (isConnected) => {  this.props.network_change(isConnected); }
-          );
-        }
-      })
-      }
-      {this.props.network_connected && SnackBar.dismiss()}
-  
-      </Container>
+        </Container>
     );
   }
 }

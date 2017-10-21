@@ -32,7 +32,7 @@ import { View, Image, NetInfo,  Dimensions, Animated, PermissionsAndroid,
   Platform, TextInput,AsyncStorage,Easing, StatusBar, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { ConnectivityRenderer, withNetworkConnectivity } from 'react-native-offline';
-import SnackBar from 'react-native-snackbar-dialog';
+
 
 import Header_Search from './header_search';
 import Location from "./location_result";
@@ -269,7 +269,7 @@ async  componentDidMount() {
      if (!this.props.hoveron){
        this.renderProps();
      }
-     if (this.props.fcm_token !== null) {
+     if (this.props.fcm_token === null) {
      try{
        let result = await FCM.requestPermissions({badge: false, sound: true, alert: true});
      } catch(e){
@@ -1127,17 +1127,7 @@ dist() {
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
         />
-        {!this.props.network_connected && 
-        SnackBar.show('Network unavailable', {
-          confirmText: 'Retry',
-          duration: 8000000,
-          onConfirm: () => {
-            NetInfo.isConnected.fetch().done(
-            (isConnected) => { this.props.network_change(isConnected); console.log('Network status is '+ isConnected);}
-          );
-          }
-        })
-        }
+               
 
 
 

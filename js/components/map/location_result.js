@@ -131,9 +131,10 @@ class Location extends Component {
                     <AndroidBackButton
                         onPress={() => this.props.input_everything()}
                        />
+                       {this.haha()}
+                  
                        {this.props.loading_prediction === false ?
                        
-                      
                     <List
 
                     						dataArray={datas}

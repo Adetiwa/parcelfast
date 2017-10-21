@@ -103,6 +103,7 @@ import {
    FETCH_SUPPORT_EMPTY,
    EMPTY_PREDICTIONS,
    GETTING_PREDICTION,
+   DEL_FCM_TOKEN,
   } from '../types';
 
 
@@ -156,12 +157,49 @@ export const save_summary_state = (data) => {
     }
 }
 
+export const clearEverything = (fcm_token) => {
+ 
+  return(dispatch) => {
+    fetch('http://parcelfast.ng/app/admin/api/deltoken', {
+
+      method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fcm_token: fcm_token,
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        dispatch({ type: DEL_FCM_TOKEN, payload: true });
+        let status = responseJson.status;
+        if (status === 'success') {
+          dispatch({ type: LOGOUT, payload: true });
+          //this.props.navigation.navigate('Profile', {name: 'Lucy'})
+          //dispatch(NavigationActions.navigate({ routeName: 'Map' }));
+        } else {
+          dispatch({ type: LOGOUT, payload: true });
+          
+        }
+
+      })
+      .catch((error) => {
+        dispatch({ type: NETWORK, payload: false });
+        dispatch({ type: LOGOUT, payload: true });
+        
+    })
+  }
+};
+/*
 export const clearEverything = () => {
   return {
     type: LOGOUT,
     payload: true
   };
 };
+*/
 
 export const pickupChanged = (text) => {
   return {
@@ -305,6 +343,7 @@ export const get_name_of_loc = (lat, long) => {
           var address = a[0].formatted_address;
 
           dispatch({type: GET_NAME_OF_LOCATION, payload: address })
+          dispatch({ type: NETWORK, payload: true });
           //this.props.navigation.navigate('Profile', {name: 'Lucy'})
           //dispatch(NavigationActions.navigate({ routeName: 'Map' }));
         } else {
@@ -346,6 +385,7 @@ export const geocodeTheAddress_pickup = (address) => {
           console.log('NEw - Long - Lat - is -'+ JSON.stringify(long_lat));
 
           dispatch({type: PICKUP_LONG_LAT_RESET, payload: long_lat });
+        
         } else {
           dispatch({ type: ERROR_GEOCODING, payload: responseJson.status });
         }

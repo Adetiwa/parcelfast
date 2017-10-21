@@ -90,6 +90,7 @@ import {
   FETCH_SUPPORT_EMPTY,
   EMPTY_PREDICTIONS,
   GETTING_PREDICTION,
+  DEL_FCM_TOKEN,
  } from '../../actions/types';
 
 import { Dimensions } from "react-native";

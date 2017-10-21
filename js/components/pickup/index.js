@@ -137,7 +137,7 @@ sendData() {
             </Button>
           </Left>
           <Body>
-            <Title style = {{fontSize: 15, color: '#888', fontWeight: '100'}}> <Image source = {pickup}/> Pickup Info </Title>
+            <Title style = {{fontSize: 15, color: '#888', fontWeight: '100'}}> <Image source = {pickup}/> Delivery Info </Title>
           </Body>
           <Right />
         </Header>
@@ -154,11 +154,11 @@ sendData() {
               }}
               >
             
-            <Item floatingLabel>
-            <Label>Name of Pickup collector</Label>
+            <Item>
               <Input
               underlineColorAndroid= 'transparent'
               value={this.state.pick_up_name}
+              placeholder="Name of Pickup collector"
               style = {{
               fontSize: 15,
               //fontWeight: 0,
@@ -173,11 +173,10 @@ sendData() {
             </Item>
 
 
-            <Item floatingLabel>
-            <Label>Tel of Pickup collector</Label>
-            
+            <Item>
               <Input
               underlineColorAndroid= 'transparent'
+              placeholder="Tel of Pickup collector"
               returnKeyType = "next"
               style = {{
               fontSize: 15,
@@ -193,10 +192,10 @@ sendData() {
               />
             </Item>
 
-            <Item floatingLabel>
-            <Label>Name of Drop-off collector</Label>
+            <Item>
               <Input
               underlineColorAndroid= 'transparent'
+              placeholder="Name of Drop-off collector"
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
               style = {{
@@ -212,10 +211,10 @@ sendData() {
               />
             </Item>
 
-            <Item floatingLabel>
-            <Label>Tel of Drop-off collector</Label>
+            <Item>
               <Input
               underlineColorAndroid= 'transparent'
+              placeholder="Tel of Drop-off collector"
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"
               style = {{
@@ -232,9 +231,9 @@ sendData() {
               />
             </Item>
 
-            <Item floatingLabel>
-            <Label>Extra Comments (optional)</Label>
+            <Item>
               <Input
+              placeholder="Extra Comments (optional)"
               underlineColorAndroid= 'transparent'
               //onSubmitEditing= {() => this.tel.focus()}
               returnKeyType = "next"

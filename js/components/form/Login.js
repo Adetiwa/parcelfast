@@ -3,7 +3,7 @@ import { View, Image, NetInfo, StatusBar, ActivityIndicator, TouchableOpacity} f
 import { connect } from 'react-redux';
 import { emailChanged, passwordChanged, loginUser, network_change } from '../../actions/Login';
 import AndroidBackButton from "react-native-android-back-button";
-import SnackBar from 'react-native-snackbar-dialog';
+
 
 import {
   Container,
@@ -174,20 +174,6 @@ checkForLog() {
 
         </Content>
         </View>
-        {!this.props.network_connected &&
-        SnackBar.show('Network Unavailable', {
-        confirmText: 'Retry',
-        duration: 100000,
-        onConfirm: () => {
-          //console.log('Thank you')
-          //
-          NetInfo.isConnected.fetch().done(
-            (isConnected) => {  this.props.network_change(isConnected); }
-          );
-        }
-      })
-      }
-      {this.props.network_connected && SnackBar.dismiss()}
   
       </Container>
     );

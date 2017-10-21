@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Image, View,Platform, StatusBar,AsyncStorage,Text, Dimensions } from "react-native";
+import { Image, View,Platform,Animated,Easing, StatusBar,AsyncStorage,Text, Dimensions } from "react-native";
 import { connect } from 'react-redux';
 import {  destinationChanged,
           select_vehicle,
@@ -11,13 +11,12 @@ import {  destinationChanged,
           setUser,
 
         } from '../../actions/Map';
-import PubNub from 'pubnub';
 const {width, height} = Dimensions.get("window");
 const SCREEN_WIDTH = width;
 const SCREEN_HEIGHT = height;
 
-const image = require("../../../img/flashscreen.png");
-const text = require("../../../img/parcelfasttext.png");
+const image = require("../../../img/logomydrawing.png");
+const text = require("../../../img/parcelfastieejtext.png");
 
 const USER_TOKEN = "user_token";
 
@@ -33,9 +32,17 @@ class SplashPage extends Component {
 
     }
 
+   componentWillMount() {
+    this.animatedValue = new Animated.Value(0);
+  } 
+
   async componentDidMount() {
 
         var navigator = this.props.navigator;
+        setTimeout (() => {
+          this.callanimate();
+        }, 1800);
+       
         setTimeout (() => {
           const user = AsyncStorage.getItem(USER_TOKEN)
           .then((data)=> {
@@ -56,53 +63,62 @@ class SplashPage extends Component {
             }
           })
 
-
-          //load = async () => {
-            //const token = AsyncStorage.getItem('user_access_token');
-            //console.log("TOken is "+JSON.stringify(token));
-            //if (token == null) {
-              //this.props.navigation.navigate('Home');
-            //} else {
-             // this.props.setUser(token);
-             // this.props.navigation.navigate('Map');
-            //}
-            /*
-                <Text style = {{
-                  fontWeight: '800',
-                  fontSize: 50,
-                  fontFamily: 'open-sans bold',
-                  color: '#FFF',
-                  textAlign: 'center',
-                }}> ParcelFast </Text>
-
-                */
+            
 
 
-          //}
         }, 2000);
+      
+     
+    }
+
+    callanimate() {
+      Animated.timing(this.animatedValue, {
+        toValue: 2000,
+        duration: 2000,
+        easing: Easing.bounce,
+        //easing: Easing.inOut(Easing.ease),
+      }).start();
     }
     render () {
+        const animatedStyle = {
+          transform: [
+            { translateX: this.animatedValue },
+          ]
+        }
         return (
             <View style={{flex: 1, backgroundColor: '#0397dd', alignItems: 'center', justifyContent: 'center'}}>
               <StatusBar backgroundColor='#0397dd' barStyle='light-content' />
               <View
               style = {{
-                  alignContent: 'center',
-                  justifyContent: 'center',
+                 
                   flexDirection: 'column'
                 }} >
-                <View  style = {{
+                
+                <Animated.View  
+                style = {[{
                   alignContent: 'center',
                   justifyContent: 'center',
-                  marginBottom: 10,
-                  marginLeft: SCREEN_WIDTH/20,
-                }} >
+                  marginBottom: 20,
+                  marginLeft: '17%',
+                }, animatedStyle]}>
                 <Image
                 style = {{
                   resizeMode: 'contain',
                 
                 }}
                 source={image}/>
+                </Animated.View>
+                
+                <View  style = {{
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                }} >
+                <Image
+                style = {{
+                  resizeMode: 'contain',
+                
+                }}
+                source={text}/>
                 </View>
 
                 

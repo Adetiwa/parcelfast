@@ -4,10 +4,11 @@ import React, { Component } from "react";
 import {
   AppRegistry,
   StyleSheet,
-  View,
+  View,BackAndroid,
   TouchableOpacity,
   Text,
 } from 'react-native';
+import AndroidBackButton from "react-native-android-back-button";
 import { Examples, NavigationBar, Button, Icon, Title } from '@shoutem/ui';
 import styless from "./styles";
 import { connect } from 'react-redux';
@@ -29,13 +30,15 @@ var BottomScreen = require('./BottomScreen');
 class Home extends Component {
   
   componentWillMount() {
-    this.props.clearEverything();
+    this.props.clearEverything(this.props.fcm_token);
   }
 
   render() {
     return (
       <View style={styles.container}>
-      
+        <AndroidBackButton
+          onPress={() => BackAndroid.exitApp()}
+         />
         <BottomScreen style={styles.viewpager}/>
 
         <View style = {styless.buttons}>
@@ -76,6 +79,7 @@ const mapStateToProps = ({ map }) => {
     longitude,
     latitudeDelta,
     longitudeDelta,
+    fcm_token,
     edit_progress,
     error, region,
     edit_error, user, loading, status } = map;
@@ -95,6 +99,7 @@ const mapStateToProps = ({ map }) => {
     longitudeDelta,
     edit_progress,
     edit_error,
+    fcm_token,
   };
 };
 

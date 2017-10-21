@@ -16,7 +16,7 @@ import {
 
 } from 'react-native';
 import { connect } from 'react-redux';
-import SnackBar from 'react-native-snackbar-dialog';
+
 import {  destinationChanged,
           select_vehicle,
           hoverondesc,
@@ -334,21 +334,7 @@ textRenderer(text) {
 
                               </View>
       }
-      {!this.props.network_connected &&
-        SnackBar.show('Network Unavailable', {
-        confirmText: 'Retry',
-        duration: 100000,
-        onConfirm: () => {
-          //console.log('Thank you')
-          //
-          NetInfo.isConnected.fetch().done(
-            (isConnected) => {  this.props.network_change(isConnected); }
-          );
-        }
-      })
-      }
-      {this.props.network_connected && SnackBar.dismiss()}
-     
+    
 </Container>
     );
   }

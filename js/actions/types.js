@@ -126,3 +126,4 @@ export const FETCH_SUPPORT_EMPTY = "fetch_support_empty";
 
 export const EMPTY_PREDICTIONS = "empty_predictions";
 export const GETTING_PREDICTION = "getting_predications";
+export const DEL_FCM_TOKEN = "del_fcm_token";
