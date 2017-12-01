@@ -4,6 +4,7 @@ import Geocoder from 'react-native-geocoding';
 import RNGooglePlaces from "react-native-google-places";
 //import RNFetchBlob from 'react-native-fetch-blob';
 import { Dimensions } from "react-native";
+
 const {width, height} = Dimensions.get("window");
 const ASPECT_RATIO = width/height;
 
@@ -13,10 +14,22 @@ Geocoder.setApiKey('AIzaSyCCcOcMglhvXnRsniygV44jmi5QzMdfyVI'); // use a valid AP
 
 
 import {
+  EMAIL_CHANGED,
+  PASSWORD_CHANGED,
+  LOGIN_USER_SUCCESS,
+  LOGIN_USER_ERROR,
+  LOGIN_USER,
+  NO_INPUT,
+  REGISTERING,
+  NEW_USER_SUCCESS,
+  NEW_USER_ERROR,
+  CANCEL_ERROR_MSG,
+  NETWORK,
+
+
    DESTINATION_INPUT,
    SELECT_VEHICLE,
    GET_USER_LOCATION,
-   LOGIN_USER_SUCCESS,
    HOVER_ON_DESTINATION,
    PICKUP_INPUT,
    INPUT_DONE,
@@ -96,7 +109,6 @@ import {
    FETCH_PRICE_ERROR,
    FROM_PAYMENT,
    CHANGE_TOKEN,
-   NETWORK,
    SELECT_SUPPORT,
    FETCHING_SUPPORT,
    FETCH_SUPPORT_GOOD,
@@ -104,10 +116,130 @@ import {
    EMPTY_PREDICTIONS,
    GETTING_PREDICTION,
    DEL_FCM_TOKEN,
+   SEND_USER_LOC,
+   SEND_USER_LOC_SUCCESS,
+   SEND_USER_LOC_NULL,
+
+   CANCEL_TRIP,
+   CANCEL_TRIP_FAILED,
+   CANCEL_TRIP_SUCCESS,
+   CANCELLING_TRIP,
+   RESET_CANCEL_MSG
+   
   } from '../types';
 
 
+  /***** LOGIN / REGISTER  *****/
+  export const emailChanged = (text) => {
+    return {
+      type: EMAIL_CHANGED,
+      payload: text
+    };
+  };
   
+  export const passwordChanged = (text) => {
+    return {
+      type: PASSWORD_CHANGED,
+      payload: text
+    };
+  };
+  
+  
+  
+  export const register = (firstname, lastname, tel, email, password) => {
+    return (dispatch) => {
+        //login user
+        dispatch({ type: REGISTERING });
+        fetch('http://admin.parcelfast.ng/api/register', {
+  
+          method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              fullname: firstname+ ' ' +lastname,
+              tel: tel,
+              email: email,
+              password: password,
+            })
+          })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            dispatch({ type: NETWORK, payload: true });
+            
+            if (responseJson.status === 'success') {
+              dispatch({ type: NEW_USER_SUCCESS, payload: responseJson });
+              //dispatch(NavigationActions.navigate({ routeName: 'Map' }));
+            } else {
+              dispatch({ type: NEW_USER_ERROR, payload: responseJson.msg });
+              
+            } 
+          })
+          .catch((error) => {
+            dispatch({ type: NETWORK, payload: false });
+            dispatch({ type: NEW_USER_ERROR, payload: "An error occured while getting match background" })
+          })
+      }
+  };
+  
+  
+  
+  export const loginUser = ({ email, password }) => {
+      
+    if (email === '' || password === '') {
+        return (dispatch) => {
+          dispatch({ type: NO_INPUT, payload: null });
+        }
+  
+    } else {
+      return (dispatch) => {
+          //login user
+          dispatch({ type: LOGIN_USER });
+          fetch('http://admin.parcelfast.ng/api/user', {
+  
+            method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: email,
+                password: password,
+              })
+            })
+            .then((response) => response.json())
+            .then((responseJson) => {
+              console.log(JSON.stringify(responseJson));
+              
+              
+              let status = responseJson.status;
+              if (status === 'success') {
+                //AsyncStorage.setItem('user_access_token', responseJson.token);
+                //var t = AsyncStorage.getItem('user_access_token')
+                //console.log("The realest token is "+t);
+                dispatch({ type: LOGIN_USER_SUCCESS, payload: responseJson });
+               // dispatch(NavigationActions.navigate({ routeName: 'Map' }));
+              } else {
+                dispatch({ type: LOGIN_USER_ERROR, payload: responseJson })
+              }
+  
+            })
+            .catch((error) => {
+              dispatch({ type: NETWORK, payload: false });
+              dispatch({ type: LOGIN_USER_ERROR, payload: "something happened o"+ error  })
+            })
+  
+  
+      }
+  
+    }
+  
+  };
+
+  /****END  OF LOGIN / REGISTER *****/
+  
+
   export const empty_predictions = (val) => {
     return {
       type: EMPTY_PREDICTIONS,
@@ -158,9 +290,10 @@ export const save_summary_state = (data) => {
 }
 
 export const clearEverything = (fcm_token) => {
+  if ((fcm_token !== '') || (fcm_token !== null)) {
  
   return(dispatch) => {
-    fetch('http://parcelfast.ng/app/admin/api/deltoken', {
+    fetch('http://admin.parcelfast.ng/api/deltoken', {
 
       method: 'POST',
         headers: {
@@ -191,6 +324,7 @@ export const clearEverything = (fcm_token) => {
         
     })
   }
+}
 };
 /*
 export const clearEverything = () => {
@@ -487,64 +621,11 @@ export const getAddressPrediction = (input) => {
 
 
 
-
-
-
-
-export const loginUser = ({ email, password }) => {
-  if (email === '' || password === '') {
-      return (dispatch) => {
-        dispatch({ type: NO_INPUT, payload: null });
-      }
-
-  } else {
-    return (dispatch) => {
-        //login user
-        dispatch({ type: LOGIN_USER });
-        fetch('http://parcelfast.ng/app/admin/api/user', {
-
-          method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: email,
-              password: password,
-            })
-          })
-          .then((response) => response.json())
-          .then((responseJson) => {
-            dispatch({ type: NETWORK, payload: true });
-            
-            let status = responseJson.status;
-            if (status === 'success') {
-              dispatch({ type: LOGIN_USER_SUCCESS, payload: responseJson });
-              //this.props.navigation.navigate('Profile', {name: 'Lucy'})
-              dispatch(NavigationActions.navigate({ routeName: 'Map' }));
-            } else {
-              dispatch({ type: LOGIN_USER_ERROR, payload: responseJson })
-            }
-
-          })
-          .catch((error) => {
-            dispatch({ type: NETWORK, payload: false });
-            dispatch({ type: LOGIN_USER_ERROR, payload: "Error login in" })
-          })
-
-
-    }
-
-  }
-
-};
-
-
 export const getHistory = (userid) => {
     return (dispatch) => {
         //login user
         dispatch({ type: FETCHING_HISTORY });
-        fetch('http://parcelfast.ng/app/admin/api/history', {
+        fetch('http://admin.parcelfast.ng/api/history', {
 
           method: 'POST',
             headers: {
@@ -577,7 +658,7 @@ export const getHistory = (userid) => {
     return (dispatch) => {
         //login user
         dispatch({ type: FETCHING_SUPPORT });
-        fetch('http://parcelfast.ng/app/admin/api/support', {
+        fetch('http://admin.parcelfast.ng/api/support', {
 
           method: 'POST',
             headers: {
@@ -612,7 +693,7 @@ export const getHistory = (userid) => {
     return (dispatch) => {
         //login user
         dispatch({ type: FETCHING_HISTORY_SINGLE });
-        fetch('http://parcelfast.ng/app/admin/api/singlehistory', {
+        fetch('http://admin.parcelfast.ng/api/singlehistory', {
 
           method: 'POST',
             headers: {
@@ -655,7 +736,7 @@ export const fetchPrice = (vehicle, emergency) => {
     return (dispatch) => {
         //login user
         dispatch({ type: FETCHING_PRICES });
-        fetch('http://parcelfast.ng/app/admin/api/price', {
+        fetch('http://admin.parcelfast.ng/api/price', {
 
           method: 'POST',
             headers: {
@@ -705,7 +786,7 @@ export const editUser = (fullname, email, tel, password, token, userid) => {
     return (dispatch) => {
         //login user
         dispatch({ type: EDITTING_USER });
-        fetch('http://parcelfast.ng/app/admin/api/edit', {
+        fetch('http://admin.parcelfast.ng/api/edit', {
 
           method: 'POST',
             headers: {
@@ -928,7 +1009,7 @@ export const getRoute = (pickup, destination) => {
 
 
 export const submitOrder = (user, pickup, destination, emergency, order_info, pickup_coords, dropoff_coords, type, scheduled, amount, km, min, screenshot, base, toll, emergency_cost, vehicle, charge_type, flutterwave_token, transaction_id) => {
-  if ((pickup === '') || (destination === '') || (pickup_coords === '') || (dropoff_coords === '') || (amount === 0) || (order_info === '')) {
+  if ((pickup === '') || (destination === '') || (pickup_coords === '') || (dropoff_coords === '') || (amount === 0)) {
       return (dispatch) => {
         dispatch({ type: ERROR_OVERALL, payload: null });
       }
@@ -937,7 +1018,7 @@ export const submitOrder = (user, pickup, destination, emergency, order_info, pi
     return (dispatch) => {
         //login user
         dispatch({ type: EDITTING_USER });
-        fetch('http://parcelfast.ng/app/admin/api/submit-orders', {
+        fetch('http://admin.parcelfast.ng/api/submit-orders', {
 
           method: 'POST',
             headers: {
@@ -1006,7 +1087,7 @@ export const getCard = (user) => {
   //var array = card.expiry.split('/');
   return (dispatch) => {
       //login user
-      fetch('http://parcelfast.ng/app/admin/api/get-card', {
+      fetch('http://admin.parcelfast.ng/api/get-card', {
         method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -1042,7 +1123,7 @@ export const verifyCard = (card, user) => {
   return (dispatch) => {
       //login user
       dispatch({ type: VERYFYING_CARD });
-      fetch('http://parcelfast.ng/app/admin/api/tokenize', {
+      fetch('http://admin.parcelfast.ng/api/tokenize', {
 
         method: 'POST',
           headers: {
@@ -1078,11 +1159,48 @@ export const verifyCard = (card, user) => {
     }
 };
 
+
+export const getNewByDriver = (lat, long) => {
+  return (dispatch) => {
+      dispatch({ type: SEND_USER_LOC, payload: true });
+      fetch('http://admin.parcelfast.ng/api/get-nearby-drivers', {
+
+        method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            latitude: lat,
+            longitude: long
+          })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson.length !== 'null') {
+            dispatch({ type: SEND_USER_LOC_SUCCESS, payload: responseJson });
+          } else {
+            dispatch({ type: SEND_USER_LOC_NULL, payload: responseJson });
+          }
+          console.log("Response recieved from server --- Nearby Drivers "+ JSON.stringify(responseJson));
+          console.log("Number of nearby driver is "+ responseJson.length);
+          
+        })
+        .catch((error) => {
+          console.log("An error occured while getting nearby drivers --- "+ error);
+         // dispatch({ type: ERROR_NETWORK_DRIVER, payload: "AN ERROR OCCURED. PROBABLY YOUR NETWORK" })
+        })
+    }
+};
+
+
+
+
 export const getNewMatch = (id) => {
   return (dispatch) => {
       //login user
       //dispatch({ type: FETCHING_HISTORY_SINGLE });
-      fetch('http://parcelfast.ng/app/admin/api/new-order', {
+      fetch('http://admin.parcelfast.ng/api/new-order', {
 
         method: 'POST',
           headers: {
@@ -1117,7 +1235,7 @@ export const getDriver = (id) => {
   return (dispatch) => {
       //login user
       dispatch({ type: CONNECTING_DRIVER, payload: "Connecting you to an available driver!" });
-      fetch('http://parcelfast.ng/app/admin/api/driver', {
+      fetch('http://admin.parcelfast.ng/api/driver', {
 
         method: 'POST',
           headers: {
@@ -1151,7 +1269,7 @@ export const onChangeToken = (user, token) => {
   return (dispatch) => {
       //login user
       dispatch({ type: CHANGE_TOKEN, payload: token });
-      fetch('http://parcelfast.ng/app/admin/api/fcm-change-token', {
+      fetch('http://admin.parcelfast.ng/api/fcm-change-token', {
 
         method: 'POST',
           headers: {
@@ -1174,4 +1292,51 @@ export const onChangeToken = (user, token) => {
           //dispatch({ type: ERROR_NETWORK_DRIVER, payload: "AN ERROR OCCURED. PROBABLY YOUR NETWORK" })
         })
     }
+};
+
+
+
+export const cancelTrip = (order, user, driver) => {
+  return (dispatch) => {
+      //login user
+      dispatch({ type: CANCELLING_TRIP, payload: true });
+      fetch('http://admin.parcelfast.ng/api/reject', {
+
+        method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            order: order,
+            user: user,
+            driver: driver,
+            })
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log("Status is "+responseJson[0].status);
+          
+          if ((responseJson[0].status === 'success') || (responseJson[0].status_code === 200)){
+            dispatch({ type: CANCEL_TRIP_SUCCESS, payload: responseJson[0].status_msg });
+            dispatch({ type: FETCH_HISTORY_GOOD, payload: responseJson });
+          } else {
+             dispatch({ type: CANCEL_TRIP_FAILED, payload: "An error occured on the server" });
+          
+         }
+        })
+        .catch((error) => {
+          dispatch({ type: CANCEL_TRIP_FAILED, payload: "Network Error!" });
+          //dispatch({ type: ERROR_NETWORK_DRIVER, payload: "AN ERROR OCCURED. PROBABLY YOUR NETWORK" })
+        })
+    }
+};
+
+
+  
+export const resetCancelMessage = (b) => {
+  return {
+    type: RESET_CANCEL_MSG,
+    payload: b
+  };
 };

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View, Image, NetInfo, StatusBar, ActivityIndicator, TouchableOpacity} from "react-native";
 import { connect } from 'react-redux';
-import { emailChanged, passwordChanged, loginUser, network_change } from '../../actions/Login';
+import { emailChanged, passwordChanged, loginUser, network_change } from '../../actions/Map';
 import AndroidBackButton from "react-native-android-back-button";
 
 
@@ -182,8 +182,8 @@ checkForLog() {
 const head = require("../../../img/head-logo.png");
 
 
-const mapStateToProps = ({ auth }) => {
-  const { email, password, error,network_connected, loading, status } = auth;
+const mapStateToProps = ({ map }) => {
+  const { email, password, error,network_connected, loading, status } = map;
   return {
     email,
     password,

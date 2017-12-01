@@ -43,6 +43,7 @@ import Init from "./components/init";
 import Confirm from "./components/confirm";
 import CardView from "./components/cardinput";
 import Profile from "./components/profile";
+import Route from "./components/route";
 import History from "./components/history";
 import Orders from "./components/orders";
 import Payment from "./components/payment";
@@ -94,6 +95,7 @@ const DrawerExample = DrawerNavigator(
     History: {screen: History},
     Payment: {screen: Payment},
     Orders: { screen: Orders },
+    Route: { screen: Route },
     Single: { screen: Single},
     Support: { screen: Support },
     SingleSupport: { screen: SingleSupport },

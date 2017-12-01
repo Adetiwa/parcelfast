@@ -65,13 +65,12 @@ export default {
     padding: 10,
   },
   continue: {
-    marginTop: 5,
-    width: "100%",
-
+    justifyContent: "center",
+    alignItems: 'center',
+    marginTop: 15,
   },
   continueText: {
     color: '#FFF',
-    textAlign: 'center',
   },
 
   names: {

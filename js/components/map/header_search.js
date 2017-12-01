@@ -12,7 +12,7 @@ import { destinationChanged,
           getDistance,empty_predictions,
           getRoute,
         } from '../../actions/Map';
-import { View, Image, Dimensions, Animated, PermissionsAndroid,
+import { View, Image, Dimensions, Animated, PermissionsAndroid, Keyboard,
   Platform, TextInput, StyleSheet,
   LayoutAnimation,
   StatusBar, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
@@ -100,6 +100,7 @@ class Header_Search extends Component {
   }
 
   inputter() {
+    Keyboard.dismiss();
     if ((this.props.pickup != '') && (this.props.destination !== '')) {
       this.props.geocodeTheAddress_dest(this.props.destination);
       this.props.geocodeTheAddress_pickup(this.props.pickup);

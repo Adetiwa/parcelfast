@@ -12,7 +12,6 @@ import AndroidBackButton from "react-native-android-back-button";
 import { Examples, NavigationBar, Button, Icon, Title } from '@shoutem/ui';
 import styless from "./styles";
 import { connect } from 'react-redux';
-
 import {  destinationChanged,
           select_vehicle,
           hoverondesc,
@@ -30,8 +29,31 @@ var BottomScreen = require('./BottomScreen');
 class Home extends Component {
   
   componentWillMount() {
-    this.props.clearEverything(this.props.fcm_token);
+    if (this.props.user !== null) {
+      this.props.clearEverything(this.props.fcm_token);
+    }
+
+    // fetch('http://admin.parcelfast.ng/api/user', {
+      
+    //           method: 'POST',
+    //             headers: {
+    //               'Accept': 'application/json',
+    //               'Content-Type': 'application/json',
+    //             }
+                
+    //           })
+    //           .then((response) => response.json())
+    //           .then((responseJson) => {
+                
+    //            console.log(JSON.stringify(responseJson));
+    //           })
+    //           .catch((error) => {
+    //             console.log(error);
+    //           })
   }
+
+    
+   
 
   render() {
     return (

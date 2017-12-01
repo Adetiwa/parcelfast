@@ -33,6 +33,7 @@ import {  destinationChanged,
           selectHistory,
           getHistory,
           network_change,
+          cancelTrip,
 
         } from '../../actions/Map';
         import {
@@ -65,6 +66,7 @@ import TabThree from "../tab/tabThree";
 import Communications from 'react-native-communications';
 //import Button from 'react-native-button';
 import * as Animatable from 'react-native-animatable'
+import Route from "../route/";
 
 import styless from "./styles";
 const pickup = require("../../../img/pickup.png");
@@ -97,10 +99,14 @@ componentDidMount() {
   this.haha();
   }
 //
-selectHis(data) {
+selectHis(data, okay) {
   this.props.selectHistory(data);
-
-  this.props.navigation.navigate('Single');
+  if ((okay == 'null') || (okay == 'complete')) {
+    this.props.navigation.navigate('Single');
+  } else {
+    this.props.navigation.navigate('Route');
+  }
+  
 }
 
 haha() {
@@ -135,7 +141,19 @@ getColor(status) {
 
 
 
-textRenderer(text) {
+textRenderer(text, data) {
+  if (data === 'cancelled') {
+    return (
+      <View style = {{
+        backgroundColor: '#f62e2e',
+        padding: 5,
+      }}>
+      <Text style = {{
+        fontSize: 12, color: '#FFF'
+      }}>TRIP CANCELLED</Text>
+    </View>
+    )
+  } else {
   if (text === 'null') {
     return (
       <View style = {{
@@ -182,6 +200,7 @@ textRenderer(text) {
     )
   }
 }
+}
   render () {
     return (
 
@@ -222,6 +241,26 @@ textRenderer(text) {
         <ActivityIndicator style = {{zIndex: 12,}}size='small' />
         </View>
     }
+     {this.props.cancelling && 
+        <View style={{
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          width: '100%',
+          height: '100%',
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.25)',
+          zIndex: 100000000,
+        }}>
+        <ActivityIndicator style = {{zIndex: 12,}}size='large' />
+        <Text style = {{
+          fontSize: 14,
+          color: '#444'
+        }}>cancelling trip...</Text>
+        </View>
+        }
     
       {this.props.history_empty === false && !this.props.fetching &&
 
@@ -237,7 +276,7 @@ textRenderer(text) {
                     					 <Card
                                style={styles.mb}>
                                   <TouchableOpacity
-                                  onPress={() =>  this.selectHis(data.o_id)}
+                                  onPress={() =>  this.selectHis(data.o_id, data.driver_status)}
                                   >
 
                                    <CardItem cardBody>
@@ -278,7 +317,7 @@ textRenderer(text) {
                                        style = {{
                                          fontSize: 10,color: '#444'
                                        }}
-                                         ><TimeAgo time={data.date} /></Text>
+                                         >{data.timeago}</Text>
                                      </Right>
 
                                    </CardItem>
@@ -290,7 +329,15 @@ textRenderer(text) {
                                      flexDirection: 'row',
                                      justifyContent: 'space-between'
                                    }}>
-                                   {this.textRenderer(data.driver_status)}
+                                   
+                                   {this.textRenderer(data.driver_status, data.order_status)}
+                                   
+                                   {data.driver !== null && 
+                                   <View style = {{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    padding: 10,
+                                   }}>
                                    <TouchableOpacity
                                      onPress={() => Communications.phonecall(data.driver_tel, true)}>
                                      <Icon style = {{color: '#555', paddingRight: 10, fontSize: 20}}
@@ -301,6 +348,29 @@ textRenderer(text) {
                                      <Icon style = {{color: '#555', paddingRight: 10, fontSize: 20}}
                                      name = "text" />
                                    </TouchableOpacity>
+                                   </View>
+                                   }
+                                  {data.driver === null && data.order_status !== 'cancelled' &&
+                                      <TouchableOpacity style = {{
+                                        justifyContent: "center",
+                                        alignItems: 'center',
+                                      //  padding: 5,
+                                      }}
+                                      onPress = {() => this.props.cancelTrip(data.o_id, this.props.user.userid, 0)} >
+                                      <View style={{
+                                          justifyContent: "center",
+                                          alignItems: 'center',
+                                          backgroundColor: '#f62e2e',
+                                          padding: 10,
+                                          marginRight: 5,
+                                        //  width: "70%",
+                                        }}>
+                                        <Text style = {{
+                                            color: '#FFF',
+                                          }}>cancel trip</Text>
+                                      </View>
+                                    </TouchableOpacity>
+                                   }
                                  </View>
 
                                   }
@@ -362,6 +432,8 @@ const mapStateToProps = ({ map }) => {
     prices,history_empty,
     done,fetching,
     history,
+    cancelling,
+    cancel_msg,
     error, region, user, distance_info, loading,emergency, status } = map;
   return {
     destination,
@@ -386,6 +458,8 @@ const mapStateToProps = ({ map }) => {
     done,
     estimated_price,history_empty,
     history,
+    cancelling,
+    cancel_msg,
   };
 };
 
@@ -401,6 +475,7 @@ export default connect(mapStateToProps, {
   calculatePrice,
   StorePrice,
   network_change,
+  cancelTrip,
   getHistory,
   selectHistory,
 })(History);

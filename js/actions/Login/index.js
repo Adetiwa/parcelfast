@@ -43,7 +43,7 @@ export const register = (firstname, lastname, tel, email, password) => {
   return (dispatch) => {
       //login user
       dispatch({ type: REGISTERING });
-      fetch('http://parcelfast.ng/app/admin/api/register', {
+      fetch('http://admin.parcelfast.ng/api/register', {
 
         method: 'POST',
           headers: {
@@ -59,8 +59,6 @@ export const register = (firstname, lastname, tel, email, password) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-          dispatch({ type: NETWORK, payload: true });
-          
           if (responseJson.status === 'success') {
             dispatch({ type: NEW_USER_SUCCESS, payload: responseJson });
             //dispatch(NavigationActions.navigate({ routeName: 'Map' }));
@@ -89,7 +87,7 @@ export const loginUser = ({ email, password }) => {
     return (dispatch) => {
         //login user
         dispatch({ type: LOGIN_USER });
-        fetch('http://parcelfast.ng/app/admin/api/user', {
+        fetch('http://admin.parcelfast.ng/api/user', {
 
           method: 'POST',
             headers: {
@@ -103,23 +101,21 @@ export const loginUser = ({ email, password }) => {
           })
           .then((response) => response.json())
           .then((responseJson) => {
-            dispatch({ type: NETWORK, payload: true });
-            
+            console.log(JSON.stringify(responseJson));
             let status = responseJson.status;
             if (status === 'success') {
               //AsyncStorage.setItem('user_access_token', responseJson.token);
               //var t = AsyncStorage.getItem('user_access_token')
               //console.log("The realest token is "+t);
               dispatch({ type: LOGIN_USER_SUCCESS, payload: responseJson });
-              dispatch(NavigationActions.navigate({ routeName: 'Map' }));
+             // dispatch(NavigationActions.navigate({ routeName: 'Map' }));
             } else {
               dispatch({ type: LOGIN_USER_ERROR, payload: responseJson })
             }
 
           })
           .catch((error) => {
-            dispatch({ type: NETWORK, payload: false });
-            dispatch({ type: LOGIN_USER_ERROR, payload: responseJson })
+            dispatch({ type: LOGIN_USER_ERROR, payload: "something happened "+ error })
           })
 
 

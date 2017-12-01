@@ -1,10 +1,21 @@
 import {
+  EMAIL_CHANGED,
+  PASSWORD_CHANGED,
+  LOGIN_USER_SUCCESS,
+  LOGIN_USER_ERROR,
+  LOGIN_USER,
+  NO_INPUT,
+  REGISTERING,
+  NEW_USER_SUCCESS,
+  NEW_USER_ERROR,
+  CANCEL_ERROR_MSG,
+
+
   DESTINATION_INPUT,
   SELECT_VEHICLE,
   GET_USER_LOCATION,
   HOVER_ON_DESTINATION,
   PICKUP_INPUT,
-  LOGIN_USER_SUCCESS,
   INPUT_DONE,
   GET_NAME_OF_LOCATION,
   GET_NAME_OF_LOCATION_ERROR,
@@ -80,7 +91,6 @@ import {
   NO_CARD,
   ERROR_GETTING_CARD,
   CHANGE_TYPE,
-  NEW_USER_SUCCESS,
   GETTING_PRICE_ON,
   FETCH_PRICE_ERROR,
   FROM_PAYMENT,
@@ -91,6 +101,14 @@ import {
   EMPTY_PREDICTIONS,
   GETTING_PREDICTION,
   DEL_FCM_TOKEN,
+  SEND_USER_LOC,
+  SEND_USER_LOC_SUCCESS,
+  SEND_USER_LOC_NULL,
+
+  CANCEL_TRIP_FAILED,
+  CANCEL_TRIP_SUCCESS,
+  CANCELLING_TRIP,
+  RESET_CANCEL_MSG,
  } from '../../actions/types';
 
 import { Dimensions } from "react-native";
@@ -104,6 +122,17 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const INITIAL_STATE =
   {
+    email: '',
+    password: '',
+    loading: false,
+    error: '',
+    status: false,
+    loadingReg: false,
+    errorReg: '',
+    statusReg: false,
+    driversGotten: false,
+    locationSent: false,
+    locationGotten: false,
     destination: '',
     pickup: '',
     hoveron: false,
@@ -112,6 +141,7 @@ const INITIAL_STATE =
     input_done: false,
     loading: false,
     error: '',
+    nearbydriver: null,
     latitude: 6.4549,
     longitude: 3.4246,
     latitudeDelta: LATITUDE_DELTA,
@@ -200,12 +230,49 @@ const INITIAL_STATE =
     fcm_token: null,
     network_connected: true,
     loading_prediction: false,
+
+    cancelling: false,
+    cancel_msg: '',
     
 }
 
 export default (state = INITIAL_STATE, action) => {
   console.log(action);
   switch(action.type) {
+
+    case REGISTERING:
+    return { ...state, loadingReg: true, errorReg: '' };
+  case NEW_USER_SUCCESS:
+    return { ...state,
+      ...INITIAL_STATE,
+       user: action.payload,
+       statusReg: true,
+
+    };
+  case CANCEL_ERROR_MSG: 
+      return { ...state, error: '' };
+  case NEW_USER_ERROR:
+    return { ...state, errorReg: action.payload, loadingReg: false };
+  case EMAIL_CHANGED:
+    return { ...state, email: action.payload };
+  case PASSWORD_CHANGED:
+    return { ...state, password: action.payload };
+  case LOGIN_USER_SUCCESS:
+  return { ...state,
+        ...INITIAL_STATE,
+         user: action.payload,
+         status: true,
+
+  };
+  case LOGIN_USER_ERROR:
+    return { ...state, error: "Authentication Failed", password: '',loading: false };
+  case LOGIN_USER:
+    return { ...state, loading: true, error: '' };
+  case NO_INPUT:
+    return {...state, loading: false, error: 'Input something'};
+
+
+
   case GETTING_PREDICTION:
     return {...state, loading_prediction: action.payload };
   case NETWORK: 
@@ -307,6 +374,7 @@ export default (state = INITIAL_STATE, action) => {
          longitude: action.payload.coords.longitude,
          latitudeDelta: LATITUDE_DELTA,
          longitudeDelta: LONGITUDE_DELTA,
+         locationGotten: true,
 
          region: {
            latitude: action.payload.coords.latitude,
@@ -594,8 +662,23 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, selected: action.payload };
     case SELECT_SUPPORT:
       return { ...state, selected_support: action.payload };
+    case SEND_USER_LOC_SUCCESS:
+    return { ...state, nearbydriver: action.payload,
+        driversGotten: true };
+    case SEND_USER_LOC:
+      return { ...state, driversGotten: true };
+    case SEND_USER_LOC_NULL:
+        return {...state, nearbydriver: {},driversGotten: true };
     case LOGOUT:
       return { ...state, ...INITIAL_STATE };
+    case CANCELLING_TRIP:
+      return {...state, cancelling: true, cancel_msg: ''};
+    case CANCEL_TRIP_SUCCESS:
+      return {...state,cancelling: false, cancel_msg: action.payload };
+    case CANCEL_TRIP_FAILED:
+      return {...state, cancelling: false, cancel_msg: action.payload };
+    case RESET_CANCEL_MSG:
+      return {...state, cancel_msg: ''};
     default:
           return state;
     }

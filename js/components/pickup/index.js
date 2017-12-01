@@ -17,7 +17,7 @@ import {  destinationChanged,
 
         } from '../../actions/Map';
 import Dropdown from 'react-native-modal-select-option';
-import { View, Image,Text, Separator,TextInput, KeyboardAvoidingView,  Dimensions, Platform , StatusBar , TouchableOpacity} from "react-native";
+import { View, Image,Text, Separator,TextInput,Keyboard, KeyboardAvoidingView,  Dimensions, Platform , StatusBar , TouchableOpacity} from "react-native";
 import AndroidBackButton from "react-native-android-back-button";
 import { KeyboardAwareScrollView} from 'react-native-form-generator'
 import {
@@ -169,6 +169,8 @@ sendData() {
               onChangeText = {(input)=>this.setState({pick_up_name: input})}
               placeholderTextColor="#CCC"
               ref='pickup_collector'
+              onSubmitEditing= {() => Keyboard.dismiss()}
+
               />
             </Item>
 
@@ -187,8 +189,8 @@ sendData() {
               onChangeText = {(input)=>this.setState({pick_up_tel: input})}
               placeholderTextColor="#CCC"
               ref='pickup_collector_tel'
-              //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
-
+              onSubmitEditing= {() => Keyboard.dismiss()}
+              
               />
             </Item>
 
@@ -207,6 +209,7 @@ sendData() {
               onChangeText = {(input)=>this.setState({drop_off_name: input})}
               placeholderTextColor="#CCC"
               ref='dropoff_collector'
+              onSubmitEditing= {() => Keyboard.dismiss()}
 
               />
             </Item>
@@ -226,8 +229,8 @@ sendData() {
               onChangeText = {(input)=>this.setState({drop_off_tel: input})}
               placeholderTextColor="#CCC"
               ref='dropoff_collector_tel'
-              //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
-
+              onSubmitEditing= {() => Keyboard.dismiss()}
+              
               />
             </Item>
 
@@ -246,7 +249,7 @@ sendData() {
               placeholderTextColor="#CCC"
               value={this.state.extra}
               ref='extra_shit'
-              //onSubmitEditing= {() => this.refs.dropoff_collector.focus()}
+              onSubmitEditing= {() => Keyboard.dismiss()}
 
               />
             </Item>

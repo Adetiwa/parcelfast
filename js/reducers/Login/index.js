@@ -60,7 +60,7 @@ export default (state = INITIAL_STATE, action) => {
 
         };
     case LOGIN_USER_ERROR:
-      return { ...state, error: "Authentication Failed", password: '',loading: false, }
+      return { ...state, error: "Authentication Failed", password: '',loading: false };
     case LOGIN_USER:
       return { ...state, loading: true, error: '' };
     case NO_INPUT:

@@ -25,14 +25,15 @@ import {  destinationChanged,
           onPayment,
           onChangeToken,
           network_change,
+          getNewByDriver,
         } from '../../actions/Map';
 import Pulse from 'react-native-pulse';
+import * as firebase from "firebase";
+
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { View, Image, NetInfo,  Dimensions, Animated, PermissionsAndroid,
   Platform, TextInput,AsyncStorage,Easing, StatusBar, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { ConnectivityRenderer, withNetworkConnectivity } from 'react-native-offline';
-
 
 import Header_Search from './header_search';
 import Location from "./location_result";
@@ -82,13 +83,9 @@ const LATITUDE_DELTA = 0.01;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const USER_TOKEN = "user_token";
 
+const connector = null;
 
 
-
-const regularJobKey = "regularJobKey";
-const exactJobKey = "exactJobKey";
-const foregroundJobKey = "foregroundJobKey";
-const lol = null;
 
 //run only on android
 /*if(Platform.OS == 'android') {
@@ -182,6 +179,7 @@ const lol = null;
 class Map extends Component {
   constructor(props) {
     super(props);
+    
     this.state = {
 
       region: {
@@ -190,6 +188,8 @@ class Map extends Component {
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA,
     },
+    
+    drivers: [],
     bounceValue: new Animated.Value(100),
     buttonText: "GET ESTIMATE",
     isDateTimePickerVisible: false,
@@ -197,7 +197,9 @@ class Map extends Component {
     map_ready: false,
     expanded: false,
     state: 'Money',
+    
   }
+ 
   }
 
 
@@ -216,27 +218,25 @@ class Map extends Component {
 
 
 
-  async componentWillMount() {
-
+ async componentWillMount() {
     this.animatedValue1 = new Animated.Value(0);
     this.animatedValue2 = new Animated.Value(1);
 
     this.props.fetchPrice(this.props.vehicle, this.props.emergency);
-    const region = await this.props.getCurrentLocation();
+    this.props.getCurrentLocation();
     this.props.from_where(false);
-    ///.then(() => {
-     // this.props.update_region(this.props.region);
-    //})
-    //.then(() => {
-    //  this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
-
-    //})
-    NetInfo.isConnected.addEventListener('change', this.handleConnectionChange);
-
-    NetInfo.isConnected.fetch().done(
-      (isConnected) => {  this.props.network_change(isConnected); }
-    );
-
+    if (!firebase.apps.length) {
+      
+    firebase.initializeApp({
+      apiKey: "AIzaSyCwSgfOqkH4rr5sAll9yH9keLvWOk0VB-4",
+      authDomain: "parcelfast-cdf6f.firebaseapp.com",
+      databaseURL: "https://parcelfast-cdf6f.firebaseio.com",
+      projectId: "parcelfast-cdf6f",
+      storageBucket: "parcelfast-cdf6f.appspot.com",
+      messagingSenderId: "659317790301"
+    })
+  }
+    
     const user = await AsyncStorage.getItem(USER_TOKEN);
     if (user !== null) {
       // We have data!!
@@ -254,10 +254,8 @@ async  componentDidMount() {
     if (!this.props.card_exist) {
       this.props.getCard(this.props.user.userid);
     }
-     
-     
     if(!this.props.route_set) {
-      this.props.getCurrentLocation();
+      //this.props.getCurrentLocation();
       //this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
 
 
@@ -275,6 +273,35 @@ async  componentDidMount() {
      } catch(e){
        console.error(e);
      }
+
+     /*var that = this;
+     //connector = firebase.database().ref();
+     let qo = firebase.database().ref('adetiwa1gmailcom');
+     
+     var finished = [];
+     qo.set({
+       'latitude': 6.6018,
+       'longitude': 3.3515,
+       'vehicle': 'truck',
+       'active': true,
+       'distance': '1KM',
+       'ETA': '20 mins',
+       'driver_id': 3
+       
+     });*/
+      //snapshot.forEach(function(data) {
+     //q.on('value', snapshot => {
+      //let result = snapshot.val();
+       // console.log("Firebase DATA " +JSON.stringify(result));
+        //result['key'] = data.key;
+
+      //}).then(function() {
+       /// console.log('Data receieved from firebase');
+      //})
+     //})
+     
+
+
 
      FCM.getFCMToken().then(token => {
        console.log("TOKEN (getFCMToken)", token);
@@ -363,6 +390,84 @@ async  componentDidMount() {
     } 
   }
 
+  thisWillRenderTheMarkers(driver, i) {
+      
+    conn = firebase.database().ref('drivers').child(driver.event_id);
+    //conn = firebase.database().ref('adetiwa1gmailcom');
+    //conn = firebase.database().ref(driver.event_id);
+    conn.on('value', snapshot => {
+      let result = snapshot.val();
+        if(result !== null) {
+          console.log('driverid is '+ driver.driver_id +" and firebase driver id is "+ result.driver_id);
+          if (driver.driver_id == result.driver_id) {
+            // console.log("adding driver records to state drivers now ..."+ JSON.stringify(result)+ " and state "+ JSON.stringify(this.state));
+            // debugger;
+            // //check if (this car already exist)
+            if(this.state.drivers.length > 0) {
+              console.log("state not empty ... with size of "+this.state.drivers.length);
+              
+              for (i = 0; i < this.state.drivers.length; i++) {
+                let dr = this.state.drivers[i].driver_id;
+                let lat = this.state.drivers[i].latitude;
+                let lng = this.state.drivers[i].longitude;
+                let act = this.state.drivers[i].active;
+                
+                if (dr == result.driver_id) {
+                  //only change when there is a change in data
+                  if (lat != driver.latitude || lng != driver.longitude || act != driver.active) {
+                      //car exist so replace
+                      console.log("different data so we are changing !!!");
+                      arr = this.state.drivers;
+                      //arr = this.state.drivers;
+                      console.log("replacing data ...");
+                      result = arr[i];
+                      this.setState({drivers: arr});
+                      
+                    
+                      //this.setState(update(this.state.drivers, 
+                        //{ $splice: [[i, 1, props]] }
+                      //));
+                    } else {
+                      console.log("pushing new data ...");
+                      
+                      //push to drivers in state
+                      this.setState({ 
+                       drivers: this.state.drivers.concat([result])
+                      }) //this.setState({});
+                    }
+                  } else {
+                    console.log("same data bitch!!!");
+                    
+                  }
+                  console.log('The state of drivers is '+ JSON.stringify(this.state.driver));
+                }
+            } else {
+              console.log("state empty ...");
+              
+              this.setState({ 
+                drivers: this.state.drivers.concat([result])
+              }) //this.setState({});
+
+              //console.log('The state of drivers is '+ JSON.stringify(this.state.driver));
+              console.log("adding driver records to state drivers now ..."+ JSON.stringify(result)+ " and state "+ JSON.stringify(this.state));
+              debugger;
+              
+             
+            }
+            
+           
+           
+          }
+        } else {
+          console.log(driver.driver_name + " has no location update from firebase  or shit happened");
+          
+        }
+      })
+
+      console.log('The state of drivers is '+ JSON.stringify(this.state.driver));
+    
+  }
+
 
   theContinueButtons() {
       if ((!this.props.distance_error) && (!this.props.getting_distance) &&
@@ -394,24 +499,33 @@ async  componentDidMount() {
       )
     }
   }
-  updateState(e){
-    console.log(e.nativeEvent);
-    this.setState({map_ready: true});
-    console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n The present state is "+ JSON.stringify(this.state) + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-  }
-  animateMap () {
-    this._map.animateToCoordinate(tempCoords, 1);
-  }
-  
-  componentWillUnmount() {
-  //  NetInfo.isConnected.removeEventListener('change', this.handleConnectionChange);
-  }
 
-handleConnectionChange = (isConnected) => {
+
+  
+
+  componentWillUpdate() {
+    
+        if(!this.props.route_set) {
+          //this.props.getCurrentLocation();
+          if (this.props.locationGotten && !this.props.driversGotten) {
+            //send location to server and get drivers around
+            this.props.getNewByDriver(this.props.latitude, this.props.longitude);
+            
+          }
+      
+        }
+    
+        
+      }
+      
+
+
+
+//handleConnectionChange = (isConnected) => {
   // this.setState({ status: isConnected });
-   this.props.network_change(isConnected);
+  // this.props.network_change(isConnected);
    //console.log(`is connected: ${this.state.status}`);
-}
+//}
 
   onDestChange(text) {
     this.props.destinationChanged(text);
@@ -684,7 +798,50 @@ dist() {
           }}
             ></View>
             </View>
-        </MapView.Marker>
+        </MapView.Marker> 
+        {this.props.nearbydriver !== null &&
+        this.props.nearbydriver.map((driver, i) => (
+          console.log("j")
+         //this.thisWillRenderTheMarkers(driver, i)
+        ))
+        }
+
+       {this.state.drivers.length > 0 &&
+       this.state.drivers.map((driver, i) => (
+         
+          <MapView.Marker
+              coordinate={
+                { latitude: this.props.latitude,
+                  longitude: this.props.longitude
+                }
+              }
+              key={i}
+              //title={marker.title}
+              //image={require('../../../img/car.png')}
+            >
+            <View style = {{
+            width: 50,
+            height: 50,
+            borderRadius: 50,
+            alignContent: 'center',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'red',
+          }}
+            ><View style = {{
+            width: 15,
+            height: 15,
+            borderRadius: 15,
+            backgroundColor: '#FFF',
+          }}
+            ></View>
+            </View>
+            </MapView.Marker>
+          ))
+                  
+      
+      
+      }
 
     </MapView.Animated>
     </Animatable.View>
@@ -695,7 +852,7 @@ dist() {
 
   onRegionChange(region) {
     this.props.update_region(region);
-    this.props.get_name_of_loc(this.props.latitude, this.props.longitude)
+    //this.props.get_name_of_loc(this.props.latitude, this.props.longitude)
 
     //console.log("This region is "+ JSON.stringify(region));
   }
@@ -703,7 +860,7 @@ dist() {
 
   onRegionChangeCompleted(region) {
     this.props.update_region(region);
-    this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
+    //this.props.get_name_of_loc(this.props.latitude, this.props.longitude);
   }
 
 
@@ -1129,8 +1286,7 @@ dist() {
         />
                
 
-
-
+        
 
       </Container>
     );
@@ -1188,6 +1344,9 @@ const mapStateToProps = ({ map }) => {
     fetching_prices,
     fetch_error,fcm_token,
     distanceInHR,
+    nearbydriver,
+    locationGotten,
+    driversGotten,
     user, dropoff_coords,loading,emergency,route_set, raw, status } = map;
   return {
     destination,
@@ -1221,7 +1380,10 @@ const mapStateToProps = ({ map }) => {
     distance_error,
     getting_distance,
     fetching_prices,
-    fetch_error
+    fetch_error,
+    nearbydriver,
+    locationGotten,
+    driversGotten,
   };
 };
 
@@ -1250,5 +1412,6 @@ export default connect(mapStateToProps, {
   change_type,
   onChangeToken,
   onPayment,
+  getNewByDriver
 
 })(Map);

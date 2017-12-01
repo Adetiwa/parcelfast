@@ -32,41 +32,72 @@ class SplashPage extends Component {
 
     }
 
+    getCOlor(shit) {
+      if (shit === 'ios') {
+        return '#FFFFFF';
+      } else {
+        return '#0397dd';
+      }
+    }
+
    componentWillMount() {
-    this.animatedValue = new Animated.Value(0);
-  } 
+    if (Platform.OS !== 'ios') {
+      this.animatedValue = new Animated.Value(0);
+    } 
+  }
 
   async componentDidMount() {
 
         var navigator = this.props.navigator;
-        setTimeout (() => {
-          this.callanimate();
-        }, 1800);
-       
-        setTimeout (() => {
+        if (Platform.OS === 'ios') {
           const user = AsyncStorage.getItem(USER_TOKEN)
           .then((data)=> {
             if (data !== null) {
               // We have data!!
 
-             // console.log("Data saved is "+JSON.stringify(data));
+            // console.log("Data saved is "+JSON.stringify(data));
 
                 this.props.setUser(JSON.parse(data));
                 this.props.navigation.navigate('Map');
             } else {
               try {
                 this.props.navigation.navigate('Home');
-               //   await AsyncStorage.setItem(USER_TOKEN, JSON.stringify(this.props.user));
+              //   await AsyncStorage.setItem(USER_TOKEN, JSON.stringify(this.props.user));
               } catch (error) {
                   // Error saving data
               }
             }
           })
+        } else {
+          setTimeout (() => {
+            this.callanimate();
+          }, 1800);
+        
+          setTimeout (() => {
+            const user = AsyncStorage.getItem(USER_TOKEN)
+            .then((data)=> {
+              if (data !== null) {
+                // We have data!!
 
-            
+              // console.log("Data saved is "+JSON.stringify(data));
+
+                  this.props.setUser(JSON.parse(data));
+                  this.props.navigation.navigate('Map');
+              } else {
+                try {
+                  this.props.navigation.navigate('Home');
+                //   await AsyncStorage.setItem(USER_TOKEN, JSON.stringify(this.props.user));
+                } catch (error) {
+                    // Error saving data
+                }
+              }
+            })
+
+              
 
 
-        }, 2000);
+          }, 2000);
+      }
       
      
     }
@@ -86,8 +117,9 @@ class SplashPage extends Component {
           ]
         }
         return (
-            <View style={{flex: 1, backgroundColor: '#0397dd', alignItems: 'center', justifyContent: 'center'}}>
+            <View style={{flex: 1, backgroundColor: this.getCOlor(Platform.OS), alignItems: 'center', justifyContent: 'center'}}>
               <StatusBar backgroundColor='#0397dd' barStyle='light-content' />
+              {(Platform.OS !== 'ios') && 
               <View
               style = {{
                  
@@ -123,6 +155,7 @@ class SplashPage extends Component {
 
                 
                 </View>
+                }
                 </View>
 
 

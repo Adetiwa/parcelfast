@@ -58,6 +58,7 @@ import {
         } from 'react-native-tableview-simple';
 import AndroidBackButton from "react-native-android-back-button";
 import UserAvatar from 'react-native-user-avatar';
+//import Route from "./route/";
 
 //import { Card, Button } from 'react-native-material-design';
 import Communications from 'react-native-communications';
@@ -264,7 +265,7 @@ getColor(status) {
 
                                    }
 
-                                   {thissingle[0].order_status !== 'pending' &&
+                                   {thissingle[0].order_status !== 'pending' && thissingle[0].driver !== null &&
 
                                    <Card style = {{width: '100%', marginTop: 30,
                                       }}>

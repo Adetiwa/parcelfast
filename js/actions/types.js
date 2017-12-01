@@ -127,3 +127,13 @@ export const FETCH_SUPPORT_EMPTY = "fetch_support_empty";
 export const EMPTY_PREDICTIONS = "empty_predictions";
 export const GETTING_PREDICTION = "getting_predications";
 export const DEL_FCM_TOKEN = "del_fcm_token";
+
+export const SEND_USER_LOC = "send_user_loc";
+export const SEND_USER_LOC_SUCCESS = "send_user_loc_success";
+export const SEND_USER_LOC_NULL = "send_user_loc_null";
+
+export const CANCEL_TRIP = "cancel_trip";
+export const CANCEL_TRIP_FAILED = "cancel_trip_failed";
+export const CANCEL_TRIP_SUCCESS = "cancel_trip_success";
+export const CANCELLING_TRIP = "cancelling_trip";
+export const RESET_CANCEL_MSG = "reset_cancel_msg";

@@ -88,6 +88,7 @@ import Home from "./components/home";
 import CardView from "./components/cardinput";
 import Profile from "./components/profile";
 import History from "./components/history";
+import Route from "./components/route";
 import Payment from "./components/payment";
 import SplashPage from "./components/splashscreen";
 import ErrorPage from "./components/error";
@@ -175,6 +176,7 @@ const AppNavigator = StackNavigator(
 		Home: {screen: Home},
 		CardView: {screen: CardView},
 		Profile: {screen: Profile},
+		Route: {screen: Route},
 		Payment: {screen: Payment},
 		History: {screen: History},
 		SplashPage: {screen: SplashPage},
@@ -188,6 +190,10 @@ const AppNavigator = StackNavigator(
 	{
 		initialRouteName: "SplashPage",
 		headerMode: "none",
+		mode: "modal",
+		navigationOptions: {
+			gesturesEnabled: false
+		}
 	}
 );
 
