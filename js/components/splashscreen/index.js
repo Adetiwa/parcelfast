@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Image, View,Platform,Animated,Easing, StatusBar,AsyncStorage,Text, Dimensions } from "react-native";
+import { Image, View,Platform,Animated,Easing, ActivityIndicator, StatusBar,AsyncStorage,Text, Dimensions } from "react-native";
 import { connect } from 'react-redux';
 import {  destinationChanged,
           select_vehicle,
@@ -156,8 +156,26 @@ class SplashPage extends Component {
                 
                 </View>
                 }
-                </View>
+                {(Platform.OS === 'ios') && 
+                  <View style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    width: '100%',
+                    height: '100%',
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#FFF',
+                    zIndex: 100000000,
 
+                  }}>
+                  <ActivityIndicator color="#444" style = {{zIndex: 12}} size='large' />
+                
+                  
+                </View>
+                }
+                </View>
 
         );
     }

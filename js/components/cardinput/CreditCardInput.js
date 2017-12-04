@@ -160,6 +160,7 @@ export default class CreditCardInput extends Component {
             cvc={cvc} />
         <ScrollView ref="Form"
             horizontal
+            
             keyboardShouldPersistTaps="always"
             scrollEnabled={allowScroll}
             showsHorizontalScrollIndicator={false}

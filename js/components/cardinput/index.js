@@ -5,6 +5,7 @@ import {
   Image,ActivityIndicator,
   View,TouchableOpacity,
   StatusBar,
+  Keyboard
 } from "react-native";
 import { connect } from 'react-redux';
 import {  destinationChanged,
@@ -83,6 +84,10 @@ class CardView extends Component {
     console.log(field);
   };
 
+  ver() {
+    Keyboard.dismiss();
+    this.props.verifyCard(this.props.card,this.props.user.userid)
+  }
   nav() {
     if (this.props.onpayment) {
       if (!this.props.card_exist){
@@ -138,22 +143,21 @@ class CardView extends Component {
                 validColor={"black"}
                 invalidColor={"red"}
                 placeholderColor={"darkgray"}
-
                 onFocus={this._onFocus}
                 onChange={this._onChange} />)
         }
       </View>
       {this.props.card_exist && !this.props.from_payment && this.nav()}
       {this.props.card !== null &&
-      <View style = {{flex: 1,
-                      justifyContent: 'center',
+      <View style = {{flex: 3,
+                      //justifyContent: 'center',
                       alignItems: 'center',
                       //alignContents: 'center',
                       }}>
                       <Text
                       style = {{
                         fontSize: 15,
-                        marginTop: 10,
+                        marginTop: -10,
                         alignSelf: 'center',
                         color: '#f62e2e',
                         marginBottom: 15,
@@ -161,18 +165,18 @@ class CardView extends Component {
                       >{this.props.card_status}</Text>
                       <TouchableOpacity
                       disabled = {this.props.load}
-                      onPress = {() => this.props.verifyCard(this.props.card,this.props.user.userid)}
+                      onPress = {() => this.ver()}
                       style = {{
                           width: '80%',
                           backgroundColor: '#FFF',
-                          height: '40%',
+                          height: '15%',
                           backgroundColor: '#0397DD',
                           justifyContent: 'center',
                           alignItems: 'center',
                       }}>
                       {this.props.load ?
 
-                     <ActivityIndicator/>
+                     <ActivityIndicator color="#FFF"/>
                        :
                     <Text
                       style = {{

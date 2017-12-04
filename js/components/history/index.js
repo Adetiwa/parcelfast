@@ -322,7 +322,6 @@ textRenderer(text, data) {
 
                                    </CardItem>
                                    </TouchableOpacity>
-                                   {data.order_status !== 'pending' &&
                                    <View style = {{
                                      paddingBottom: 5,
                                      paddingLeft: 5,
@@ -332,7 +331,7 @@ textRenderer(text, data) {
                                    
                                    {this.textRenderer(data.driver_status, data.order_status)}
                                    
-                                   {data.driver !== null && 
+                                   {data.driver !== "null" && data.order_status !== 'cancelled' &&
                                    <View style = {{
                                     flexDirection: 'row',
                                     justifyContent: 'space-between',
@@ -350,7 +349,7 @@ textRenderer(text, data) {
                                    </TouchableOpacity>
                                    </View>
                                    }
-                                  {data.driver === null && data.order_status !== 'cancelled' &&
+                                  {data.order_status !== 'cancelled' &&
                                       <TouchableOpacity style = {{
                                         justifyContent: "center",
                                         alignItems: 'center',
@@ -373,7 +372,7 @@ textRenderer(text, data) {
                                    }
                                  </View>
 
-                                  }
+                                  
                                  </Card>
 
                     							}

@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Keyboard
 } from "react-native";
 
 const s = StyleSheet.create({
@@ -92,7 +93,8 @@ export default class CCInput extends Component {
               placeholder={placeholder}
               value={value}
               onFocus={this._onFocus}
-              onChangeText={this._onChange} />
+              onChangeText={this._onChange}
+              onSubmitEditing = {Keyboard.dismiss()} />
         </View>
       </TouchableOpacity>
     );

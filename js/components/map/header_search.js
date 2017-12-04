@@ -99,6 +99,11 @@ class Header_Search extends Component {
     this.props.select_vehicle(type);
   }
 
+  closeUP() {
+    Keyboard.dismiss();
+    this.props.input_everything();
+  }
+
   inputter() {
     Keyboard.dismiss();
     if ((this.props.pickup != '') && (this.props.destination !== '')) {
@@ -314,11 +319,12 @@ class Header_Search extends Component {
                          style = {{position: 'absolute',
                           left: -5,
                           top: 10,
+                          zIndex: this.props.hoveron ? 1 : 0,
                           //marginTop: -10,
                           opacity: this.props.hoveron ? 1 : 1,
                           }}
                         transparent
-                        onPress={() => this.props.input_everything()}>
+                        onPress={() => this.closeUP()}>
                           <Icon style = {{color: '#888'}} name="arrow-back" />
                         </Button>
                          <View style={animatableStyles.searchSection}>
@@ -328,6 +334,7 @@ class Header_Search extends Component {
                             placeholder="Pick up Address"
                             value = {this.props.pickup}
                             ref='pickupInput'
+                            autoCorrect={false}
                             underlineColorAndroid= 'transparent'
                             placeholderTextColor="#CCC"
                             returnKeyType = "go"
@@ -342,6 +349,7 @@ class Header_Search extends Component {
                             <TextInput
                             placeholder="Drop off Address"
                             ref='destInput'
+                            autoCorrect={false}
                             value = {this.props.destination}
                             underlineColorAndroid= 'transparent'
                             placeholderTextColor="#CCC"
