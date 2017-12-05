@@ -9,8 +9,7 @@ import {  destinationChanged,
           update_region,
           fetchPrice,
           setUser,
-
-        } from '../../actions/Map';
+} from '../../actions/Map';
 const {width, height} = Dimensions.get("window");
 const SCREEN_WIDTH = width;
 const SCREEN_HEIGHT = height;
@@ -124,7 +123,7 @@ class SplashPage extends Component {
               style = {{
                  
                   flexDirection: 'column'
-                }} >
+                }}>
                 
                 <Animated.View  
                 style = {[{
